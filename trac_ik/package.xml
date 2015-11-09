@@ -3,7 +3,9 @@
   <name>trac_ik</name>
   <version>1.0.0</version>
   <description>
-
+    TRAC-IK is a faster, significantly more reliable drop-in replacement for
+    KDL's pseudoinverse Jacobian solver.  There is a KDL-compatible API for
+    chains, and a MoveIt! kinematics plugin.
   </description> 
   <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
   <author>Patrick Beeson</author>
