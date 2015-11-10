@@ -12,26 +12,18 @@ answer.  Future work plans to allow secondary constraints and sorting
 functions to be provided to the main TRAC-IK call in order to receive back the
 "best" IK solution.
 
-#Note: 
-
-While TRAC-IK is an improvement over KDL's IK for many joint-limited chains,
-TRAC-IK does **not** significantly improve IK results over KDL for the PR2 arm
-chains.  So, if your research focuses on the PR2 platform (real or simulated),
-it may not be worthwhile changing your code to use TRAC-IK.  *In our tests,
-KDL finds 98.75% IK solutions on 10,000 random PR2 arm configurations with an
-average of 0.27 ms per successful solve.  TRAC-IK solves 100% of the same
-random samples with an average of 0.34 ms per successful solve.*
-
 ###This repo contains 3 ROS packages:###
 
-trac\_ik is simple a metapackage.  You may need to run ```rosdep update &&
-rosdep install trac_ik_lib``` to get the Ubuntu nlopt packages required by
-TRAC-IK. (Alternatively, you can run ```sudo apt-get install libnlopt-dev```.)
+trac\_ik is simple a metapackage.  
 
 The TRAC-IK kinematics code in
 [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib)
 builds a .so library that can be used as a drop in replacement for KDL's IK
 functions for KDL chains. (This has been tested using ROS Indigo with catkin).
+
+You may need to run ```rosdep update &&
+rosdep install trac_ik_lib``` to get the Ubuntu nlopt packages required by
+TRAC-IK. (Alternatively, you can run ```sudo apt-get install libnlopt-dev```.)
 
 The
 [trac\_ik\_kinematics\_plugin](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_kinematics_plugin)
