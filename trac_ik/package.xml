@@ -42,6 +42,7 @@
   </description> 
   <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
   <author>Patrick Beeson</author>
+  <author>Barrett Ames</author>
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/trac_ik</url>
