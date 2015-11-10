@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   pluginlib
   roscpp
   tf_conversions
-  trac_ik
+  trac_ik_lib
 )
 
 include_directories(${catkin_INCLUDE_DIRS})
@@ -18,7 +18,7 @@ catkin_package(
     pluginlib
     roscpp
     tf_conversions
-    trac_ik
+    trac_ik_lib
 )
 
 include_directories(include)
