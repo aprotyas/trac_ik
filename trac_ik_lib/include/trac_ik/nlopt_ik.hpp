@@ -36,13 +36,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
  
 namespace NLOPT_IK {
 
-
+  enum OptType { Joint, DualQuat, SumSq, L2 };
 
 
   class NLOPT_IK 
   {
   public:
-    NLOPT_IK(const KDL::Chain& chain,const KDL::JntArray& q_min, const KDL::JntArray& q_max, double maxtime=0.005, double eps=1e-3, int type=0);
+    NLOPT_IK(const KDL::Chain& chain,const KDL::JntArray& q_min, const KDL::JntArray& q_max, double maxtime=0.005, double eps=1e-3, OptType type=SumSq);
 
     ~NLOPT_IK() {};
     int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray(), bool find_multiples_=false);
@@ -87,7 +87,7 @@ namespace NLOPT_IK {
     double maxtime;
     double eps;
     int iter_counter; 
-    int TYPE;
+    OptType TYPE;
   
     KDL::Frame targetPose;
     KDL::Frame z_up ;

@@ -197,7 +197,7 @@ namespace NLOPT_IK {
   }
 
 
-  NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, int _type):
+  NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
     chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
   {
     //Constructor for an IK Class.  Takes in a Chain to operate on,
@@ -226,17 +226,17 @@ namespace NLOPT_IK {
     std::vector<double> tolerance(1,1e-8);
     
     switch (TYPE) {
-    case 0: 
+    case Joint: 
       opt.set_min_objective(minfunc, this);
       opt.add_equality_mconstraint(constrainfuncm, this, tolerance);
       break;
-    case 1: 
+    case DualQuat: 
       opt.set_min_objective(minfuncDQ, this);
       break; 
-    case 2: 
+    case SumSq: 
       opt.set_min_objective(minfuncSumSquared, this);
       break; 
-    case 3: 
+    case L2: 
       opt.set_min_objective(minfuncL2, this);
       break; 
     }
@@ -492,7 +492,7 @@ namespace NLOPT_IK {
     // used.  Outputs the joint configuration found that solves the
     // IK.
 
-    // Returns -1 if a configuration could not be found within the eps
+    // Returns -3 if a configuration could not be found within the eps
     // set up in the constructor.
 
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
@@ -506,7 +506,7 @@ namespace NLOPT_IK {
 
     if (chain.getNrOfJoints() < 2) {
       ROS_WARN_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
-      return -std::numeric_limits<float>::max();
+      return -3;//std::numeric_limits<float>::max();
     }
 
     opt.set_maxtime(maxtime);

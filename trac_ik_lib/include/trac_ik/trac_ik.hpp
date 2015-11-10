@@ -84,6 +84,8 @@ namespace TRAC_IK {
 
     bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired);
 
+    bool reeval(const KDL::JntArray& seed, KDL::JntArray& solution);
+
     std::vector<double> lb, ub;
   
     int kdlRC, nloptRC;

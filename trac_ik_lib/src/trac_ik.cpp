@@ -33,6 +33,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/date_time.hpp>
 #include <boost/make_shared.hpp>
 
+#include <ros/ros.h>
+
 namespace TRAC_IK {
 
 
@@ -41,7 +43,7 @@ namespace TRAC_IK {
     chain(_chain),
     eps(_eps),
     maxtime(_maxtime),
-    nl_solver(chain,_q_min,_q_max,maxtime,eps, 2),
+    nl_solver(chain,_q_min,_q_max,maxtime,eps, NLOPT_IK::SumSq),
     iksolver(chain,_q_min,_q_max,maxtime,eps),
     work(io_service)
   {
@@ -80,6 +82,51 @@ namespace TRAC_IK {
     return true;
   }
 
+  bool TRAC_IK::reeval(const KDL::JntArray& seed, KDL::JntArray& solution) {
+
+    KDL::JntArray new_solution(solution);
+    
+    bool improved = false;
+
+    for (uint i=0; i<lb.size(); i++) {
+      
+      double val = std::abs(seed(i) - solution(i));
+      
+      double  z = 2*M_PI;
+
+      while (solution(i)+z <= ub[i]) {
+        double newval = std::abs(seed(i) - (solution(i)+z));
+        if (newval < val) {
+          val = newval;
+          new_solution(i) = solution(i)+z;
+          improved = true;
+        }
+        z += 2*M_PI;
+      }
+
+      z = -2*M_PI;
+
+      while (solution(i)+z >= lb[i]) {
+        double newval = std::abs(seed(i) - (solution(i)+z));
+        if (newval < val) {
+          val = newval;
+          new_solution(i) = solution(i)+z;
+          improved = true;
+        }
+        z -= 2*M_PI;
+      }
+      
+    }
+
+    if (improved) {
+      solution = new_solution;
+    }
+
+    return improved;
+
+  }
+
+
   int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds, const KDL::JntArray& q_desired) {
 
     KDL::JntArray kdl_out=q_init;
@@ -117,6 +164,12 @@ namespace TRAC_IK {
     io_service.post(boost::bind(&task_t::operator(), task2));
 
     boost::wait_for_all(pending_data.begin(), pending_data.end()); 
+
+    if (nloptRC == 0)
+      reeval(des,nlopt_out);
+
+    if (kdlRC == 0)
+      reeval(des,kdl_out);
 
     int result;
     if (nloptRC > kdlRC) {
