@@ -1,7 +1,6 @@
-The TRAC-IK kinematics solver is built in trac_ik as a .so library
-(this has been tested using ROS Indigo using Catkin).
-The headers and shared objects in this package can be linked against
-by user programs.  
+The TRAC-IK kinematics solver is built in trac\_ik\_lib as a .so library (this
+has been tested using ROS Indigo using Catkin).  The headers and shared
+objects in this package can be linked against by user programs.
 
 This requires the Ubuntu packages for NLOpt Libraries to be installed (the
 ros-indigo-nlopt packages do not use proper headers).  This can be done by
@@ -27,6 +26,8 @@ KDL IK:
 
 
 TRAC-IK
+
+    #include <trac_ik/trac_ik.hpp>    
 
     TRAC_IK::TRAC_IK ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error);  
 
