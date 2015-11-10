@@ -5,7 +5,8 @@ objects in this package can be linked against by user programs.
 This requires the Ubuntu packages for NLOpt Libraries to be installed (the
 ros-indigo-nlopt packages do not use proper headers).  This can be done by
 running ```sudo apt-get install libnlopt-dev``` on the trusty (and later)
-standard Ubuntu distros.  
+standard Ubuntu distros.  (Alternatively, you can run ```rosdep update &&
+rosdep install trac_ik```.
 
 KDL IK:
 
