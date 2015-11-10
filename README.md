@@ -25,7 +25,8 @@ random samples with an average of 0.34 ms per successful solve.*
 ###This repo contains 3 ROS packages:###
 
 trac\_ik is simple a metapackage.  You may need to run ```rosdep update &&
-rosdep install trac_ik``` to get the Ubuntu nlopt packages required by TRAC-IK.
+rosdep install trac_ik_lib``` to get the Ubuntu nlopt packages required by
+TRAC-IK. (Alternatively, you can run ```sudo apt-get install libnlopt-dev```.)
 
 The TRAC-IK kinematics code in
 [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib)
