@@ -27,3 +27,6 @@ replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
 
 ###A detailed writeup on TRAC-IK can be found here:###
 [Humanoids-2015](https://personal.traclabs.com/~pbeeson/publications/b2hd-Beeson-humanoids-15.html)
+
+###Some sample results are below:###
+![results.png](https://bitbucket.org/repo/7eA5MR/images/1410545029-results.png)
