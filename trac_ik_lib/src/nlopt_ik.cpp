@@ -40,7 +40,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace NLOPT_IK {
 
-
+  // No need to search over all real values for continuous joints -- Too large
+  // of a range (FLT_MAX) was deterimental.  But too small a range +/- M_PI
+  // was also deterimental.  experiments showed +/- SEARCH_MAX value worked
+  // well.
+#define SEARCH_MAX 1000.0
+  
+  
   dual_quaternion targetDQ;
 
   double minfunc(const std::vector<double>& x, std::vector<double>& grad, void* data) {
@@ -211,8 +217,8 @@ namespace NLOPT_IK {
     opt = nlopt::opt(nlopt::LD_SLSQP, _chain.getNrOfJoints());
 
     for (uint i=0; i<chain.getNrOfJoints(); i++) {
-      lb.push_back(_q_min(i));
-      ub.push_back(_q_max(i));
+      lb.push_back(std::max(-SEARCH_MAX,_q_min(i))); 
+      ub.push_back(std::min(SEARCH_MAX,_q_max(i)));
     }
        
     opt.set_lower_bounds(lb);

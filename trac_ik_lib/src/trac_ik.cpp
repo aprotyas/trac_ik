@@ -101,6 +101,7 @@ namespace TRAC_IK {
           new_solution(i) = solution(i)+z;
           improved = true;
         }
+        else break;
         z += 2*M_PI;
       }
 
@@ -113,6 +114,7 @@ namespace TRAC_IK {
           new_solution(i) = solution(i)+z;
           improved = true;
         }
+        else break;
         z -= 2*M_PI;
       }
       
