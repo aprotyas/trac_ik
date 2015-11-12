@@ -31,7 +31,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef NLOPT_IK_HPP
 #define NLOPT_IK_HPP
  
-#include <kdl/chainfksolverpos_recursive.hpp>
+#include <trac_ik/kdl_tl.hpp>
 #include <nlopt.hpp>
  
 namespace NLOPT_IK {
@@ -96,6 +96,8 @@ namespace NLOPT_IK {
     KDL::Frame z_target;
     KDL::Frame x_target;
     KDL::Frame y_target;
+    
+    std::vector<KDL::BasicJointType> types;
 
     nlopt::opt opt;
 

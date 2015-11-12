@@ -37,6 +37,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace KDL {
 
+  enum BasicJointType { RotJoint, TransJoint };
+
   class ChainIkSolverPos_TL 
   {
   public:
@@ -65,6 +67,8 @@ namespace KDL {
     
     bool rr;
     bool wrap;
+
+    std::vector<KDL::BasicJointType> types;
 
     bool aborted;
 

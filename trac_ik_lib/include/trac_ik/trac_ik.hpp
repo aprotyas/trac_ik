@@ -88,6 +88,8 @@ namespace TRAC_IK {
 
     std::vector<double> lb, ub;
   
+    std::vector<KDL::BasicJointType> types;
+
     int kdlRC, nloptRC;
 
     int kdl_count, nlopt_count;

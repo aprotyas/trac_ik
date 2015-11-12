@@ -39,6 +39,19 @@ namespace KDL
     maxtime(_maxtime),eps(_eps),rr(_random_restart),wrap(_try_jl_wrap)
   {
 
+    if (wrap) {
+      for (uint i=0; i<chain.segments.size(); i++) {
+        std::string type = chain.segments[i].getJoint().getTypeName();
+        if (type.find("Rot")!=std::string::npos)
+          types.push_back(KDL::BasicJointType::RotJoint);
+        if (type.find("Trans")!=std::string::npos)
+          types.push_back(KDL::BasicJointType::TransJoint);
+      }
+      
+      assert(types.size()==q_max.rows());
+
+    }
+
   }
 
   int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds) {
@@ -87,14 +100,16 @@ namespace KDL
       
       for(unsigned int j=0; j<q_min.rows(); j++) {
         if(q_curr(j) < q_min(j)) 
-          if (!wrap)
+          if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
+            // KDL's default 
             q_curr(j) = q_min(j);
           else {
-            double curr_angle = q_curr(j) + 2*M_PI;
-            while (curr_angle < q_min(j))
-              curr_angle = curr_angle + 2*M_PI;
+            // Find actual wrapped angle between limit and joint
+            double diffangle = fmod(q_min(j)-q_curr(j),2*M_PI);
+            // Subtract that angle from limit and go into the range by a
+            // revolution
+            double curr_angle = q_min(j) - diffangle + 2*M_PI;
             if (curr_angle > q_max(j))
-              // Always use KDL's default if not testing our RR
               q_curr(j) = q_min(j);
             else
               q_curr(j) = curr_angle;
@@ -103,14 +118,15 @@ namespace KDL
       
       for(unsigned int j=0; j<q_max.rows(); j++) {
         if(q_curr(j) > q_max(j)) 
-          if (!wrap)
+          if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
+            // KDL's default 
             q_curr(j) = q_max(j);
           else {
-            double curr_angle = q_curr(j) - 2*M_PI;
-            while (curr_angle > q_max(j))
-              curr_angle = curr_angle - 2*M_PI;
-            if (!rr || curr_angle < q_min(j))
-              // Always use KDL's default if not testing our RR
+            // Find actual wrapped angle between limit and joint
+            double diffangle = fmod(q_curr(j)-q_max(j),2*M_PI);
+            // Add that angle to limit and go into the range by a revolution
+            double curr_angle = q_max(j) + diffangle - 2*M_PI;
+            if (curr_angle < q_min(j))
               q_curr(j) = q_max(j);
             else
               q_curr(j) = curr_angle;

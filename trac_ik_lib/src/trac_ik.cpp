@@ -55,6 +55,16 @@ namespace TRAC_IK {
       ub.push_back(_q_max(i));
     }
 
+    for (uint i=0; i<chain.segments.size(); i++) {
+      std::string type = chain.segments[i].getJoint().getTypeName();
+      if (type.find("Rot")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::RotJoint);
+      if (type.find("Trans")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::TransJoint);
+    }
+     
+    assert(types.size()==lb.size());
+ 
 
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
@@ -84,48 +94,54 @@ namespace TRAC_IK {
 
   bool TRAC_IK::reeval(const KDL::JntArray& seed, KDL::JntArray& solution) {
 
-    KDL::JntArray new_solution(solution);
-    
+   
     bool improved = false;
 
     for (uint i=0; i<lb.size(); i++) {
       
-      double val = std::abs(seed(i) - solution(i));
-      
-      double  z = 2*M_PI;
+      if (types[i]==KDL::BasicJointType::TransJoint)
+        continue;
 
-      while (solution(i)+z <= ub[i]) {
-        double newval = std::abs(seed(i) - (solution(i)+z));
-        if (newval < val) {
-          val = newval;
-          new_solution(i) = solution(i)+z;
-          improved = true;
-        }
-        else break;
-        z += 2*M_PI;
+      double target = seed(i);
+      double val = solution(i);
+      
+      if (val > target+M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(val-target,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target + diffangle - 2*M_PI;
       }
 
-      z = -2*M_PI;
-
-      while (solution(i)+z >= lb[i]) {
-        double newval = std::abs(seed(i) - (solution(i)+z));
-        if (newval < val) {
-          val = newval;
-          new_solution(i) = solution(i)+z;
-          improved = true;
-        }
-        else break;
-        z -= 2*M_PI;
+      if (val < target-M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(target-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target - diffangle + 2*M_PI;
       }
-      
-    }
 
-    if (improved) {
-      solution = new_solution;
-    }
+      if (val > ub[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(val-ub[i],2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = ub[i] + diffangle - 2*M_PI;
+      }
 
+      if (val < lb[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(lb[i]-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = lb[i] - diffangle + 2*M_PI;
+      }
+
+      if (std::abs(val-solution(i)) > 0.1) {
+        improved = true;
+        //        ROS_WARN_STREAM("Changed: "<<solution(i)<<" to "<<val<<" for seed: "<<seed(i)<<" (target: "<<target<<") & limits ("<<lb[i]<<","<<ub[i]<<")");
+        solution(i) = val;
+      }
+    }
+    
     return improved;
-
+    
   }
 
 
