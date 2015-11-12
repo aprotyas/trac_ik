@@ -34,9 +34,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace KDL
 {
-  ChainIkSolverPos_TL::ChainIkSolverPos_TL(const Chain& _chain, const JntArray& _q_min, const JntArray& _q_max, double _maxtime, double _eps, bool _random_restart):
+  ChainIkSolverPos_TL::ChainIkSolverPos_TL(const Chain& _chain, const JntArray& _q_min, const JntArray& _q_max, double _maxtime, double _eps, bool _random_restart, bool _try_jl_wrap):
     chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(_chain), fksolver(_chain), delta_q(_chain.getNrOfJoints()),
-    maxtime(_maxtime),eps(_eps),rr(_random_restart)
+    maxtime(_maxtime),eps(_eps),rr(_random_restart),wrap(_try_jl_wrap)
   {
 
   }
@@ -86,13 +86,35 @@ namespace KDL
       Add(q_out,delta_q,q_curr);
       
       for(unsigned int j=0; j<q_min.rows(); j++) {
-        if(q_curr(j) < q_min(j))
-          q_curr(j) = q_min(j);
+        if(q_curr(j) < q_min(j)) 
+          if (!wrap)
+            q_curr(j) = q_min(j);
+          else {
+            double curr_angle = q_curr(j) + 2*M_PI;
+            while (curr_angle < q_min(j))
+              curr_angle = curr_angle + 2*M_PI;
+            if (curr_angle > q_max(j))
+              // Always use KDL's default if not testing our RR
+              q_curr(j) = q_min(j);
+            else
+              q_curr(j) = curr_angle;
+          }
       }
       
       for(unsigned int j=0; j<q_max.rows(); j++) {
-        if(q_curr(j) > q_max(j))
-          q_curr(j) = q_max(j);
+        if(q_curr(j) > q_max(j)) 
+          if (!wrap)
+            q_curr(j) = q_max(j);
+          else {
+            double curr_angle = q_curr(j) - 2*M_PI;
+            while (curr_angle > q_max(j))
+              curr_angle = curr_angle - 2*M_PI;
+            if (!rr || curr_angle < q_min(j))
+              // Always use KDL's default if not testing our RR
+              q_curr(j) = q_max(j);
+            else
+              q_curr(j) = curr_angle;
+          }
       }
       
       Subtract(q_out,q_curr,q_out);
