@@ -540,9 +540,26 @@ namespace NLOPT_IK {
 
     std::vector<double> x(chain.getNrOfJoints());
 
-    for (uint i=0; i < x.size(); i++)
+    for (uint i=0; i < x.size(); i++) {
       x[i] = q_init(i);
-    
+      
+      // Below is to handle bad seeds outside of limits
+
+      if (x[i] > ub[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(x[i]-ub[i],2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        x[i] = ub[i] + diffangle - 2*M_PI;
+      }
+
+      if (x[i] < lb[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(lb[i]-x[i],2*M_PI);
+        // Subtract that from lower bound and go forward a full rotation
+        x[i] = lb[i] - diffangle + 2*M_PI;
+      }        
+    }
+
     best_x=x;
     progress = -3;
     best_err = DBL_MAX;
