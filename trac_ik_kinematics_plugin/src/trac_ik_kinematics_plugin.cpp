@@ -258,8 +258,6 @@ namespace trac_ik_kinematics_plugin
                   }
                 else
                   {
-                    lower = -M_PI;
-                    upper = M_PI;
                     hasLimits = 0;
                   }
                 if(hasLimits)
@@ -271,8 +269,8 @@ namespace trac_ik_kinematics_plugin
                 else
                   {
                     joint_has_limits_vector_.push_back(false);
-                    joint_min_vector_.push_back(-M_PI);
-                    joint_max_vector_.push_back(M_PI);
+                    joint_min_vector_.push_back(-FLT_MAX);
+                    joint_max_vector_.push_back(FLT_MAX);
                   }
               }
           } else
