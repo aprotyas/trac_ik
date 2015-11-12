@@ -86,13 +86,29 @@ namespace KDL
       Add(q_out,delta_q,q_curr);
       
       for(unsigned int j=0; j<q_min.rows(); j++) {
-        if(q_curr(j) < q_min(j))
-          q_curr(j) = q_min(j);
+        if(q_curr(j) < q_min(j)) {
+          double curr_angle = q_curr(j) + 2*M_PI;
+          while (curr_angle < q_min(j))
+            curr_angle = curr_angle + 2*M_PI;
+          if (!rr || curr_angle > q_max(j))
+            // Always use KDL's default if not testing our RR
+            q_curr(j) = q_min(j);
+          else
+            q_curr(j) = curr_angle;
+        }
       }
       
       for(unsigned int j=0; j<q_max.rows(); j++) {
-        if(q_curr(j) > q_max(j))
-          q_curr(j) = q_max(j);
+        if(q_curr(j) > q_max(j)) {
+          double curr_angle = q_curr(j) - 2*M_PI;
+          while (curr_angle > q_max(j))
+            curr_angle = curr_angle - 2*M_PI;
+          if (!rr || curr_angle < q_min(j))
+            // Always use KDL's default if not testing our RR
+            q_curr(j) = q_max(j);
+          else
+            q_curr(j) = curr_angle;
+        }
       }
       
       Subtract(q_out,q_curr,q_out);
