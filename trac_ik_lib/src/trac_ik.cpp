@@ -55,6 +55,16 @@ namespace TRAC_IK {
       ub.push_back(_q_max(i));
     }
 
+    for (uint i=0; i<chain.segments.size(); i++) {
+      std::string type = chain.segments[i].getJoint().getTypeName();
+      if (type.find("Rot")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::RotJoint);
+      if (type.find("Trans")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::TransJoint);
+    }
+     
+    assert(types.size()==lb.size());
+ 
 
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
@@ -89,6 +99,9 @@ namespace TRAC_IK {
 
     for (uint i=0; i<lb.size(); i++) {
       
+      if (types[i]==KDL::BasicJointType::TransJoint)
+        continue;
+
       double target = seed(i);
       double val = solution(i);
       

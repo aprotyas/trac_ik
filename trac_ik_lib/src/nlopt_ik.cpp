@@ -215,12 +215,28 @@ namespace NLOPT_IK {
       return;
     }
     opt = nlopt::opt(nlopt::LD_SLSQP, _chain.getNrOfJoints());
+      
+    for (uint i=0; i<chain.segments.size(); i++) {
+      std::string type = chain.segments[i].getJoint().getTypeName();
+      if (type.find("Rot")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::RotJoint);
+      if (type.find("Trans")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::TransJoint);
+    }
 
     for (uint i=0; i<chain.getNrOfJoints(); i++) {
-      lb.push_back(std::max(-SEARCH_MAX,_q_min(i))); 
-      ub.push_back(std::min(SEARCH_MAX,_q_max(i)));
+      if (types[i]==KDL::BasicJointType::RotJoint) {
+        lb.push_back(std::max(-SEARCH_MAX,_q_min(i))); 
+        ub.push_back(std::min(SEARCH_MAX,_q_max(i)));
+      }
+      else  {
+        lb.push_back(_q_min(i)); 
+        ub.push_back(_q_max(i));
+      }
     }
-       
+     
+    assert(types.size()==lb.size());
+
     opt.set_lower_bounds(lb);
     opt.set_upper_bounds(ub);
     
@@ -543,23 +559,30 @@ namespace NLOPT_IK {
     for (uint i=0; i < x.size(); i++) {
       x[i] = q_init(i);
       
-      // Below is to handle bad seeds outside of limits
-
-      if (x[i] > ub[i]) {
-        //Find actual angle offset
-        double diffangle = fmod(x[i]-ub[i],2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        x[i] = ub[i] + diffangle - 2*M_PI;
+      if (types[i]==KDL::BasicJointType::TransJoint) {
+        x[i] = std::min(x[i],ub[i]);
+        x[i] = std::max(x[i],lb[i]);
       }
-
-      if (x[i] < lb[i]) {
-        //Find actual angle offset
-        double diffangle = fmod(lb[i]-x[i],2*M_PI);
-        // Subtract that from lower bound and go forward a full rotation
-        x[i] = lb[i] - diffangle + 2*M_PI;
-      }        
+      else {
+        
+        // Below is to handle bad seeds outside of limits
+        
+        if (x[i] > ub[i]) {
+          //Find actual angle offset
+          double diffangle = fmod(x[i]-ub[i],2*M_PI);
+          // Add that to upper bound and go back a full rotation
+          x[i] = ub[i] + diffangle - 2*M_PI;
+      }
+        
+        if (x[i] < lb[i]) {
+          //Find actual angle offset
+          double diffangle = fmod(lb[i]-x[i],2*M_PI);
+          // Subtract that from lower bound and go forward a full rotation
+          x[i] = lb[i] - diffangle + 2*M_PI;
+        }        
+      }
     }
-
+    
     best_x=x;
     progress = -3;
     best_err = DBL_MAX;
