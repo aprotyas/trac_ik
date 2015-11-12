@@ -44,7 +44,7 @@ namespace TRAC_IK {
     eps(_eps),
     maxtime(_maxtime),
     nl_solver(chain,_q_min,_q_max,maxtime,eps, NLOPT_IK::SumSq),
-    iksolver(chain,_q_min,_q_max,maxtime,eps),
+    iksolver(chain,_q_min,_q_max,maxtime,eps,true,true),
     work(io_service)
   {
     assert(chain.getNrOfJoints()==_q_min.data.size());

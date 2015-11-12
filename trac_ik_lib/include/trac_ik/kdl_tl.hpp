@@ -41,7 +41,7 @@ namespace KDL {
   {
   public:
 
-    ChainIkSolverPos_TL(const Chain& chain,const JntArray& q_min, const JntArray& q_max, double maxtime=0.005, double eps=1e-3, bool random_restart=true);
+    ChainIkSolverPos_TL(const Chain& chain,const JntArray& q_min, const JntArray& q_max, double maxtime=0.005, double eps=1e-3, bool random_restart=false, bool try_jl_wrap=false);
 
     ~ChainIkSolverPos_TL();
 
@@ -64,7 +64,8 @@ namespace KDL {
     double eps;
     
     bool rr;
-    
+    bool wrap;
+
     bool aborted;
 
     Frame f;
