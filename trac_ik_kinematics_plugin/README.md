@@ -20,4 +20,3 @@ solver with the TRAC-IK solver.  To use:
    -- Note: The Cartesian error distance used to determine a valid solution is
       _1e-5_, as that is what is hard-coded into MoveIt's KDL plugin.
 
-
