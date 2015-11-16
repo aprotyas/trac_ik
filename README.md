@@ -39,4 +39,22 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 ###Some sample results are below: 
 
-![results.png](https://bitbucket.org/repo/7eA5MR/images/1410545029-results.png)
+IK success and average speed (for successful solves) as of v1.1.0.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
+
+Chain | DOFs | KDL (inverse Jacbian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK |
+- | - | -  | - | - |
+PR2 arm | 7 | 98.8%0.28ms | 99.7%; 0.29ms | 100%; 0.38ms |
+Jaco2 arm | 6 | 26.2%; 0.37ms | 97.7%; 0.46ms | 99.7%; 0.48ms |
+NASA Robosimian arm | 7 | 61.4%; 0.86ms | 99.9%; 0.34ms | 99.9%; 0.41ms |
+Atlas 2013 arm | 6 | 75.5%; 0.16ms | 97.1%; 0.25ms | 99.9%; 0.31ms |
+Atlas 2015 arm | 7 | 75.4%; 0.4ms | 92.2%; 0.52ms | 99.3%; 0.46ms |
+Baxter arm | 7 | 60.7%; 0.44ms | 89.2%; 0.58ms | 99.4%; 0.56ms |
+Fetch arm | 7 | 87.6%; 0.11ms | 98.4%; 0.21ms | 100%; 0.23ms |
+Denso vs-068 | 6 | 27.9%; 0.26ms | 98.1%; 0.32ms | 99.8%; 0.37ms |
+NASA Valkyrie arm | 7 | 44.7%; 0.62ms | 88.5%; 0.92ms | 99.5%; 0.68ms |
+NASA Robonaut2 arm | 7 | 85.7%; 0.41ms | 93.5%; 0.5ms | 99.5%; 0.46ms |
+NASA Robonaut2 grasping 'leg' | 7 | 60.9%; 0.59ms | 86.7%; 0.54ms | 99.8%; 0.57ms |
+NASA Robonaut2 'leg' + waist + arm | 15 | 97.6%; 0.78ms | 97.7%; 0.78ms | 99.9%; 0.76ms |
+TRACLabs arm | 7 | 78.8%; 0.4ms | 94.6%; 0.42ms | 100%; 0.38ms |
+
+
