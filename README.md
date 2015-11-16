@@ -20,6 +20,7 @@ The TRAC-IK kinematics code in
 [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib)
 builds a .so library that can be used as a drop in replacement for KDL's IK
 functions for KDL chains. (This has been tested using ROS Indigo with catkin).
+Details for use are in trac\_ik\_lib/README.md.
 
 You may need to run ```rosdep update &&
 rosdep install trac_ik_lib``` to get the Ubuntu nlopt packages required by
@@ -30,6 +31,7 @@ The
 package builds a [MoveIt!
 plugin](http://moveit.ros.org/documentation/concepts/#kinematics) that can
 replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
+Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 ###A detailed writeup on TRAC-IK can be found here:###
 
