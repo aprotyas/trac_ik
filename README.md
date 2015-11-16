@@ -41,7 +41,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 IK success and average speed (for successful solves) as of v1.1.0.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
 
-Chain | DOFs | KDL (inverse Jacbian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK |
+Chain | DOFs | Orocos' KDL (inverse Jacobian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK |
 - | - | -  | - | - |
 PR2 arm | 7 | **98.8%** (0.28ms) | **99.7%** (0.29ms) | **100%** (0.38ms) |
 Jaco2 arm | 6 | **26.2%** (0.37ms) | **97.7%** (0.46ms) | **99.7%** (0.48ms) |
