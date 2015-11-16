@@ -56,5 +56,6 @@ NASA Robonaut2 arm | 7 | **85.7%** (0.41ms) | **93.5%** (0.5ms) | **99.5%** (0.4
 NASA Robonaut2 grasping 'leg' | 7 | **60.9%** (0.59ms) | **86.7%** (0.54ms) | **99.8%** (0.57ms) |
 NASA Robonaut2 'leg' + waist + arm | 15 | **97.6%** (0.78ms) | **97.7%** (0.78ms) | **99.9%** (0.76ms) |
 TRACLabs arm | 7 | **78.8%** (0.4ms) | **94.6%** (0.42ms) | **100%** (0.38ms) |
+Fanuc M-430iA/2F | 5 | **21.1%** (0.19ms) | **88.2%** (0.41ms) | **99.4%** (0.53ms) |
 
 Feel free to [email Patrick](mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.
