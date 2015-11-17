@@ -209,7 +209,6 @@ namespace trac_ik_kinematics_plugin
 
     ros::NodeHandle node_handle("~");
 
-
     urdf::Model robot_model;
     std::string xml_string;
 
@@ -230,7 +229,7 @@ namespace trac_ik_kinematics_plugin
     ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");
 
     boost::shared_ptr<urdf::Link> link = boost::const_pointer_cast<urdf::Link>(robot_model.getLink(getTipFrame()));
-    while(link->name != base_frame_ && joint_names_.size() <= num_joints_)
+    while(link->name != base_frame_)
       {
         ROS_DEBUG_NAMED("trac_ik","Link %s",link->name.c_str());
         link_names_.push_back(link->name);
@@ -319,7 +318,6 @@ namespace trac_ik_kinematics_plugin
 
     double epsilon = 1e-5;  //Same as MoveIt's KDL plugin
 
-    //TODO: Use time and error parameters
     ik_solver = new TRAC_IK::TRAC_IK(chain, joint_min, joint_max, timeout, epsilon);
 
     active_ = true;
