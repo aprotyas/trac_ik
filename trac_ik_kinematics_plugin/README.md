@@ -25,8 +25,7 @@ detection and constraint checking may use Forward Kinematics to determine the
 pose of any subgoal joint configuration, but the planning _IS NOT_ being done
 in Cartesian space. After a joint trajectory is found, MoveIt! tries to smooth
 the trajectory to make it less "crazy looking", but this does not always
-result in a path that is pleasing to human users.  Thus, TRAC-IK really isn't
-going to help you much for normal MoveIt! operations.
+result in a path that is pleasing to human users.  
 
 If you don't have obstacles in your space, you may want to try the Cartesian
 planning API in MoveIt! to get "straight-line" motion.  MoveIt's Cartesian
