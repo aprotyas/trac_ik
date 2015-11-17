@@ -14,8 +14,7 @@ solver with the TRAC-IK solver.  To use:
     - Note: The Cartesian error distance used to determine a valid solution is _1e-5_, as that is what is hard-coded into MoveIt's KDL plugin.
 
 
-###NOTE: My understanding of how MoveIt! works from user experience and
-looking at the source code (though I am NOT a MoveIt! developer):
+###NOTE: My understanding of how MoveIt! works from user experience and looking at the source code (though I am NOT a MoveIt! developer):
 
 For normal operations, MoveIt! only really calls an IK solver for one pose
 (maybe multiple times if the first result is invalid due to self collisions or
