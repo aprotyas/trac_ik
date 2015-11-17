@@ -305,6 +305,8 @@ namespace trac_ik_kinematics_plugin
     if(!tree.getChain(base_name, tip_name, chain))
       ROS_FATAL("Couldn't find chain %s to %s",base_name.c_str(),tip_name.c_str());
 
+    assert(num_joints_ == chain.getNrOfJoints());
+
     fk_solver = new KDL::ChainFkSolverPos_recursive(chain);
 
     ROS_INFO_NAMED("trac-ik plugin","Looking in private handle: %s for param name: %s",
