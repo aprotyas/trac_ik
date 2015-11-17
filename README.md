@@ -33,6 +33,9 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 IK success and average speed (for successful solves) as of v1.1.0.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
 
+Note on timings: The timing below are only for _successful_ solves.  When unsuccessful, the IK solver runs for the full timeout requested.  If all solve requests (successful and unsuccessful) were included in the timing data, then for robot chains where KDL fails much of the time, the times would be skewed to basically be the timeout value.  So, in general, if the solve rate of TRAC-IK is >> KDL, then the overall expected time for TRAC-IK << KDL.
+
+
 Chain | DOFs | Orocos' KDL (inverse Jacobian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK |
 - | - | -  | - | - |
 PR2 arm | 7 | **98.8%** (0.28ms) | **99.7%** (0.29ms) | **100%** (0.38ms) |
