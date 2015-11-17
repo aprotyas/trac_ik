@@ -18,8 +18,7 @@ functions to be provided to the main TRAC-IK call in order to receive back the
 
 - [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib), the TRAC-IK kinematics code,
 builds a .so library that can be used as a drop in replacement for KDL's IK
-functions for KDL chains. (This has been tested using ROS Indigo with catkin).
-Details for use are in trac\_ik\_lib/README.md.
+functions for KDL chains. Details for use are in trac\_ik\_lib/README.md.
 
 - [trac\_ik\_kinematics\_plugin](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_kinematics_plugin) builds a [MoveIt! plugin](http://moveit.ros.org/documentation/concepts/#kinematics) that can
 replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
