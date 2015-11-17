@@ -33,7 +33,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 IK success and average speed (for successful solves) as of v1.1.0.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
 
-Note on timings: The timing below are only for _successful_ solves.  When unsuccessful, the IK solver runs for the full timeout requested.  If all solve requests (successful and unsuccessful) were included in the timing data, then for robot chains where KDL fails much of the time, the times would be skewed to basically be the timeout value.  So, in general, if the solve rate of TRAC-IK is >> KDL, then the overall expected time for TRAC-IK << KDL.
+Note on timings: The timings below are only for _successful_ solves, and are meant to illustrate that TRAC-IK does not add significant overhead over KDL in the worst case.  When an IK solution is not found, the IK solver implementations run for the full timeout requested.  If all solve requests (successful and unsuccessful) were included in the timing data, then for robot chains where KDL fails much of the time (e.g., Jaco-2), the KDL times would be skewed to basically be the user provided timeout value (here 5ms).  So, in general, if the solve rate of TRAC-IK is >> KDL, then the overall expected time for TRAC-IK << KDL.
 
 
 Chain | DOFs | Orocos' KDL (inverse Jacobian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK |
@@ -54,5 +54,6 @@ TRACLabs modular arm | 7 | **78.8%** (0.4ms) | **94.6%** (0.42ms) | **100%** (0.
 Fanuc M-430iA/2F | 5 | **21.1%** (0.19ms) | **88.2%** (0.41ms) | **99.4%** (0.53ms) |
 UR5 | 6 | **35.7%** (0.24ms) | **88.7%** (0.24ms) | **99.8%** (0.37ms) |
 UR10 | 6 | **36.12%** (0.26ms) | **88.1%** (0.25ms) | **99.7%** (0.39ms) |
+KUKA  LBR iiwa 14 R820 | 7 | **36%** (0.93ms) | **90.7%** (0.6ms) | **99.7%** (0.7 ms) |
 
 Feel free to [email Patrick](mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.
