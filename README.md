@@ -34,6 +34,8 @@ IK success and average speed (for successful solves) as of v1.1.0.  All results 
 
 **Note on timings**: The timings below are only for _SUCCESSFUL_ solves, and are meant to illustrate that TRAC-IK does not add significant overhead over KDL in the _WORST CASE_.  When an IK solution is not found, the IK solver implementations run for the full timeout requested.  If all solve requests (successful and unsuccessful) were included in the timing data, then for robot chains where KDL fails much of the time (e.g., Jaco-2), the KDL times would be skewed to basically be the user provided timeout value (here 5 ms).  So, in general, if the solve rate of TRAC-IK >> KDL, then the overall expected time for TRAC-IK << KDL.
 
+**Note on success**: Neither KDL nor TRAC-IK uses any mesh information to determine if _valid_ IK solutions result in self-collisions.  IK solutions deal with link distances and joint ranges, and remain agnostic about self-collisions due to volumes.  Expected future enhancements to TRAC-IK that search for multiple solutions may also include the ability to throw out solutions that result in self collisions (provided the URDF has valid geometry information); however, this is currently not the behaviour of any generic IK solver examined to date.
+
 
 Chain | DOFs | Orocos' KDL (inverse Jacobian w/ joint limits) | KDL-RR (our fixes to KDL joint limit handling) | TRAC-IK 
 - | - | -  | - | - 
