@@ -140,10 +140,14 @@ namespace KDL
           for (unsigned int j=0; j<q_out.rows(); j++) 
             q_curr(j)=fRand(q_min(j),q_max(j));
         }
-        else {
-          q_out=q_curr;
-          return -3;
-        }
+        // Below would be an optimization to the normal KDL, where when it
+        // gets stuck, it returns immediately.  Don't use to compare KDL with
+        // random restarts or TRAC-IK to plain KDL.
+
+        // else {
+        //   q_out=q_curr;
+        //   return -3;
+        // }
       }
 
       q_out=q_curr;
