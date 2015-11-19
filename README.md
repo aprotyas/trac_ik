@@ -62,7 +62,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 ###Some sample results are below: 
 
-_Orocos' **KDL**_ (inverse Jacobian w/ joint limits), _KDL-RR_ (our fixes to KDL joint limit handling), and _TRAC-IK_ (our concurrent inverse Jacobian and non-linear optimization solver) are compared below.
+_Orocos' **KDL**_ (inverse Jacobian w/ joint limits), _**KDL-RR**_ (our fixes to KDL joint limit handling), and _**TRAC-IK**_ (our concurrent inverse Jacobian and non-linear optimization solver) are compared below.
 
 IK success and average speed (for successful solves) as of TRAC-IK tag v1.1.1.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
 
@@ -70,9 +70,7 @@ IK success and average speed (for successful solves) as of TRAC-IK tag v1.1.1.  
 
 **Note on timings**: The first timings listed below are only for _SUCCESSFUL_ solves, and are meant to illustrate that TRAC-IK does not add significant overhead over KDL in the _WORST CASE_.  The second timings provided include both successful _AND UNSUCCESSFUL_ runs.  When an IK solution is not found, the numerical IK solver implementations will run for the full timeout requested, searching for an answer; thus for robot chains where KDL fails much of the time (e.g., Jaco-2), the KDL times are skewed towards the timeout value (here 5 ms).  
 
-[comment]: <> **Note on SSE movement**: The SSE movement values show the average Sum-of-Squared Error between the seed joints values (midway between the joint limits) and the joint values for _SUCCESSFUL_ IK solutions.  Lower is generally better in that the found IK solution is closer to the desired (Seed) value when SSE movement values are lower; however, please take into consideration that is an average over successful runs, which may vary drastically across different IK implementations. 
-
-Chain | DOFs | Orocos' KDL solve rate | Orocos' KDL Avg Time for success | Orocos' KDL Avg Time (5ms timeout) | KDL-RR solve rate | KDL-RR Avg Time for success | KDL-RR Avg Time (5ms timeout) | TRAC-IK solve rate | TRAC-IK Avg Time for success | TRAC-IK Avg Time (5ms timeout)
+Chain | DOFs | Orocos' _KDL_ solve rate | Orocos' _KDL_ Avg Time for success | Orocos' _KDL_ Avg Time (5ms timeout) | _KDL-RR_ solve rate | _KDL-RR_ Avg Time for success | _KDL-RR_ Avg Time (5ms timeout) | _TRAC-IK_ solve rate | _TRAC-IK_ Avg Time for success | _TRAC-IK_ Avg Time (5ms timeout)
 - | - | - | - | - | - | - | - | - | - | -
 Atlas 2013 arm | 6 | **75.53%** | 0.16ms | 1.35ms | **97.13%** | 0.26ms | 0.4ms | **99.86%** | 0.29ms | 0.29ms
 Atlas 2015 arm | 7 | **75.32%** | 0.4ms | 1.54ms | **92.21%** | 0.52ms | 0.87ms | **99.31%** | 0.47ms | 0.5ms
