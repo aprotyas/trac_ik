@@ -204,7 +204,7 @@ namespace NLOPT_IK {
 
 
   NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
-    chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
+    chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type), find_multiples(false)
   {
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
@@ -506,8 +506,16 @@ namespace NLOPT_IK {
   }
 
 
+  std::vector<KDL::JntArray> NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
+    std::vector<KDL::JntArray> ret_arr;
+    KDL::JntArray q_out;
+    int rc =CartToJnt(q_init, p_in,q_out,_bounds, q_desired);
+    if (rc >=0)
+      ret_arr.push_back(q_out);
+    return ret_arr;
+  }
 
-  int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds, const KDL::JntArray& q_desired, bool find_multiples_) {
+  int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
     // User command to start an IK solve.  Takes in a seed
     // configuration, a Cartesian pose, and (optional) a desired
     // configuration.  If the desired is not provided, the seed is
@@ -520,7 +528,7 @@ namespace NLOPT_IK {
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration diff;
 
-    find_multiples=find_multiples_;
+    find_multiples=false;
 
     aborted = false;    
     bounds = _bounds;

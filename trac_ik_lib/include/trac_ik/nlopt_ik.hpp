@@ -45,7 +45,9 @@ namespace NLOPT_IK {
     NLOPT_IK(const KDL::Chain& chain,const KDL::JntArray& q_min, const KDL::JntArray& q_max, double maxtime=0.005, double eps=1e-3, OptType type=SumSq);
 
     ~NLOPT_IK() {};
-    int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray(), bool find_multiples_=false);
+    int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
+
+    std::vector<KDL::JntArray> CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
 
     double minJoints(const std::vector<double>& x, std::vector<double>& grad);
     //  void cartFourPointError(const std::vector<double>& x, double error[]);
@@ -74,13 +76,12 @@ namespace NLOPT_IK {
     }
 
 
-    bool find_multiples;
-
     std::vector<double> lb;
     std::vector<double> ub;
 
     const KDL::Chain chain;
     std::vector<double> des;
+
 
     KDL::ChainFkSolverPos_recursive fksolver;
 
@@ -88,6 +89,8 @@ namespace NLOPT_IK {
     double eps;
     int iter_counter; 
     OptType TYPE;
+
+    bool find_multiples;
   
     KDL::Frame targetPose;
     KDL::Frame z_up ;

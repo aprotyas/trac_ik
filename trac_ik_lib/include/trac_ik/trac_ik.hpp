@@ -43,7 +43,7 @@ namespace TRAC_IK {
   class TRAC_IK 
   {
   public:
-    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-3);
+    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, bool multiple_solutions=false);
 
     ~TRAC_IK();
 
@@ -51,7 +51,6 @@ namespace TRAC_IK {
       double err = 0;
       for (uint i=0; i<arr1.data.size(); i++) {
         err += pow(arr1(i) - arr2(i),2);
-        //        err = std::max(err, std::abs(arr1(i) - arr2(i)));
       }
       
       return err;
@@ -64,6 +63,7 @@ namespace TRAC_IK {
     KDL::Chain chain;
     double eps;
     double maxtime;
+    bool multi_solve;
     NLOPT_IK::NLOPT_IK nl_solver;
     KDL::ChainIkSolverPos_TL iksolver;
 

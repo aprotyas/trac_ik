@@ -54,6 +54,16 @@ namespace KDL
 
   }
 
+  std::vector<KDL::JntArray> ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds) {
+    std::vector<KDL::JntArray> ret_arr;
+    KDL::JntArray q_out;
+    int rc =CartToJnt(q_init, p_in,q_out,_bounds);
+    if (rc >=0)
+      ret_arr.push_back(q_out);
+    return ret_arr;
+  }
+
+
   int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds) {
 
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();

@@ -49,6 +49,8 @@ namespace KDL {
 
     int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero());
 
+    std::vector<KDL::JntArray> CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, const KDL::Twist bounds=KDL::Twist::Zero());
+
     void abort();
       
   private:

@@ -39,10 +39,11 @@ namespace TRAC_IK {
 
 
 
-  TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps):
+  TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, bool _multiple_solutions):
     chain(_chain),
     eps(_eps),
     maxtime(_maxtime),
+    multi_solve(_multiple_solutions),
     nl_solver(chain,_q_min,_q_max,maxtime,eps, NLOPT_IK::SumSq),
     iksolver(chain,_q_min,_q_max,maxtime,eps,true,true),
     work(io_service)
@@ -76,14 +77,22 @@ namespace TRAC_IK {
   bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
   {
     KDL::JntArray q_out=q_init;
+    std::vector<KDL::JntArray> solves;
 
-    int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
-    if (kdlRC >= 0) {
-      nl_solver.abort();
-      mtx_.lock();
-      solutions.push_back(q_out);
-      mtx_.unlock();
+    if (!multi_solve) {
+      int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
+      if (kdlRC >=0) 
+        solves.push_back(q_out);
     }
+    else {
+      solves = iksolver.CartToJnt(q_init,p_in,bounds);
+    }
+
+    nl_solver.abort();
+    mtx_.lock();
+    solutions.insert(solutions.end(), solves.begin(), solves.end());
+    mtx_.unlock();
+
     return true;
   }
 
@@ -91,14 +100,22 @@ namespace TRAC_IK {
   bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
   {
     KDL::JntArray q_out=q_init;
+    std::vector<KDL::JntArray> solves;
 
-    int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds,q_desired);
-    if (nloptRC >=0) {
-      iksolver.abort();
-      mtx_.lock();
-      solutions.push_back(q_out);
-      mtx_.unlock();
+    if (!multi_solve) {
+      int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds,q_desired);
+      if (nloptRC >=0) 
+        solves.push_back(q_out);
     }
+    else {
+      solves = nl_solver.CartToJnt(q_init,p_in,bounds,q_desired);
+    }
+
+    iksolver.abort();
+    mtx_.lock();
+    solutions.insert(solutions.end(), solves.begin(), solves.end());
+    mtx_.unlock();
+
     return true;
   }
 
