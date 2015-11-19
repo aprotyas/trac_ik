@@ -57,19 +57,8 @@ namespace TRAC_IK {
       return err;
     }
 
-
-
-
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
 
-    std::pair<int, int> getSolveCounts(){
-      return std::make_pair(kdl_count,nlopt_count);
-    }
-
-    void resetSolveCounts(){
-      kdl_count = 0;
-      nlopt_count = 0;
-    }
 
   private:
     KDL::Chain chain;
@@ -79,10 +68,10 @@ namespace TRAC_IK {
     KDL::ChainIkSolverPos_TL iksolver;
 
 
-    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired);
+    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired);
 
 
-    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired);
+    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired);
 
     bool reeval(const KDL::JntArray& seed, KDL::JntArray& solution);
 
@@ -90,10 +79,9 @@ namespace TRAC_IK {
   
     std::vector<KDL::BasicJointType> types;
 
-    int kdlRC, nloptRC;
-
-    int kdl_count, nlopt_count;
-   
+    boost::mutex mtx_;
+    std::vector<KDL::JntArray> solutions;
+ 
 
     boost::asio::io_service io_service;
     boost::thread_group threads;
