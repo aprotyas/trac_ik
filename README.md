@@ -91,4 +91,4 @@ UR10 | 6 | **36.14%** | 3.29ms | **88.06%** | 0.81ms | **99.79%** | 0.42ms
 UR5 | 6 | **35.89%** | 3.29ms | **88.71%** | 0.77ms | **99.62%** | 0.4ms
 NASA Valkyrie arm | 7 | **44.76%** | 3.04ms | **88.61%** | 1.39ms | **99.54%** | 0.67ms
 
-Feel free to [email Patrick] (mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.
+Feel free to [email Patrick](mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.
