@@ -26,7 +26,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 ###A detailed writeup on TRAC-IK can be found here:###
 
-[Humanoids-2015](https://personal.traclabs.com/~pbeeson/publications/b2hd-Beeson-humanoids-15.html)
+[Humanoids-2015](https://personal.traclabs.com/~pbeeson/publications/b2hd-Beeson-humanoids-15.html) (reported results are from v1.0.0 of TRAC-IK, see below for new results).
 
 ###Some sample results are below: 
 
