@@ -580,6 +580,10 @@ namespace NLOPT_IK {
           // Subtract that from lower bound and go forward a full rotation
           x[i] = lb[i] - diffangle + 2*M_PI;
         }        
+
+        if (x[i] > ub[i]) 
+          x[i] = (ub[i]+lb[i])/2.0;
+        
       }
     }
     
