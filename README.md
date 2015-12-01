@@ -30,38 +30,6 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md.
 
 ###Some sample results are below: 
 
-The ROS packages in this repository were created to provide an alternative
-Inverse Kinematics solver to the popular inverse Jacobian methods in KDL.
-Specifically, KDL's convergence algorithms are based on Newton's method, which
-does not work well in the presence of joint limits --- common for many robotic
-platforms.  TRAC-IK concurrently runs two IK implementations.  One is a simple
-extension to KDL's Newton-based convergence algorithm that detects and
-mitigates local minima due to joint limits by random jumps.  The second is an
-SQP (Sequential Quadratic Programming) nonlinear optimization approach which
-uses quasi-Newton methods that better handle joint limits.  Currently, the IK
-search returns immediately when either of these algorithms converges to an
-answer.  Future work plans to allow secondary constraints and sorting
-functions to be provided to the main TRAC-IK call in order to receive back the
-"best" IK solution.
-
-###This repo contains 3 ROS packages:###
-
-- trac\_ik is simply a metapackage.  
-
-- [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib), the TRAC-IK kinematics code,
-builds a .so library that can be used as a drop in replacement for KDL's IK
-functions for KDL chains. Details for use are in trac\_ik\_lib/README.md.
-
-- [trac\_ik\_kinematics\_plugin](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_kinematics_plugin) builds a [MoveIt! plugin](http://moveit.ros.org/documentation/concepts/#kinematics) that can
-replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
-Details for use are in trac\_ik\_kinematics\_plugin/README.md.
-
-###A detailed writeup on TRAC-IK can be found here:###
-
-[Humanoids-2015](https://personal.traclabs.com/~pbeeson/publications/b2hd-Beeson-humanoids-15.html) (reported results are from v1.0.0 of TRAC-IK, see below for newer results).
-
-###Some sample results are below: 
-
 _Orocos' **KDL**_ (inverse Jacobian w/ joint limits), _**KDL-RR**_ (our fixes to KDL joint limit handling), and _**TRAC-IK**_ (our concurrent inverse Jacobian and non-linear optimization solver) are compared below.
 
 IK success and average speed (for successful solves) as of TRAC-IK tag v1.1.1.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.

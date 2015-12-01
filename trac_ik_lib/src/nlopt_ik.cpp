@@ -535,8 +535,13 @@ namespace NLOPT_IK {
     q_out=q_init;
 
     if (chain.getNrOfJoints() < 2) {
-      ROS_WARN_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
-      return -3;//std::numeric_limits<float>::max();
+      ROS_ERROR_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
+      return -3;
+    }
+
+    if (q_init.data.size() != types.size()) {
+      ROS_ERROR_THROTTLE(1.0,"IK seeded with wrong number of joints.  Expected %d but got %d",(int)types.size(), (int)q_init.data.size());
+      return -3;
     }
 
     opt.set_maxtime(maxtime);
@@ -588,6 +593,10 @@ namespace NLOPT_IK {
           // Subtract that from lower bound and go forward a full rotation
           x[i] = lb[i] - diffangle + 2*M_PI;
         }        
+
+        if (x[i] > ub[i]) 
+          x[i] = (ub[i]+lb[i])/2.0;
+        
       }
     }
     
@@ -635,8 +644,9 @@ namespace NLOPT_IK {
       }
     }
            
-    q_out.resize(chain.getNrOfJoints()); 
-    
+ 
+
+
     for (uint i=0; i < x.size(); i++) {
       q_out(i) = best_x[i];
     }
