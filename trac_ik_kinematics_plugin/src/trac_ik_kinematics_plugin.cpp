@@ -538,12 +538,12 @@ namespace trac_ik_kinematics_plugin
           solution_callback(ik_pose, solution, error_code);
           if(error_code.val == moveit_msgs::MoveItErrorCodes::SUCCESS)
             {
-              ROS_DEBUG_STREAM_NAMED("ikfast","Solution passes callback");
+              ROS_DEBUG_STREAM_NAMED("trac_ik","Solution passes callback");
               return true;
             }
           else
             {
-              ROS_DEBUG_STREAM_NAMED("ikfast","Solution has error code " << error_code);
+              ROS_DEBUG_STREAM_NAMED("trac_ik","Solution has error code " << error_code);
               return false;
             }
         }
