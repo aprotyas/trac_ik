@@ -356,6 +356,12 @@ namespace trac_ik_kinematics_plugin
     return false;
   }
 
+  if(link_names.size() != num_joints_)
+  {
+    ROS_ERROR_NAMED("trac_ik","Link names vector must have size: %d",num_joints_);
+    return false;
+  }
+
   KDL::Frame p_out;
   geometry_msgs::PoseStamped pose;
   tf::Stamped<tf::Pose> tf_pose;
@@ -380,6 +386,7 @@ namespace trac_ik_kinematics_plugin
       valid = false;
     }
   }
+
   return valid;
 }
 
@@ -522,15 +529,26 @@ namespace trac_ik_kinematics_plugin
     solution.resize(num_joints_);
 
     if (rc >=0) {
-
       for (uint z=0; z< num_joints_; z++)
         solution[z]=out(z);
 
-      if(!solution_callback.empty()) {
-        solution_callback(ik_pose,solution,error_code);
-      }
-      if(error_code.val == error_code.SUCCESS)
-         return true;
+      // check for collisions if a callback is provided 
+      if( !solution_callback.empty() )
+        {
+          solution_callback(ik_pose, solution, error_code);
+          if(error_code.val == moveit_msgs::MoveItErrorCodes::SUCCESS)
+            {
+              ROS_DEBUG_STREAM_NAMED("ikfast","Solution passes callback");
+              return true;
+            }
+          else
+            {
+              ROS_DEBUG_STREAM_NAMED("ikfast","Solution has error code " << error_code);
+              return false;
+            }
+        }
+      else
+          return true; // no collision check callback provided
     }
 
     error_code.val = moveit_msgs::MoveItErrorCodes::NO_IK_SOLUTION;
