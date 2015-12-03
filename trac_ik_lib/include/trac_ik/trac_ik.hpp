@@ -56,7 +56,7 @@ namespace TRAC_IK {
       return err;
     }
 
-    int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
+    int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
 
 
 
@@ -70,10 +70,10 @@ namespace TRAC_IK {
 
     boost::posix_time::ptime start_time;
 
-    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired);
+    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
 
-    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired);
+    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
     bool reeval(const KDL::JntArray& seed, KDL::JntArray& solution);
 

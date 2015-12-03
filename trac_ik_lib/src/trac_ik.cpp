@@ -74,7 +74,7 @@ namespace TRAC_IK {
 
   }
 
-  bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
+  bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
     KDL::JntArray q_out;
 
@@ -114,7 +114,7 @@ namespace TRAC_IK {
   }
 
 
-  bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
+  bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
     KDL::JntArray q_out;
 
@@ -206,7 +206,7 @@ namespace TRAC_IK {
   }
 
 
-  int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds, const KDL::JntArray& q_desired) {
+  int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds) {
 
     start_time = boost::posix_time::microsec_clock::local_time();
 
@@ -217,18 +217,12 @@ namespace TRAC_IK {
 
     bounds=_bounds;
 
-    KDL::JntArray des;
-    if (q_desired.data.size()!=q_init.data.size())
-      des = q_init;
-    else 
-      des = q_desired;
-
     std::vector<boost::shared_future<bool> > pending_data;
 
     typedef boost::packaged_task<bool> task_t;
-    boost::shared_ptr<task_t> task1 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runKDL, this, boost::cref(q_init), boost::cref(p_in), boost::cref(q_desired)));
+    boost::shared_ptr<task_t> task1 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runKDL, this, boost::cref(q_init), boost::cref(p_in)));
 
-    boost::shared_ptr<task_t> task2 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runNLOPT, this, boost::cref(q_init), boost::cref(p_in), boost::cref(q_desired)));
+    boost::shared_ptr<task_t> task2 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runNLOPT, this, boost::cref(q_init), boost::cref(p_in)));
 
     boost::shared_future<bool> fut1(task1->get_future());
     boost::shared_future<bool> fut2(task2->get_future());
@@ -252,11 +246,11 @@ namespace TRAC_IK {
     }
 
     for (uint i=0; i<solutions.size(); i++)
-      reeval(des,solutions[i]);
+      reeval(q_init,solutions[i]);
 
     double minerr = FLT_MAX;
     for (uint i=0; i<solutions.size(); i++)  {
-      double err = TRAC_IK::JointErr(des,solutions[i]);
+      double err = TRAC_IK::JointErr(q_init,solutions[i]);
       if (err < minerr) {
         minerr = err;
         q_out = solutions[i];
