@@ -207,7 +207,7 @@ namespace NLOPT_IK {
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
     //iterations, and an (optional) desired error.
-    aborted=false;
+    reset();
 
     if (chain.getNrOfJoints() < 2) {
       ROS_WARN_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
@@ -290,9 +290,9 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted || progress == 0) {
+    if (aborted || progress != -3) {
       opt.force_stop();
-      return;     
+      return;
     }
 
    
@@ -309,7 +309,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -356,7 +356,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted || progress == 0) {
+    if (aborted || progress != -3) {
       opt.force_stop();
       return;     
     }
@@ -375,7 +375,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -423,7 +423,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted || progress == 0) {
+    if (aborted || progress != -3) {
       opt.force_stop();
       return;     
     }
@@ -442,7 +442,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -493,39 +493,6 @@ namespace NLOPT_IK {
   }
 
 
-  std::vector<KDL::JntArray> NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
-
-    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    boost::posix_time::time_duration timediff;
-    double time_left;
-
-    double fulltime = maxtime;
-
-    std::vector<KDL::JntArray> ret_arr;
-    KDL::JntArray q_out, seed;   
-    seed = q_init;
-
-    while (true) {
-      int rc =CartToJnt(seed, p_in,q_out,_bounds, q_desired);
-      if (rc >= 0)
-        ret_arr.push_back(q_out);
-
-      for (unsigned int j=0; j<seed.data.size(); j++) 
-        seed(j)=fRand(lb[j], ub[j]);
-
-      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = fulltime - timediff.total_milliseconds()/1000.0;
-      
-      if (time_left <= 0)
-        break;
-
-      maxtime = time_left;
-    }
-    
-    maxtime = fulltime;
-    return ret_arr;
-  }
-
   int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
     // User command to start an IK solve.  Takes in a seed
     // configuration, a Cartesian pose, and (optional) a desired
@@ -535,8 +502,6 @@ namespace NLOPT_IK {
 
     // Returns -3 if a configuration could not be found within the eps
     // set up in the constructor.
-
-    aborted = false;    
 
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration diff;
@@ -629,11 +594,15 @@ namespace NLOPT_IK {
     } catch (...) {
     }
     
+    if (progress == -1) // Got NaNs
+      progress = -3;
+        
+
     if (!aborted && progress != 0) {
 
       double time_left;
       diff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = maxtime - diff.total_milliseconds()/1000.0;
+      time_left = maxtime - diff.total_nanoseconds()/1000000000.0;
 
       while (time_left > 0 && !aborted && progress != 0) {
 
@@ -647,14 +616,15 @@ namespace NLOPT_IK {
             opt.optimize(x, minf);
           } 
         catch (...) {}
+
+        if (progress == -1) // Got NaNs
+          progress = -3;
 	
         diff=boost::posix_time::microsec_clock::local_time()-start_time;
-      	time_left = maxtime - diff.total_milliseconds()/1000.0;
+      	time_left = maxtime - diff.total_nanoseconds()/1000000000.0;
       }
     }
            
- 
-
 
     for (uint i=0; i < x.size(); i++) {
       q_out(i) = best_x[i];
@@ -664,9 +634,5 @@ namespace NLOPT_IK {
     
   }
   
-
-  void NLOPT_IK::abort() {
-    aborted = true;
-  }
 
 }

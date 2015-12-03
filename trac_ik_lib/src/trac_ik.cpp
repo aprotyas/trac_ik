@@ -76,23 +76,39 @@ namespace TRAC_IK {
 
   bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
   {
-    KDL::JntArray q_out=q_init;
-    std::vector<KDL::JntArray> solves;
+    KDL::JntArray q_out;
 
-    if (!multi_solve) {
+    double fulltime = maxtime;
+    KDL::JntArray seed = q_init;
+
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    while (true) {
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
+      
+      if (time_left <= 0)
+        break;
+      
+      iksolver.setMaxtime(time_left);
+
       int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
       if (kdlRC >=0) {
-        solves.push_back(q_out);
+        mtx_.lock();
+        solutions.push_back(q_out);
+        mtx_.unlock();
       }
-    }
-    else {
-      solves = iksolver.CartToJnt(q_init,p_in,bounds);
-    }
 
+      if (!solutions.empty() && !multi_solve)
+        break;
+      
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(lb[j], ub[j]);     
+    }     
     nl_solver.abort();
-    mtx_.lock();
-    solutions.insert(solutions.end(), solves.begin(), solves.end());
-    mtx_.unlock();
+
+    iksolver.setMaxtime(fulltime);
 
     return true;
   }
@@ -100,23 +116,40 @@ namespace TRAC_IK {
 
   bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired)
   {
-    KDL::JntArray q_out=q_init;
-    std::vector<KDL::JntArray> solves;
+    KDL::JntArray q_out;
 
-    if (!multi_solve) {
-      int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds,q_desired);
+    double fulltime = maxtime;
+    KDL::JntArray seed = q_init;
+
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    while (true) {
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
+      
+      if (time_left <= 0)
+        break;
+     
+      nl_solver.setMaxtime(time_left);
+
+      int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds);
       if (nloptRC >=0) {
-        solves.push_back(q_out);
+        mtx_.lock();
+        solutions.push_back(q_out);
+        mtx_.unlock();
       }
-    }
-    else {
-      solves = nl_solver.CartToJnt(q_init,p_in,bounds,q_desired);
-    }
+
+      if (!solutions.empty() && !multi_solve)
+        break;
+      
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(lb[j], ub[j]);     
+    }     
 
     iksolver.abort();
-    mtx_.lock();
-    solutions.insert(solutions.end(), solves.begin(), solves.end());
-    mtx_.unlock();
+
+    nl_solver.setMaxtime(fulltime);
 
     return true;
   }
@@ -174,6 +207,11 @@ namespace TRAC_IK {
 
 
   int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds, const KDL::JntArray& q_desired) {
+
+    start_time = boost::posix_time::microsec_clock::local_time();
+
+    nl_solver.reset();
+    iksolver.reset();
 
     solutions.clear();
 

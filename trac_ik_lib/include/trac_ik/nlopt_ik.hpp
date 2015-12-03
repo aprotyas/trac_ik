@@ -34,6 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/kdl_tl.hpp>
 #include <nlopt.hpp>
  
+
 namespace NLOPT_IK {
 
   enum OptType { Joint, DualQuat, SumSq, L2 };
@@ -41,13 +42,12 @@ namespace NLOPT_IK {
 
   class NLOPT_IK 
   {
+    friend class TRAC_IK::TRAC_IK;
   public:
     NLOPT_IK(const KDL::Chain& chain,const KDL::JntArray& q_min, const KDL::JntArray& q_max, double maxtime=0.005, double eps=1e-3, OptType type=SumSq);
 
     ~NLOPT_IK() {};
     int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
-
-    std::vector<KDL::JntArray> CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, const KDL::Twist bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
 
     double minJoints(const std::vector<double>& x, std::vector<double>& grad);
     //  void cartFourPointError(const std::vector<double>& x, double error[]);
@@ -55,15 +55,17 @@ namespace NLOPT_IK {
     void cartDQError(const std::vector<double>& x, double error[]);
     void cartL2NormError(const std::vector<double>& x, double error[]);
 
-    void abort();
-  
-    inline static double fRand(double min, double max)
-    {
-      double f = (double)rand() / RAND_MAX;
-      return min + f * (max - min);
-    }
+    inline void setMaxtime(double t) { maxtime = t; }
 
   private:
+
+    inline void abort() {
+      aborted = true;
+    }
+
+    inline void reset() {
+      aborted = false;
+    }
     
     static double JointErr(const std::vector<double>& arr1, const std::vector<double>& arr2) {
       double err = 0;
@@ -110,6 +112,13 @@ namespace NLOPT_IK {
     bool aborted;
 
     KDL::Twist bounds;
+
+    inline static double fRand(double min, double max)
+    {
+      double f = (double)rand() / RAND_MAX;
+      return min + f * (max - min);
+    }
+
 
   };
 

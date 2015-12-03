@@ -38,6 +38,7 @@ namespace KDL
     chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(_chain), fksolver(_chain), delta_q(_chain.getNrOfJoints()),
     maxtime(_maxtime),eps(_eps),rr(_random_restart),wrap(_try_jl_wrap)
   {
+    reset();
 
     if (wrap) {
       for (uint i=0; i<chain.segments.size(); i++) {
@@ -54,44 +55,12 @@ namespace KDL
 
   }
 
-  std::vector<KDL::JntArray> ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds) {
-
-    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-    boost::posix_time::time_duration timediff;
-    double time_left;
-
-    double fulltime = maxtime;
-
-    std::vector<KDL::JntArray> ret_arr;
-    KDL::JntArray q_out, seed;   
-    seed = q_init;
-
-    while (true) {
-      int rc =CartToJnt(seed, p_in,q_out,_bounds);
-      if (rc >= 0)
-        ret_arr.push_back(q_out);
-
-      for (unsigned int j=0; j<seed.data.size(); j++) 
-        seed(j)=fRand(q_min(j),q_max(j));
-
-
-      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = fulltime - timediff.total_milliseconds()/1000.0;
-      
-      if (time_left <= 0)
-        break;
-
-      maxtime = time_left;
-    }
-    
-    maxtime = fulltime;
-    return ret_arr;
-  }
 
 
   int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds) {
 
-    aborted=false;
+    if (aborted)
+      return -3;
 
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration timediff;
@@ -189,7 +158,7 @@ namespace KDL
       q_out=q_curr;
      
       timediff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = maxtime - timediff.total_milliseconds()/1000.0;
+      time_left = maxtime - timediff.total_nanoseconds()/1000000000.0;
     } while (time_left > 0 && !aborted);
     
     return -3;
@@ -197,10 +166,6 @@ namespace KDL
 
   ChainIkSolverPos_TL::~ChainIkSolverPos_TL()
   {
-  }
-
-  void ChainIkSolverPos_TL::abort() {
-    aborted = true;
   }
 
 

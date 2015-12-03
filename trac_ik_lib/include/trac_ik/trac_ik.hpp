@@ -37,8 +37,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 
-namespace TRAC_IK {
 
+namespace TRAC_IK {
 
   class TRAC_IK 
   {
@@ -59,6 +59,7 @@ namespace TRAC_IK {
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
 
 
+
   private:
     KDL::Chain chain;
     double eps;
@@ -67,6 +68,7 @@ namespace TRAC_IK {
     NLOPT_IK::NLOPT_IK nl_solver;
     KDL::ChainIkSolverPos_TL iksolver;
 
+    boost::posix_time::ptime start_time;
 
     bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::JntArray& q_desired);
 
@@ -87,6 +89,13 @@ namespace TRAC_IK {
     boost::thread_group threads;
     boost::asio::io_service::work work;
     KDL::Twist bounds;
+
+    inline static double fRand(double min, double max)
+    {
+      double f = (double)rand() / RAND_MAX;
+      return min + f * (max - min);
+    }
+
 
   };
 
