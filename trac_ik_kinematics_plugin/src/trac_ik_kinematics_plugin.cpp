@@ -55,8 +55,6 @@ namespace trac_ik_kinematics_plugin
     bool active_; // Internal variable that indicates whether solvers are configured and ready
 
     KDL::Chain chain;
-    KDL::ChainFkSolverPos_recursive* fk_solver;
-    TRAC_IK::TRAC_IK* ik_solver;
     bool position_ik_;
     const std::vector<std::string>& getJointNames() const { return joint_names_; }
     const std::vector<std::string>& getLinkNames() const { return link_names_; }
@@ -68,13 +66,9 @@ namespace trac_ik_kinematics_plugin
     /** @class
      *  @brief Interface for an TRAC-IK kinematics plugin
      */
-    TRAC_IKKinematicsPlugin():active_(false), fk_solver(NULL), ik_solver(NULL), position_ik_(false){}
+    TRAC_IKKinematicsPlugin(): active_(false), position_ik_(false){}
 
     ~TRAC_IKKinematicsPlugin() {
-      if (fk_solver != NULL)
-        delete fk_solver;
-      if (ik_solver != NULL)
-        delete ik_solver;
     }
 
     /**
@@ -307,20 +301,12 @@ namespace trac_ik_kinematics_plugin
 
     assert(num_joints_ == chain.getNrOfJoints());
 
-    fk_solver = new KDL::ChainFkSolverPos_recursive(chain);
-
     ROS_INFO_NAMED("trac-ik plugin","Looking in private handle: %s for param name: %s",
                     node_handle.getNamespace().c_str(),
-                    (group_name+"/kinematics_solver_timeout").c_str());
+                    (group_name+"/position_only_ik").c_str());
 
     node_handle.param(group_name+"/position_only_ik", position_ik_, false);
 
-    double timeout;
-    node_handle.param(group_name+"/kinematics_solver_timeout", timeout, 0.005);
-
-    double epsilon = 1e-5;  //Same as MoveIt's KDL plugin
-
-    ik_solver = new TRAC_IK::TRAC_IK(chain, joint_min, joint_max, timeout, epsilon);
 
     active_ = true;
     return true;
@@ -372,11 +358,13 @@ namespace trac_ik_kinematics_plugin
     jnt_pos_in(i) = joint_angles[i];
   }
 
+  KDL::ChainFkSolverPos_recursive fk_solver(chain);
+
   bool valid = true;
   for(unsigned int i=0; i < poses.size(); i++)
   {
     ROS_DEBUG_NAMED("trac_ik","End effector index: %d",getKDLSegmentIndex(link_names[i]));
-    if(fk_solver->JntToCart(jnt_pos_in,p_out,getKDLSegmentIndex(link_names[i])) >=0)
+    if(fk_solver.JntToCart(jnt_pos_in,p_out,getKDLSegmentIndex(link_names[i])) >=0)
     {
       tf::poseKDLToMsg(p_out,poses[i]);
     }
@@ -505,6 +493,8 @@ namespace trac_ik_kinematics_plugin
       }
 
 
+
+
     KDL::Frame frame;
     tf::poseMsgToKDL(ik_pose,frame);
 
@@ -523,7 +513,11 @@ namespace trac_ik_kinematics_plugin
       bounds.rot.z(FLT_MAX);
     }
 
-    int rc = ik_solver->CartToJnt(in, frame, out, bounds);
+    double epsilon = 1e-5;  //Same as MoveIt's KDL plugin
+
+    TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon);
+
+    int rc = ik_solver.CartToJnt(in, frame, out, bounds);
 
 
     solution.resize(num_joints_);
