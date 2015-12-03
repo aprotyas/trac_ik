@@ -30,7 +30,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/kdl_tl.hpp>
 #include <boost/date_time.hpp>
-
+#include <ros/ros.h>
 
 namespace KDL
 {
@@ -48,30 +48,56 @@ namespace KDL
           types.push_back(KDL::BasicJointType::TransJoint);
       }
       
-      assert(types.size()==q_max.rows());
+      assert(types.size()==q_max.data.size());
 
     }
 
   }
 
   std::vector<KDL::JntArray> ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds) {
+
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    double fulltime = maxtime;
+
     std::vector<KDL::JntArray> ret_arr;
-    KDL::JntArray q_out;
-    int rc =CartToJnt(q_init, p_in,q_out,_bounds);
-    if (rc >=0)
-      ret_arr.push_back(q_out);
+    KDL::JntArray q_out, seed;   
+    seed = q_init;
+
+    while (true) {
+      int rc =CartToJnt(seed, p_in,q_out,_bounds);
+      if (rc >= 0)
+        ret_arr.push_back(q_out);
+
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(q_min(j),q_max(j));
+
+
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_milliseconds()/1000.0;
+      
+      if (time_left <= 0)
+        break;
+
+      maxtime = time_left;
+    }
+    
+    maxtime = fulltime;
     return ret_arr;
   }
 
 
   int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds) {
 
+    aborted=false;
+
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration timediff;
     q_out = q_init;
     bounds = _bounds;
 
-    aborted=false;
            
     double time_left;
 
@@ -108,7 +134,7 @@ namespace KDL
       
       Add(q_out,delta_q,q_curr);
       
-      for(unsigned int j=0; j<q_min.rows(); j++) {
+      for(unsigned int j=0; j<q_min.data.size(); j++) {
         if(q_curr(j) < q_min(j)) 
           if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
             // KDL's default 
@@ -126,7 +152,7 @@ namespace KDL
           }
       }
       
-      for(unsigned int j=0; j<q_max.rows(); j++) {
+      for(unsigned int j=0; j<q_max.data.size(); j++) {
         if(q_curr(j) > q_max(j)) 
           if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
             // KDL's default 
@@ -147,7 +173,7 @@ namespace KDL
       
       if (q_out.data.isZero(1e-8)) {
         if (rr) {
-          for (unsigned int j=0; j<q_out.rows(); j++) 
+          for (unsigned int j=0; j<q_out.data.size(); j++) 
             q_curr(j)=fRand(q_min(j),q_max(j));
         }
         // Below would be an optimization to the normal KDL, where when it

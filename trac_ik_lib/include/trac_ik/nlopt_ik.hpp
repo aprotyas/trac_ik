@@ -90,8 +90,6 @@ namespace NLOPT_IK {
     int iter_counter; 
     OptType TYPE;
 
-    bool find_multiples;
-  
     KDL::Frame targetPose;
     KDL::Frame z_up ;
     KDL::Frame x_out;

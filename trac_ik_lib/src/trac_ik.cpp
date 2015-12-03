@@ -81,8 +81,9 @@ namespace TRAC_IK {
 
     if (!multi_solve) {
       int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
-      if (kdlRC >=0) 
+      if (kdlRC >=0) {
         solves.push_back(q_out);
+      }
     }
     else {
       solves = iksolver.CartToJnt(q_init,p_in,bounds);
@@ -104,8 +105,9 @@ namespace TRAC_IK {
 
     if (!multi_solve) {
       int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds,q_desired);
-      if (nloptRC >=0) 
+      if (nloptRC >=0) {
         solves.push_back(q_out);
+      }
     }
     else {
       solves = nl_solver.CartToJnt(q_init,p_in,bounds,q_desired);
@@ -214,16 +216,14 @@ namespace TRAC_IK {
     for (uint i=0; i<solutions.size(); i++)
       reeval(des,solutions[i]);
 
-    // Temporary
-    double err1 = TRAC_IK::JointErr(des,solutions[0]);
-    double err2 = err1; 
-
-    if (solutions.size() > 1) 
-      err2 = TRAC_IK::JointErr(des,solutions[1]);       
-
-    if (err2 < err1) 
-      q_out=solutions[1];
-    else q_out=solutions[0];
+    double minerr = FLT_MAX;
+    for (uint i=0; i<solutions.size(); i++)  {
+      double err = TRAC_IK::JointErr(des,solutions[i]);
+      if (err < minerr) {
+        minerr = err;
+        q_out = solutions[i];
+      }
+    }
     
     return 0;    
   }

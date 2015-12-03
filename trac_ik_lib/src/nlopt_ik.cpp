@@ -181,8 +181,6 @@ namespace NLOPT_IK {
 
     double jump=1e-8;
  
-    //    assert(m==2);
-
     c->cartSumSquaredError(vals, result);
 
     if (grad!=NULL) {
@@ -204,11 +202,12 @@ namespace NLOPT_IK {
 
 
   NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
-    chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type), find_multiples(false)
+    chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
   {
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
     //iterations, and an (optional) desired error.
+    aborted=false;
 
     if (chain.getNrOfJoints() < 2) {
       ROS_WARN_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
@@ -243,7 +242,6 @@ namespace NLOPT_IK {
     double tol = 1e-8;
     opt.set_xtol_abs(tol);
 
-    aborted=false;
 
     std::vector<double> tolerance(1,1e-8);
     
@@ -271,8 +269,6 @@ namespace NLOPT_IK {
     // configuration and the desired.  The SSE is easy to provide a
     // closed form gradient for.
 
-    //    assert(des.size() == x.size());
-
     bool gradient = !grad.empty();
 
     double err = 0;
@@ -294,7 +290,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress == 0) {
       opt.force_stop();
       return;     
     }
@@ -347,10 +343,7 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
   
@@ -363,7 +356,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress == 0) {
       opt.force_stop();
       return;     
     }
@@ -416,10 +409,7 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
   
@@ -433,7 +423,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress == 0) {
       opt.force_stop();
       return;     
     }
@@ -498,20 +488,41 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
 
 
   std::vector<KDL::JntArray> NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
+
+    boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    double fulltime = maxtime;
+
     std::vector<KDL::JntArray> ret_arr;
-    KDL::JntArray q_out;
-    int rc =CartToJnt(q_init, p_in,q_out,_bounds, q_desired);
-    if (rc >=0)
-      ret_arr.push_back(q_out);
+    KDL::JntArray q_out, seed;   
+    seed = q_init;
+
+    while (true) {
+      int rc =CartToJnt(seed, p_in,q_out,_bounds, q_desired);
+      if (rc >= 0)
+        ret_arr.push_back(q_out);
+
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(lb[j], ub[j]);
+
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_milliseconds()/1000.0;
+      
+      if (time_left <= 0)
+        break;
+
+      maxtime = time_left;
+    }
+    
+    maxtime = fulltime;
     return ret_arr;
   }
 
@@ -525,12 +536,11 @@ namespace NLOPT_IK {
     // Returns -3 if a configuration could not be found within the eps
     // set up in the constructor.
 
+    aborted = false;    
+
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration diff;
 
-    find_multiples=false;
-
-    aborted = false;    
     bounds = _bounds;
     q_out=q_init;
 
@@ -609,7 +619,6 @@ namespace NLOPT_IK {
     }
     else 
       {
-        //      assert (q_desired.data.size()==(int)x.size());
         des.resize(x.size());
         for (uint i=0; i< des.size(); i++)
           des[i]=q_desired(i);
@@ -620,13 +629,13 @@ namespace NLOPT_IK {
     } catch (...) {
     }
     
-    if (!aborted) {
+    if (!aborted && progress != 0) {
 
       double time_left;
       diff=boost::posix_time::microsec_clock::local_time()-start_time;
       time_left = maxtime - diff.total_milliseconds()/1000.0;
 
-      while (time_left > 0 && !aborted) {
+      while (time_left > 0 && !aborted && progress != 0) {
 
         for (uint i=0; i< x.size(); i++)
           x[i]=fRand(lb[i], ub[i]);
