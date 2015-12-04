@@ -56,6 +56,7 @@ namespace trac_ik_kinematics_plugin
 
     KDL::Chain chain;
     bool position_ik_;
+    bool multi_solve_;
     const std::vector<std::string>& getJointNames() const { return joint_names_; }
     const std::vector<std::string>& getLinkNames() const { return link_names_; }
 
@@ -66,7 +67,7 @@ namespace trac_ik_kinematics_plugin
     /** @class
      *  @brief Interface for an TRAC-IK kinematics plugin
      */
-    TRAC_IKKinematicsPlugin(): active_(false), position_ik_(false){}
+    TRAC_IKKinematicsPlugin(): active_(false), position_ik_(false), multi_solve_(false){}
 
     ~TRAC_IKKinematicsPlugin() {
     }
@@ -307,6 +308,8 @@ namespace trac_ik_kinematics_plugin
 
     node_handle.param(group_name+"/position_only_ik", position_ik_, false);
 
+    node_handle.param(group_name+"/multi_solve", multi_solve_, false);
+
 
     active_ = true;
     return true;
@@ -486,21 +489,22 @@ namespace trac_ik_kinematics_plugin
   {
     ROS_DEBUG_STREAM_NAMED("trac_ik","getPositionIK");
 
-    if(!active_)
-      {
-        ROS_ERROR("kinematics not active");
-        return false;
-      }
+    if(!active_) {
+      ROS_ERROR("kinematics not active");
+      error_code.val = error_code.NO_IK_SOLUTION;
+      return false;
+    }
 
-
-
+    if (ik_seed_state.size() != num_joints_) {
+      ROS_ERROR_STREAM_NAMED("trac_ik","Seed state must have size " << num_joints_ << " instead of size " << ik_seed_state.size());
+      error_code.val = error_code.NO_IK_SOLUTION;
+      return false;
+    }
 
     KDL::Frame frame;
     tf::poseMsgToKDL(ik_pose,frame);
 
     KDL::JntArray in(num_joints_), out(num_joints_);
-
-    assert(ik_seed_state.size()==num_joints_);
 
     for (uint z=0; z< num_joints_; z++)
         in(z)=ik_seed_state[z];
@@ -515,7 +519,7 @@ namespace trac_ik_kinematics_plugin
 
     double epsilon = 1e-5;  //Same as MoveIt's KDL plugin
 
-    TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon);
+    TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon, multi_solve_);
 
     int rc = ik_solver.CartToJnt(in, frame, out, bounds);
 

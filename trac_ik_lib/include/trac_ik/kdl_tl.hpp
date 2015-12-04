@@ -35,21 +35,26 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 
+namespace TRAC_IK {
+  class TRAC_IK;
+}
+
 namespace KDL {
 
   enum BasicJointType { RotJoint, TransJoint };
 
   class ChainIkSolverPos_TL 
   {
-  public:
+    friend class TRAC_IK::TRAC_IK;
 
+  public:
     ChainIkSolverPos_TL(const Chain& chain,const JntArray& q_min, const JntArray& q_max, double maxtime=0.005, double eps=1e-3, bool random_restart=false, bool try_jl_wrap=false);
 
     ~ChainIkSolverPos_TL();
 
     int CartToJnt(const KDL::JntArray& q_init, const KDL::Frame& p_in, KDL::JntArray& q_out, const KDL::Twist bounds=KDL::Twist::Zero());
 
-    void abort();
+    inline void setMaxtime(double t) { maxtime = t; }
       
   private:
     const Chain chain;
@@ -69,6 +74,14 @@ namespace KDL {
     bool wrap;
 
     std::vector<KDL::BasicJointType> types;
+
+    inline void abort() {
+      aborted = true;
+    }
+
+    inline void reset() {
+      aborted = false;
+    }
 
     bool aborted;
 

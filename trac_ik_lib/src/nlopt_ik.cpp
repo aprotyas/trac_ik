@@ -181,8 +181,6 @@ namespace NLOPT_IK {
 
     double jump=1e-8;
  
-    //    assert(m==2);
-
     c->cartSumSquaredError(vals, result);
 
     if (grad!=NULL) {
@@ -209,6 +207,7 @@ namespace NLOPT_IK {
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
     //iterations, and an (optional) desired error.
+    reset();
 
     if (chain.getNrOfJoints() < 2) {
       ROS_WARN_THROTTLE(1.0,"NLOpt_IK can only be run for chains of length 2 or more");
@@ -243,7 +242,6 @@ namespace NLOPT_IK {
     double tol = 1e-8;
     opt.set_xtol_abs(tol);
 
-    aborted=false;
 
     std::vector<double> tolerance(1,1e-8);
     
@@ -271,8 +269,6 @@ namespace NLOPT_IK {
     // configuration and the desired.  The SSE is easy to provide a
     // closed form gradient for.
 
-    //    assert(des.size() == x.size());
-
     bool gradient = !grad.empty();
 
     double err = 0;
@@ -294,9 +290,9 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress != -3) {
       opt.force_stop();
-      return;     
+      return;
     }
 
    
@@ -313,7 +309,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -347,10 +343,7 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
   
@@ -363,7 +356,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress != -3) {
       opt.force_stop();
       return;     
     }
@@ -382,7 +375,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -416,10 +409,7 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
   
@@ -433,7 +423,7 @@ namespace NLOPT_IK {
     // of the current joint configuration and compares that to the
     // desired Cartesian pose for the IK solve.
 
-    if (aborted) {
+    if (aborted || progress != -3) {
       opt.force_stop();
       return;     
     }
@@ -452,7 +442,7 @@ namespace NLOPT_IK {
     if (isnan(currentPose.p.x())) {
       ROS_ERROR("NaNs from NLOpt!!");
       error[0] = std::numeric_limits<float>::max();
-      aborted = true;
+      progress = -1;
       return;
     }
 
@@ -498,16 +488,12 @@ namespace NLOPT_IK {
         best_x=x;
         best_err=err1;
       }
-      if (!find_multiples) {
-        aborted=true;
-        return;
-      }
+      return;
     }
   }
 
 
-
-  int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds, const KDL::JntArray& q_desired, bool find_multiples_) {
+  int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist _bounds, const KDL::JntArray& q_desired) {
     // User command to start an IK solve.  Takes in a seed
     // configuration, a Cartesian pose, and (optional) a desired
     // configuration.  If the desired is not provided, the seed is
@@ -520,9 +506,6 @@ namespace NLOPT_IK {
     boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
     boost::posix_time::time_duration diff;
 
-    find_multiples=find_multiples_;
-
-    aborted = false;    
     bounds = _bounds;
     q_out=q_init;
 
@@ -601,7 +584,6 @@ namespace NLOPT_IK {
     }
     else 
       {
-        //      assert (q_desired.data.size()==(int)x.size());
         des.resize(x.size());
         for (uint i=0; i< des.size(); i++)
           des[i]=q_desired(i);
@@ -612,13 +594,17 @@ namespace NLOPT_IK {
     } catch (...) {
     }
     
-    if (!aborted) {
+    if (progress == -1) // Got NaNs
+      progress = -3;
+        
+
+    if (!aborted && progress != 0) {
 
       double time_left;
       diff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = maxtime - diff.total_milliseconds()/1000.0;
+      time_left = maxtime - diff.total_nanoseconds()/1000000000.0;
 
-      while (time_left > 0 && !aborted) {
+      while (time_left > 0 && !aborted && progress != 0) {
 
         for (uint i=0; i< x.size(); i++)
           x[i]=fRand(lb[i], ub[i]);
@@ -630,14 +616,15 @@ namespace NLOPT_IK {
             opt.optimize(x, minf);
           } 
         catch (...) {}
+
+        if (progress == -1) // Got NaNs
+          progress = -3;
 	
         diff=boost::posix_time::microsec_clock::local_time()-start_time;
-      	time_left = maxtime - diff.total_milliseconds()/1000.0;
+      	time_left = maxtime - diff.total_nanoseconds()/1000000000.0;
       }
     }
            
- 
-
 
     for (uint i=0; i < x.size(); i++) {
       q_out(i) = best_x[i];
@@ -647,9 +634,5 @@ namespace NLOPT_IK {
     
   }
   
-
-  void NLOPT_IK::abort() {
-    aborted = true;
-  }
 
 }

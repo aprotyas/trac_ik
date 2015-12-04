@@ -39,10 +39,11 @@ namespace TRAC_IK {
 
 
 
-  TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps):
+  TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, bool _multiple_solutions):
     chain(_chain),
     eps(_eps),
     maxtime(_maxtime),
+    multi_solve(_multiple_solutions),
     nl_solver(chain,_q_min,_q_max,maxtime,eps, NLOPT_IK::SumSq),
     iksolver(chain,_q_min,_q_max,maxtime,eps,true,true),
     work(io_service)
@@ -70,25 +71,86 @@ namespace TRAC_IK {
                                       &io_service));
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
-    kdl_count=0;
-    nlopt_count=0;
 
   }
 
-  bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired)
+  bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
-    kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
-    if (kdlRC >= 0)
-      nl_solver.abort();
+    KDL::JntArray q_out;
+
+    double fulltime = maxtime;
+    KDL::JntArray seed = q_init;
+
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    while (true) {
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
+      
+      if (time_left <= 0)
+        break;
+      
+      iksolver.setMaxtime(time_left);
+
+      int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
+      if (kdlRC >=0) {
+        mtx_.lock();
+        solutions.push_back(q_out);
+        mtx_.unlock();
+      }
+
+      if (!solutions.empty() && !multi_solve)
+        break;
+      
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(lb[j], ub[j]);     
+    }     
+    nl_solver.abort();
+
+    iksolver.setMaxtime(fulltime);
+
     return true;
   }
 
 
-  bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired)
+  bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
-    nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds,q_desired);
-    if (nloptRC >=0)
-      iksolver.abort();
+    KDL::JntArray q_out;
+
+    double fulltime = maxtime;
+    KDL::JntArray seed = q_init;
+
+    boost::posix_time::time_duration timediff;
+    double time_left;
+
+    while (true) {
+      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
+      time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
+      
+      if (time_left <= 0)
+        break;
+     
+      nl_solver.setMaxtime(time_left);
+
+      int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds);
+      if (nloptRC >=0) {
+        mtx_.lock();
+        solutions.push_back(q_out);
+        mtx_.unlock();
+      }
+
+      if (!solutions.empty() && !multi_solve)
+        break;
+      
+      for (unsigned int j=0; j<seed.data.size(); j++) 
+        seed(j)=fRand(lb[j], ub[j]);     
+    }     
+
+    iksolver.abort();
+
+    nl_solver.setMaxtime(fulltime);
+
     return true;
   }
 
@@ -135,7 +197,6 @@ namespace TRAC_IK {
 
       if (std::abs(val-solution(i)) > 0.1) {
         improved = true;
-        //        ROS_WARN_STREAM("Changed: "<<solution(i)<<" to "<<val<<" for seed: "<<seed(i)<<" (target: "<<target<<") & limits ("<<lb[i]<<","<<ub[i]<<")");
         solution(i) = val;
       }
     }
@@ -145,28 +206,24 @@ namespace TRAC_IK {
   }
 
 
-  int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds, const KDL::JntArray& q_desired) {
+  int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds) {
 
-    KDL::JntArray kdl_out=q_init;
-    KDL::JntArray nlopt_out=q_init;
+    start_time = boost::posix_time::microsec_clock::local_time();
+
+    nl_solver.reset();
+    iksolver.reset();
+
+    solutions.clear();
 
     bounds=_bounds;
-
-    kdlRC = -3;
-    nloptRC = -3;
-
-    KDL::JntArray des;
-    if (q_desired.data.size()!=q_init.data.size())
-      des = q_init;
-    else 
-      des = q_desired;
 
     std::vector<boost::shared_future<bool> > pending_data;
 
     typedef boost::packaged_task<bool> task_t;
-    boost::shared_ptr<task_t> task1 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runNLOPT, this, boost::cref(q_init), boost::cref(p_in), boost::ref(nlopt_out), boost::cref(q_desired)));
+    boost::shared_ptr<task_t> task1 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runKDL, this, boost::cref(q_init), boost::cref(p_in)));
 
-    boost::shared_ptr<task_t> task2 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runKDL, this, boost::cref(q_init), boost::cref(p_in), boost::ref(kdl_out), boost::cref(q_desired)));
+    boost::shared_ptr<task_t> task2 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runNLOPT, this, boost::cref(q_init), boost::cref(p_in)));
+
     boost::shared_future<bool> fut1(task1->get_future());
     boost::shared_future<bool> fut2(task2->get_future());
     
@@ -183,38 +240,24 @@ namespace TRAC_IK {
 
     boost::wait_for_all(pending_data.begin(), pending_data.end()); 
 
-    if (nloptRC == 0)
-      reeval(des,nlopt_out);
-
-    if (kdlRC == 0)
-      reeval(des,kdl_out);
-
-    int result;
-    if (nloptRC > kdlRC) {
-      q_out = nlopt_out;
-      result = nloptRC;
-      nlopt_count++;
+    if (solutions.empty()) {
+      q_out=q_init;
+      return -3;
     }
-    else if (kdlRC > nloptRC) {
-      q_out = kdl_out;
-      result = kdlRC;
-      kdl_count++;
-    }
-    else { //they both failed or both succeeded
-      result = kdlRC;
-      double err1 = TRAC_IK::JointErr(des,nlopt_out);
-      double err2 = TRAC_IK::JointErr(des,kdl_out);       
-      if (err1 < err2) {
-        q_out=nlopt_out;
-        nlopt_count++;
-      }
-      else {
-        q_out=kdl_out;
-        kdl_count++;
+
+    for (uint i=0; i<solutions.size(); i++)
+      reeval(q_init,solutions[i]);
+
+    double minerr = FLT_MAX;
+    for (uint i=0; i<solutions.size(); i++)  {
+      double err = TRAC_IK::JointErr(q_init,solutions[i]);
+      if (err < minerr) {
+        minerr = err;
+        q_out = solutions[i];
       }
     }
-   
-    return result;    
+    
+    return 0;    
   }
   
 

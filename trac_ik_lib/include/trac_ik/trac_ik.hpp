@@ -37,13 +37,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 
-namespace TRAC_IK {
 
+namespace TRAC_IK {
 
   class TRAC_IK 
   {
   public:
-    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-3);
+    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, bool multiple_solutions=false);
 
     ~TRAC_IK();
 
@@ -51,38 +51,29 @@ namespace TRAC_IK {
       double err = 0;
       for (uint i=0; i<arr1.data.size(); i++) {
         err += pow(arr1(i) - arr2(i),2);
-        //        err = std::max(err, std::abs(arr1(i) - arr2(i)));
       }
       
       return err;
     }
 
+    int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
 
 
-
-    int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero(), const KDL::JntArray& q_desired=KDL::JntArray());
-
-    std::pair<int, int> getSolveCounts(){
-      return std::make_pair(kdl_count,nlopt_count);
-    }
-
-    void resetSolveCounts(){
-      kdl_count = 0;
-      nlopt_count = 0;
-    }
 
   private:
     KDL::Chain chain;
     double eps;
     double maxtime;
+    bool multi_solve;
     NLOPT_IK::NLOPT_IK nl_solver;
     KDL::ChainIkSolverPos_TL iksolver;
 
+    boost::posix_time::ptime start_time;
 
-    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired);
+    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
 
-    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray& q_out, const KDL::JntArray& q_desired);
+    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
     bool reeval(const KDL::JntArray& seed, KDL::JntArray& solution);
 
@@ -90,15 +81,21 @@ namespace TRAC_IK {
   
     std::vector<KDL::BasicJointType> types;
 
-    int kdlRC, nloptRC;
-
-    int kdl_count, nlopt_count;
-   
+    boost::mutex mtx_;
+    std::vector<KDL::JntArray> solutions;
+ 
 
     boost::asio::io_service io_service;
     boost::thread_group threads;
     boost::asio::io_service::work work;
     KDL::Twist bounds;
+
+    inline static double fRand(double min, double max)
+    {
+      double f = (double)rand() / RAND_MAX;
+      return min + f * (max - min);
+    }
+
 
   };
 
