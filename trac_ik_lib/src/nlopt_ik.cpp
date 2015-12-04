@@ -337,7 +337,7 @@ namespace NLOPT_IK {
     error[0] = KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot);
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
-      progress=0;
+      progress=1;
       double err1 = NLOPT_IK::JointErr(des,x);
       if (err1 < best_err) {
         best_x=x;
@@ -403,7 +403,7 @@ namespace NLOPT_IK {
     error[0] = std::sqrt(KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot));
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
-      progress=0;
+      progress=1;
       double err1 = NLOPT_IK::JointErr(des,x);
       if (err1 < best_err) {
         best_x=x;
@@ -482,7 +482,7 @@ namespace NLOPT_IK {
 
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
-      progress=0;
+      progress=1;
       double err1 = NLOPT_IK::JointErr(des,x);
       if (err1 < best_err) {
         best_x=x;
@@ -560,7 +560,7 @@ namespace NLOPT_IK {
           double diffangle = fmod(x[i]-ub[i],2*M_PI);
           // Add that to upper bound and go back a full rotation
           x[i] = ub[i] + diffangle - 2*M_PI;
-      }
+        }
         
         if (x[i] < lb[i]) {
           //Find actual angle offset
@@ -568,7 +568,7 @@ namespace NLOPT_IK {
           // Subtract that from lower bound and go forward a full rotation
           x[i] = lb[i] - diffangle + 2*M_PI;
         }        
-
+        
         if (x[i] > ub[i]) 
           x[i] = (ub[i]+lb[i])/2.0;
         
@@ -598,13 +598,13 @@ namespace NLOPT_IK {
       progress = -3;
         
 
-    if (!aborted && progress != 0) {
+    if (!aborted && progress < 0) {
 
       double time_left;
       diff=boost::posix_time::microsec_clock::local_time()-start_time;
       time_left = maxtime - diff.total_nanoseconds()/1000000000.0;
 
-      while (time_left > 0 && !aborted && progress != 0) {
+      while (time_left > 0 && !aborted && progress < 0) {
 
         for (uint i=0; i< x.size(); i++)
           x[i]=fRand(lb[i], ub[i]);

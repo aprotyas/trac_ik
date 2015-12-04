@@ -195,13 +195,14 @@ namespace TRAC_IK {
         val = lb[i] - diffangle + 2*M_PI;
       }
 
-      if (std::abs(val-solution(i)) > 0.1) {
-        improved = true;
+      //      if (std::abs(val-solution(i)) > 0.1) {
+      //        improved = true;
         solution(i) = val;
-      }
+        //      }
     }
     
-    return improved;
+    return true;
+    //    return improved;
     
   }
 
@@ -257,7 +258,7 @@ namespace TRAC_IK {
       }
     }
     
-    return 0;    
+    return solutions.size();    
   }
   
 

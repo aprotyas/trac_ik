@@ -95,7 +95,7 @@ namespace KDL
 
 
       if(Equal(delta_twist,Twist::Zero(),eps))
-        return 0;
+        return 1;
         
       
       vik_solver.CartToJnt(q_out,delta_twist,delta_q);
