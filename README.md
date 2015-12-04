@@ -14,7 +14,7 @@ functions to be provided to the main TRAC-IK call in order to receive back the
 
 ###This repo contains 3 ROS packages:###
 
-- trac\_ik is simply a metapackage.  
+- trac\_ik is a metapackage with build and [Changelog](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik/CHANGELOG.rst) info.
 
 - [trac\_ik\_lib](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_lib), the TRAC-IK kinematics code,
 builds a .so library that can be used as a drop in replacement for KDL's IK
