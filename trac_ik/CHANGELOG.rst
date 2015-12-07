@@ -1,6 +1,13 @@
 Change history
 ==============
 
+
+1.2.1 (2015-12-07)
+------------------
+
+ * Fixed a bug in the MoveIt! plugin FK call that assumed all joint poses were desired.
+
+
 1.2.0 (2015-12-04)
 ------------------
 
@@ -8,6 +15,7 @@ Change history
  * Made MoveIt! support this new IK run mode if the user desires.
  * Improved timing info to use a higher solution clock.
  * Fixed TRAC-IK's abort/reset of KDL-RR and NLOpt-IK to catch race conditions.
+
 
 1.1.2 (2015-12-3)
 ------------------
@@ -22,12 +30,14 @@ Change history
 
  * Prepared code to have auto test suite run to generate data in main README.md.
 
+
 1.1.0 (2015-11-12)
 ------------------
 
  * Improvements to KDL-RR that better handle joint limits on rotational joints that can turn +- PI.
  * Fixed bug where continuous joints could cause problems.
  * Made NLOpt modes enums instead of integer parameters.
+
 
 1.0.0 (2015-11-10)
 ------------------
