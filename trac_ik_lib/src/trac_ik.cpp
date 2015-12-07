@@ -341,6 +341,8 @@ namespace TRAC_IK {
     
     switch (solvetype) {
     case Manip1:
+      std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
+      break;
     case Manip2:
       std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
       break;
