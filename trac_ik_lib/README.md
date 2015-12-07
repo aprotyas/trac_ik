@@ -10,7 +10,7 @@ rosdep install trac_ik_lib```.
 
 KDL IK:
 
-    c++
+```c++
     KDL::ChainFkSolverPos_recursive fk_solver(chain);
     KDL::ChainIkSolverVel_pinv vik_solver(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);
@@ -25,11 +25,11 @@ KDL IK:
     % can be called in a loop without seeing any real penalty in runtime.
 
     % NOTE: error == 1e-3 is acceptable for most purposes
-
+```
 
 TRAC-IK:
 
-    c++
+```c++
     #include <trac_ik/trac_ik.hpp>    
 
     TRAC_IK::TRAC_IK ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
@@ -48,4 +48,6 @@ TRAC-IK:
     % provided, then by default are 0.  If given, the ABS() of the
     % values will be used to set tolerances at -tol..0..+tol for each of
     % the 6 Cartesian dimensions of the end effector pose.
+```
+
 
