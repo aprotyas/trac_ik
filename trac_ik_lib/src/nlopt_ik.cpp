@@ -69,7 +69,7 @@ namespace NLOPT_IK {
 
     std::vector<double> vals(x);
 
-    double jump=1e-4;
+    double jump=boost::math::tools::epsilon<float>();
     double result[1]; 
     c->cartDQError(vals, result);
 
@@ -104,7 +104,7 @@ namespace NLOPT_IK {
 
     std::vector<double> vals(x);
 
-    double jump=1e-8;
+    double jump=boost::math::tools::epsilon<float>();
     double result[1]; 
     c->cartSumSquaredError(vals, result);
 
@@ -139,7 +139,7 @@ namespace NLOPT_IK {
 
     std::vector<double> vals(x);
 
-    double jump=1e-8;
+    double jump=boost::math::tools::epsilon<float>();
     double result[1]; 
     c->cartL2NormError(vals, result);
 
@@ -179,7 +179,7 @@ namespace NLOPT_IK {
       vals[i]=x[i];
     }
 
-    double jump=1e-8;
+    double jump=boost::math::tools::epsilon<float>();
  
     c->cartSumSquaredError(vals, result);
 
@@ -239,12 +239,10 @@ namespace NLOPT_IK {
     opt.set_lower_bounds(lb);
     opt.set_upper_bounds(ub);
     
-    double tol = 1e-8;
-    opt.set_xtol_abs(tol);
+    std::vector<double> tolerance(1,boost::math::tools::epsilon<float>());
+    opt.set_xtol_abs(tolerance[0]);
 
-
-    std::vector<double> tolerance(1,1e-8);
-    
+   
     switch (TYPE) {
     case Joint: 
       opt.set_min_objective(minfunc, this);
@@ -338,11 +336,7 @@ namespace NLOPT_IK {
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
       progress=1;
-      double err1 = NLOPT_IK::JointErr(des,x);
-      if (err1 < best_err) {
-        best_x=x;
-        best_err=err1;
-      }
+      best_x=x;
       return;
     }
   }
@@ -404,11 +398,7 @@ namespace NLOPT_IK {
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
       progress=1;
-      double err1 = NLOPT_IK::JointErr(des,x);
-      if (err1 < best_err) {
-        best_x=x;
-        best_err=err1;
-      }
+      best_x=x;
       return;
     }
   }
@@ -483,11 +473,7 @@ namespace NLOPT_IK {
 
     if (KDL::Equal(delta_twist,KDL::Twist::Zero(),eps)) {
       progress=1;
-      double err1 = NLOPT_IK::JointErr(des,x);
-      if (err1 < best_err) {
-        best_x=x;
-        best_err=err1;
-      }
+      best_x=x;
       return;
     }
   }
@@ -577,7 +563,6 @@ namespace NLOPT_IK {
     
     best_x=x;
     progress = -3;
-    best_err = DBL_MAX;
 
     if (q_desired.data.size()==0) {
       des=x;

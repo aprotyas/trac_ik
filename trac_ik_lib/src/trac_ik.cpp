@@ -32,7 +32,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/trac_ik.hpp>
 #include <boost/date_time.hpp>
 #include <boost/make_shared.hpp>
-
+#include <Eigen/Geometry>
 #include <ros/ros.h>
 
 namespace TRAC_IK {
@@ -41,6 +41,8 @@ namespace TRAC_IK {
 
   TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, bool _multiple_solutions):
     chain(_chain),
+    jacsolver(_chain),
+    jac(_q_min.data.size()),
     eps(_eps),
     maxtime(_maxtime),
     multi_solve(_multiple_solutions),
@@ -48,6 +50,8 @@ namespace TRAC_IK {
     iksolver(chain,_q_min,_q_max,maxtime,eps,true,true),
     work(io_service)
   {
+
+  
     assert(chain.getNrOfJoints()==_q_min.data.size());
     assert(chain.getNrOfJoints()==_q_max.data.size());
 
@@ -72,6 +76,34 @@ namespace TRAC_IK {
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
 
+  }
+
+  void TRAC_IK::remove_duplicate_solutions() {
+    std::vector<KDL::JntArray> subset;
+
+    for (uint i=0; i < solutions.size(); i++)
+      if (unique_vector(solutions[i],subset))
+        subset.push_back(solutions[i]);
+
+    solutions=subset;
+  }
+
+  bool TRAC_IK::unique_vector(const KDL::JntArray& v1, const std::vector<KDL::JntArray>& list) {
+    // Assumes solutions is completed
+
+    for (uint i=0; i < list.size(); i++) {
+      bool found_match = true;
+      for (uint j=0; j<v1.data.size(); j++) {
+        double jntErr = std::abs(v1(j)-list[i](j));
+        if (jntErr > boost::math::tools::epsilon<float>()) {
+          found_match = false;
+          break;
+        }
+      }
+      if (found_match)
+        return false;
+    }
+    return true;
   }
 
   bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
@@ -206,6 +238,19 @@ namespace TRAC_IK {
     
   }
 
+    inline double TRAC_IK::ManipValue1(const KDL::JntArray& arr, const KDL::Jacobian& jac) {
+      
+      return std::sqrt((jac.data*jac.data.transpose()).determinant());
+    }
+    
+    inline double TRAC_IK::ManipValue2(const KDL::JntArray& arr, const KDL::Jacobian& jac) {
+
+      Eigen::JacobiSVD<Eigen::MatrixXd> svdsolver(jac.data);
+      Eigen::MatrixXd singular_values = svdsolver.singularValues();
+      
+      return singular_values.minCoeff()/singular_values.maxCoeff();
+    }
+
 
   int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds) {
 
@@ -249,14 +294,33 @@ namespace TRAC_IK {
     for (uint i=0; i<solutions.size(); i++)
       reeval(q_init,solutions[i]);
 
+    remove_duplicate_solutions();
+
+    std::vector <std::vector<std::pair<double,uint> > > errors(3);
+
+
     double minerr = FLT_MAX;
     for (uint i=0; i<solutions.size(); i++)  {
+
       double err = TRAC_IK::JointErr(q_init,solutions[i]);
-      if (err < minerr) {
-        minerr = err;
-        q_out = solutions[i];
-      }
+      errors[0].push_back(std::make_pair(err,i));
+
+      jacsolver.JntToJac(solutions[i],jac);
+
+      err = TRAC_IK::ManipValue1(solutions[i],jac);
+      errors[1].push_back(std::make_pair(err,i));
+
+      err = TRAC_IK::ManipValue2(solutions[i],jac);
+      errors[2].push_back(std::make_pair(err,i));
+
+      if (multi_solve)
+        ROS_WARN_STREAM(i<<" "<<errors[0][i].first<<" "<<errors[1][i].first<<" "<<errors[2][i].first);
     }
+    
+    std::sort(errors[0].begin(),errors[0].end());
+    q_out = solutions[errors[0][0].second];
+    if (multi_solve)
+      ROS_WARN_STREAM(errors[0][0].second<<" "<<errors[0][0].first<<"\n");
     
     return solutions.size();    
   }

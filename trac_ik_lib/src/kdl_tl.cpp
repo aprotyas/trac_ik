@@ -140,7 +140,7 @@ namespace KDL
       
       Subtract(q_out,q_curr,q_out);
       
-      if (q_out.data.isZero(1e-8)) {
+      if (q_out.data.isZero(boost::math::tools::epsilon<float>())) {
         if (rr) {
           for (unsigned int j=0; j<q_out.data.size(); j++) 
             q_curr(j)=fRand(q_min(j),q_max(j));

@@ -34,6 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/kdl_tl.hpp>
 #include <trac_ik/nlopt_ik.hpp>
+#include <kdl/chainjnttojacsolver.hpp>
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 
@@ -56,12 +57,17 @@ namespace TRAC_IK {
       return err;
     }
 
+    double ManipValue1(const KDL::JntArray&, const KDL::Jacobian&);
+    double ManipValue2(const KDL::JntArray& arr, const KDL::Jacobian&);
+
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
 
 
 
   private:
     KDL::Chain chain;
+    KDL::ChainJntToJacSolver jacsolver;
+    KDL::Jacobian jac;
     double eps;
     double maxtime;
     bool multi_solve;
@@ -90,11 +96,15 @@ namespace TRAC_IK {
     boost::asio::io_service::work work;
     KDL::Twist bounds;
 
+    void remove_duplicate_solutions();
+    bool unique_vector(const KDL::JntArray& v1, const std::vector<KDL::JntArray>& list);
+
     inline static double fRand(double min, double max)
     {
       double f = (double)rand() / RAND_MAX;
       return min + f * (max - min);
     }
+
 
 
   };

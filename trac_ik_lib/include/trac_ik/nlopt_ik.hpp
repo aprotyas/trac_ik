@@ -67,16 +67,6 @@ namespace NLOPT_IK {
       aborted = false;
     }
     
-    static double JointErr(const std::vector<double>& arr1, const std::vector<double>& arr2) {
-      double err = 0;
-      for (uint i=0; i<arr1.size(); i++) {
-        err += pow(arr1[i] - arr2[i],2);
-        //err = std::max(err, std::abs(arr1[i] - arr2[i]));
-      }
-      
-      return err;
-    }
-
 
     std::vector<double> lb;
     std::vector<double> ub;
@@ -107,7 +97,6 @@ namespace NLOPT_IK {
     KDL::Frame currentPose;
 
     std::vector<double> best_x;
-    double best_err;
     int progress;
     bool aborted;
 
