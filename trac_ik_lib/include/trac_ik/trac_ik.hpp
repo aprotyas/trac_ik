@@ -41,10 +41,12 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace TRAC_IK {
 
+  enum SolveType { Speed, Distance, Manip1, Manip2 };
+
   class TRAC_IK 
   {
   public:
-    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, bool multiple_solutions=false);
+    TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
 
     ~TRAC_IK();
 
@@ -57,8 +59,7 @@ namespace TRAC_IK {
       return err;
     }
 
-    double ManipValue1(const KDL::JntArray&, const KDL::Jacobian&);
-    double ManipValue2(const KDL::JntArray& arr, const KDL::Jacobian&);
+    
 
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
 
@@ -70,7 +71,8 @@ namespace TRAC_IK {
     KDL::Jacobian jac;
     double eps;
     double maxtime;
-    bool multi_solve;
+    SolveType solvetype;
+
     NLOPT_IK::NLOPT_IK nl_solver;
     KDL::ChainIkSolverPos_TL iksolver;
 
@@ -104,6 +106,10 @@ namespace TRAC_IK {
       double f = (double)rand() / RAND_MAX;
       return min + f * (max - min);
     }
+
+    double manipPenalty(const KDL::JntArray&);
+    double ManipValue1(const KDL::JntArray&, const KDL::Jacobian&);
+    double ManipValue2(const KDL::JntArray&, const KDL::Jacobian&);
 
 
 

@@ -56,18 +56,19 @@ namespace trac_ik_kinematics_plugin
 
     KDL::Chain chain;
     bool position_ik_;
-    bool multi_solve_;
     const std::vector<std::string>& getJointNames() const { return joint_names_; }
     const std::vector<std::string>& getLinkNames() const { return link_names_; }
 
     KDL::JntArray joint_min, joint_max;
+
+    std::string solve_type;
 
   public:
 
     /** @class
      *  @brief Interface for an TRAC-IK kinematics plugin
      */
-    TRAC_IKKinematicsPlugin(): active_(false), position_ik_(false), multi_solve_(false){}
+    TRAC_IKKinematicsPlugin(): active_(false), position_ik_(false){}
 
     ~TRAC_IKKinematicsPlugin() {
     }
@@ -308,8 +309,7 @@ namespace trac_ik_kinematics_plugin
 
     node_handle.param(group_name+"/position_only_ik", position_ik_, false);
 
-    node_handle.param(group_name+"/multi_solve", multi_solve_, false);
-
+    node_handle.param(group_name+"/solve_type", solve_type, std::string("Speed"));
 
     active_ = true;
     return true;
@@ -513,7 +513,17 @@ namespace trac_ik_kinematics_plugin
 
     double epsilon = 1e-5;  //Same as MoveIt's KDL plugin
 
-    TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon, multi_solve_);
+    TRAC_IK::SolveType solvetype;
+
+    if (solve_type == "Manipulation1")
+      solvetype = TRAC_IK::Manip1;
+    else if (solve_type == "Manipulation2")
+      solvetype = TRAC_IK::Manip2;
+    else if (solve_type == "Distance")
+      solvetype = TRAC_IK::Distance;
+    else solvetype = TRAC_IK::Speed;
+    
+    TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon, solvetype);
 
     int rc = ik_solver.CartToJnt(in, frame, out, bounds);
 
