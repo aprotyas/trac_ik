@@ -2,6 +2,13 @@ Change history
 ==============
 
 
+1.3.0 (2015-12-07)
+------------------
+
+ * Added a mode to TRAC-IK constructor that determines how the IK solver runs: 1) Speed return immediately whenever any solution is found (all other modes run for the requested timeout to try to find multiple solutions); 2) Distance runs for the timeout and returns the solution found that minimizes the Sum-of-Squares error from the seed; 3) Manip1 returns the solution that maximizes the manipulation metric sqrt(det(J*J^T)); 4)  Manip2 returns the metric that minimizes the condition number |J||J^-1|.
+ * Added support for these modes in the MoveIt! plugin via the kinematic.yaml parameter solve_type, which can be one of the strings "Speed", "Distance", "Manipulation1", "Manipulation2".
+
+
 1.2.1 (2015-12-07)
 ------------------
 
