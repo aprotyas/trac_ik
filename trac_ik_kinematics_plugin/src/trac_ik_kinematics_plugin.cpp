@@ -345,12 +345,6 @@ namespace trac_ik_kinematics_plugin
     return false;
   }
 
-  if(link_names.size() != num_joints_)
-  {
-    ROS_ERROR_NAMED("trac_ik","Link names vector must have size: %d",num_joints_);
-    return false;
-  }
-
   KDL::Frame p_out;
   geometry_msgs::PoseStamped pose;
   tf::Stamped<tf::Pose> tf_pose;
