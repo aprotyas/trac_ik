@@ -30,10 +30,13 @@ TRAC-IK
 
     #include <trac_ik/trac_ik.hpp>    
 
-    TRAC_IK::TRAC_IK ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error);  
+    TRAC_IK::TRAC_IK ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
 
-    % NOTE: Any optional parameters to the constructor are used during
-    % testing, please only use the defaults for those parameters.
+    % NOTE: The last argument to the constructor is optional, and can be one of the following: 
+    % Speed: returns very quickly the first solution found
+    % Distance: runs for the full timeout_in_ms, then returns the solution that minimizes SSE from the seed
+    % Manip1: runs for full timeout, returns solution that maximizes sqrt(det(J*J^T))
+    % Manip2: runs for full timeout, returns solution that minimizes cond(J) = |J|*|J^-1|
 
     int rc = ik_solver.CartToJnt(KDL::JntArray joint_seed, KDL::Frame desired_end_effector_pose, KDL::JntArray& return_joints, KDL::Twist tolerances);
 
