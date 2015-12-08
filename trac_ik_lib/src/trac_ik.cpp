@@ -42,7 +42,6 @@ namespace TRAC_IK {
   TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, SolveType _type):
     chain(_chain),
     jacsolver(_chain),
-    jac(_q_min.data.size()),
     eps(_eps),
     maxtime(_maxtime),
     solvetype(_type),
@@ -250,12 +249,24 @@ namespace TRAC_IK {
   }
 
 
-  inline double TRAC_IK::ManipValue1(const KDL::JntArray& arr, const KDL::Jacobian& jac) {
+  double TRAC_IK::ManipValue1(const KDL::JntArray& arr) {
+    KDL::Jacobian jac(arr.data.size());
+
+    jacsolver.JntToJac(arr,jac);
+
+    Eigen::JacobiSVD<Eigen::MatrixXd> svdsolver(jac.data);
+    Eigen::MatrixXd singular_values = svdsolver.singularValues();
     
-    return std::sqrt((jac.data*jac.data.transpose()).determinant());
+    double error = 1.0;
+    for(unsigned int i=0; i < singular_values.rows(); ++i)
+      error *= singular_values(i,0);
+    return error;
   }
   
-  inline double TRAC_IK::ManipValue2(const KDL::JntArray& arr, const KDL::Jacobian& jac) {
+  double TRAC_IK::ManipValue2(const KDL::JntArray& arr) {
+    KDL::Jacobian jac(arr.data.size());
+
+    jacsolver.JntToJac(arr,jac);
     
     Eigen::JacobiSVD<Eigen::MatrixXd> svdsolver(jac.data);
     Eigen::MatrixXd singular_values = svdsolver.singularValues();
@@ -322,14 +333,12 @@ namespace TRAC_IK {
       
       switch (solvetype) {
       case Manip1:
-        jacsolver.JntToJac(solutions[i],jac);
         penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue1(solutions[i],jac);
+        err = penalty*TRAC_IK::ManipValue1(solutions[i]);
         break;
       case Manip2:
-        jacsolver.JntToJac(solutions[i],jac);
         penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue2(solutions[i],jac);
+        err = penalty*TRAC_IK::ManipValue2(solutions[i]);
         break;
       case Speed: // Distance and Speed just minimize distance
       case Distance:

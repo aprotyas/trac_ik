@@ -32,7 +32,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TRAC_IK_HPP
 #define TRAC_IK_HPP
 
-#include <trac_ik/kdl_tl.hpp>
 #include <trac_ik/nlopt_ik.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <boost/thread.hpp>
@@ -68,7 +67,6 @@ namespace TRAC_IK {
   private:
     KDL::Chain chain;
     KDL::ChainJntToJacSolver jacsolver;
-    KDL::Jacobian jac;
     double eps;
     double maxtime;
     SolveType solvetype;
@@ -108,8 +106,8 @@ namespace TRAC_IK {
     }
 
     double manipPenalty(const KDL::JntArray&);
-    double ManipValue1(const KDL::JntArray&, const KDL::Jacobian&);
-    double ManipValue2(const KDL::JntArray&, const KDL::Jacobian&);
+    double ManipValue1(const KDL::JntArray&);
+    double ManipValue2(const KDL::JntArray&);
 
 
 
