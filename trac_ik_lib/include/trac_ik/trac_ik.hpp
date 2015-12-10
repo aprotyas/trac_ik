@@ -86,15 +86,15 @@ namespace TRAC_IK {
 
     boost::mutex mtx_;
     std::vector<KDL::JntArray> solutions;
- 
+    std::vector<std::pair<double,uint> >  errors; 
+
 
     boost::asio::io_service io_service;
     boost::thread_group threads;
     boost::asio::io_service::work work;
     KDL::Twist bounds;
 
-    void remove_duplicate_solutions();
-    bool unique_vector(const KDL::JntArray& v1, const std::vector<KDL::JntArray>& list);
+    bool unique_solution(const KDL::JntArray& sol);
 
     inline static double fRand(double min, double max)
     {
@@ -105,6 +105,10 @@ namespace TRAC_IK {
     double manipPenalty(const KDL::JntArray&);
     double ManipValue1(const KDL::JntArray&);
     double ManipValue2(const KDL::JntArray&);
+
+    inline bool myEqual(const KDL::JntArray& a, const KDL::JntArray& b) {
+      return (a.data-b.data).isZero(1e-4);
+    }
 
 
 

@@ -1,6 +1,32 @@
 Change history
 ==============
 
+1.3.5 (2015-12-08)
+------------------
+
+ * Overhaul of how multiple solutions are managed in TRAC-IK threads.
+ * Improved speed and accurate returning of unique results found.
+
+1.3.4 (2015-12-10)
+------------------
+
+ * Fixed a bug where we were looping over solutions inside of looping over solutions. 
+
+1.3.3 (2015-12-10)
+------------------
+
+ * Change final normalization for manipulability metrics with continuous joints. Make continuous joints explicitly handled (if lower_limit >= upper_limit, joint is continuous).
+
+1.3.2 (2015-12-10)
+------------------
+
+ * Fixed bug where TRAC-IK multisolution modes weren't using the computed random seeds, but were using the same seed over and over.
+ * Fixed potential issues with large bound joints seraching too large of a space
+
+1.3.1 (2015-12-08)
+------------------
+
+ * Slight tweak to Manipulation metrics function to ensure it always works, even with weird Jacobians.
 
 1.3.0 (2015-12-07)
 ------------------
