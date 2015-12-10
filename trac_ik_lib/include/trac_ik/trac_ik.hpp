@@ -58,11 +58,7 @@ namespace TRAC_IK {
       return err;
     }
 
-    
-
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
-
-
 
   private:
     KDL::Chain chain;
@@ -81,7 +77,8 @@ namespace TRAC_IK {
 
     bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
-    bool reeval(const KDL::JntArray& seed, KDL::JntArray& solution);
+    void normalize(const KDL::JntArray& seed, KDL::JntArray& solution);
+    void normalize(KDL::JntArray& solution);
 
     std::vector<double> lb, ub;
   
