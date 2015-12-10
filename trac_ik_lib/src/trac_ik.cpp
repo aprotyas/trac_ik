@@ -37,8 +37,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace TRAC_IK {
 
-
-
   TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, SolveType _type):
     chain(_chain),
     jacsolver(_chain),
@@ -81,32 +79,13 @@ namespace TRAC_IK {
 
   }
 
-  void TRAC_IK::remove_duplicate_solutions() {
-    std::vector<KDL::JntArray> subset;
+  bool TRAC_IK::unique_solution(const KDL::JntArray& sol) {
 
-    for (uint i=0; i < solutions.size(); i++) {
-      if (unique_vector(solutions[i],subset))
-        subset.push_back(solutions[i]);
-    }
-    solutions=subset;
-  }
-
-  bool TRAC_IK::unique_vector(const KDL::JntArray& v1, const std::vector<KDL::JntArray>& list) {
-    // Assumes solutions is completed
-
-    for (uint i=0; i < list.size(); i++) {
-      bool found_match = true;
-      for (uint j=0; j<v1.data.size(); j++) {
-        double jntErr = std::abs(v1(j)-list[i](j));
-        if (jntErr > 1e-4) {
-          found_match = false;
-          break;
-        }
-      }
-      if (found_match)
+    for (uint i=0; i< solutions.size(); i++)
+      if (myEqual(sol,solutions[i]))
         return false;
-    }
     return true;
+
   }
 
   bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
@@ -130,14 +109,44 @@ namespace TRAC_IK {
 
       int kdlRC = iksolver.CartToJnt(seed,p_in,q_out,bounds);
       if (kdlRC >=0) {
+        switch (solvetype) {
+        case Manip1:
+        case Manip2:
+          normalize_limits(q_init, q_out);
+          break;
+        default:
+          normalize_seed(q_init, q_out);
+          break;
+        }
         mtx_.lock();
-        solutions.push_back(q_out);
+        if (unique_solution(q_out)) {
+          solutions.push_back(q_out);
+          uint curr_size=solutions.size();
+          errors.resize(curr_size);
+          mtx_.unlock();
+          double err, penalty;
+          switch (solvetype) {
+          case Manip1:
+            penalty = manipPenalty(q_out);
+            err = penalty*TRAC_IK::ManipValue1(q_out);
+            break;
+          case Manip2:
+            penalty = manipPenalty(q_out);
+            err = penalty*TRAC_IK::ManipValue2(q_out);
+            break;
+          default:
+            err = TRAC_IK::JointErr(q_init,q_out);
+            break;
+          }
+          mtx_.lock();
+          errors[curr_size-1] = std::make_pair(err,curr_size-1);
+        }
         mtx_.unlock();
       }
-
+      
       if (!solutions.empty() && solvetype == Speed)
         break;
-
+      
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(-FLT_MAX, FLT_MAX);
@@ -150,7 +159,6 @@ namespace TRAC_IK {
 
     return true;
   }
-
 
   bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
@@ -173,14 +181,44 @@ namespace TRAC_IK {
 
       int nloptRC = nl_solver.CartToJnt(seed,p_in,q_out,bounds);
       if (nloptRC >=0) {
+        switch (solvetype) {
+        case Manip1:
+        case Manip2:
+          normalize_limits(q_init, q_out);
+          break;
+        default:
+          normalize_seed(q_init, q_out);
+          break;
+        }
         mtx_.lock();
-        solutions.push_back(q_out);
+        if (unique_solution(q_out)) {
+          solutions.push_back(q_out);
+          uint curr_size=solutions.size();
+          errors.resize(curr_size);
+          mtx_.unlock();
+          double err, penalty;
+          switch (solvetype) {
+          case Manip1:
+            penalty = manipPenalty(q_out);
+            err = penalty*TRAC_IK::ManipValue1(q_out);
+            break;
+          case Manip2:
+            penalty = manipPenalty(q_out);
+            err = penalty*TRAC_IK::ManipValue2(q_out);
+            break;
+          default:
+            err = TRAC_IK::JointErr(q_init,q_out);
+            break;
+          }
+          mtx_.lock();
+          errors[curr_size-1] = std::make_pair(err,curr_size-1);
+        }
         mtx_.unlock();
       }
-
+      
       if (!solutions.empty() && solvetype == Speed)
         break;
-
+      
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(-FLT_MAX, FLT_MAX);
@@ -352,6 +390,8 @@ namespace TRAC_IK {
     iksolver.reset();
 
     solutions.clear();
+    errors.clear();
+
 
     bounds=_bounds;
 
@@ -383,56 +423,13 @@ namespace TRAC_IK {
       return -3;
     }
 
-    std::vector<std::pair<double,uint> >  errors;
-    double err;
-    double penalty;
-
     switch (solvetype) {
     case Manip1:
-
-      for (uint i=0; i<solutions.size(); i++)
-        normalize_limits(q_init, solutions[i]);
-
-      remove_duplicate_solutions();
-
-      for (uint i=0; i<solutions.size(); i++)  {
-        penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue1(solutions[i]);
-        errors.push_back(std::make_pair(err,i));
-      }
-
-      std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
-
-      break;
     case Manip2:
-      for (uint i=0; i<solutions.size(); i++)
-        normalize_limits(q_init, solutions[i]);
-
-      remove_duplicate_solutions();
-
-      for (uint i=0; i<solutions.size(); i++)  {
-        penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue2(solutions[i]);
-        errors.push_back(std::make_pair(err,i));
-      }
-
       std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
-
       break;
-    case Speed: // Distance and Speed just minimize distance
-    case Distance:
-      for (uint i=0; i<solutions.size(); i++)
-        normalize_seed(q_init,solutions[i]);
-
-      remove_duplicate_solutions();
-
-      for (uint i=0; i<solutions.size(); i++)  {
-        err = TRAC_IK::JointErr(q_init,solutions[i]);
-        errors.push_back(std::make_pair(err,i));
-      }
-
+    default:
       std::sort(errors.begin(),errors.end());
-
       break;
     }
 
