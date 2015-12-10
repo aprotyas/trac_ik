@@ -317,15 +317,9 @@ namespace TRAC_IK {
       return -3;
     }
 
-    for (uint i=0; i<solutions.size(); i++)
-      reeval(q_init,solutions[i]);
-
-    remove_duplicate_solutions();
-
     std::vector<std::pair<double,uint> >  errors;
 
 
-    double minerr = FLT_MAX;
     for (uint i=0; i<solutions.size(); i++)  {
 
       double err;
@@ -333,15 +327,21 @@ namespace TRAC_IK {
       
       switch (solvetype) {
       case Manip1:
+        remove_duplicate_solutions();
         penalty = manipPenalty(solutions[i]);
         err = penalty*TRAC_IK::ManipValue1(solutions[i]);
         break;
       case Manip2:
+        remove_duplicate_solutions();
         penalty = manipPenalty(solutions[i]);
         err = penalty*TRAC_IK::ManipValue2(solutions[i]);
         break;
       case Speed: // Distance and Speed just minimize distance
       case Distance:
+        for (uint i=0; i<solutions.size(); i++)
+          reeval(q_init,solutions[i]);
+        
+        remove_duplicate_solutions();
         err = TRAC_IK::JointErr(q_init,solutions[i]);
       }
       
