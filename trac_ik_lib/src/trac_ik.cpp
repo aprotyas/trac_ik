@@ -5,25 +5,25 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, 
+    1. Redistributions of source code must retain the above copyright notice,
        this list of conditions and the following disclaimer.
 
     2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation 
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
 
     3. Neither the name of the copyright holder nor the names of its contributors
-       may be used to endorse or promote products derived from this software 
+       may be used to endorse or promote products derived from this software
        without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
 IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
@@ -50,7 +50,7 @@ namespace TRAC_IK {
     work(io_service)
   {
 
-  
+
     assert(chain.getNrOfJoints()==_q_min.data.size());
     assert(chain.getNrOfJoints()==_q_max.data.size());
 
@@ -70,10 +70,10 @@ namespace TRAC_IK {
       else if (type.find("Trans")!=std::string::npos)
         types.push_back(KDL::BasicJointType::TransJoint);
     }
-    
+
     assert(types.size()==lb.size());
-    
-    
+
+
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
@@ -122,10 +122,10 @@ namespace TRAC_IK {
     while (true) {
       timediff=boost::posix_time::microsec_clock::local_time()-start_time;
       time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
-      
+
       if (time_left <= 0)
         break;
-      
+
       iksolver.setMaxtime(time_left);
 
       int kdlRC = iksolver.CartToJnt(seed,p_in,q_out,bounds);
@@ -137,13 +137,13 @@ namespace TRAC_IK {
 
       if (!solutions.empty() && solvetype == Speed)
         break;
-      
-      for (unsigned int j=0; j<seed.data.size(); j++) 
+
+      for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(-FLT_MAX, FLT_MAX);
         else
-          seed(j)=fRand(lb[j], ub[j]);     
-    }     
+          seed(j)=fRand(lb[j], ub[j]);
+    }
     nl_solver.abort();
 
     iksolver.setMaxtime(fulltime);
@@ -165,10 +165,10 @@ namespace TRAC_IK {
     while (true) {
       timediff=boost::posix_time::microsec_clock::local_time()-start_time;
       time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
-      
+
       if (time_left <= 0)
         break;
-     
+
       nl_solver.setMaxtime(time_left);
 
       int nloptRC = nl_solver.CartToJnt(seed,p_in,q_out,bounds);
@@ -180,14 +180,14 @@ namespace TRAC_IK {
 
       if (!solutions.empty() && solvetype == Speed)
         break;
-      
-      for (unsigned int j=0; j<seed.data.size(); j++) 
+
+      for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(-FLT_MAX, FLT_MAX);
-        else 
-          seed(j)=fRand(lb[j], ub[j]);     
-    }     
-    
+        else
+          seed(j)=fRand(lb[j], ub[j]);
+    }
+
     iksolver.abort();
 
     nl_solver.setMaxtime(fulltime);
@@ -198,17 +198,17 @@ namespace TRAC_IK {
   void TRAC_IK::normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution) {
     // Make sure rotational joint values are within 1 revolution of seed; then
     // ensure joint limits are met.
-   
+
     bool improved = false;
 
     for (uint i=0; i<lb.size(); i++) {
-      
+
       if (types[i]==KDL::BasicJointType::TransJoint)
         continue;
 
       double target = seed(i);
       double val = solution(i);
-      
+
       if (val > target+M_PI) {
         //Find actual angle offset
         double diffangle = fmod(val-target,2*M_PI);
@@ -243,27 +243,27 @@ namespace TRAC_IK {
       }
 
       solution(i) = val;
-    }   
+    }
   }
 
   void TRAC_IK::normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution) {
     // Make sure rotational joint values are within 1 revolution of middle of
     // limits; then ensure joint limits are met.
-   
+
     bool improved = false;
-    
+
     for (uint i=0; i<lb.size(); i++) {
-      
+
       if (types[i] == KDL::BasicJointType::TransJoint)
         continue;
-      
+
       double target = seed(i);
-      
+
       if (types[i] == KDL::BasicJointType::RotJoint)
         target = (ub[i]+lb[i])/2.0;
 
       double val = solution(i);
-      
+
       if (val > target+M_PI) {
         //Find actual angle offset
         double diffangle = fmod(val-target,2*M_PI);
@@ -298,7 +298,8 @@ namespace TRAC_IK {
       }
 
       solution(i) = val;
-    }   
+    }
+
   }
 
 
@@ -321,21 +322,21 @@ namespace TRAC_IK {
 
     Eigen::JacobiSVD<Eigen::MatrixXd> svdsolver(jac.data);
     Eigen::MatrixXd singular_values = svdsolver.singularValues();
-    
+
     double error = 1.0;
     for(unsigned int i=0; i < singular_values.rows(); ++i)
       error *= singular_values(i,0);
     return error;
   }
-  
+
   double TRAC_IK::ManipValue2(const KDL::JntArray& arr) {
     KDL::Jacobian jac(arr.data.size());
 
     jacsolver.JntToJac(arr,jac);
-    
+
     Eigen::JacobiSVD<Eigen::MatrixXd> svdsolver(jac.data);
     Eigen::MatrixXd singular_values = svdsolver.singularValues();
-    
+
     return singular_values.minCoeff()/singular_values.maxCoeff();
   }
 
@@ -363,9 +364,9 @@ namespace TRAC_IK {
 
     boost::shared_future<bool> fut1(task1->get_future());
     boost::shared_future<bool> fut2(task2->get_future());
-    
-    /*  
-    // this was for pre-c++11 
+
+    /*
+    // this was for pre-c++11
     pending_data.push_back(boost::move(fut1));
     pending_data.push_back(boost::move(fut2));
     */
@@ -375,7 +376,7 @@ namespace TRAC_IK {
     io_service.post(boost::bind(&task_t::operator(), task1));
     io_service.post(boost::bind(&task_t::operator(), task2));
 
-    boost::wait_for_all(pending_data.begin(), pending_data.end()); 
+    boost::wait_for_all(pending_data.begin(), pending_data.end());
 
     if (solutions.empty()) {
       q_out=q_init;
@@ -383,73 +384,74 @@ namespace TRAC_IK {
     }
 
     std::vector<std::pair<double,uint> >  errors;
+    double err;
+    double penalty;
 
-
-    for (uint i=0; i<solutions.size(); i++)  {
-
-      double err;
-      double penalty;
-     
-      switch (solvetype) {
-      case Manip1:
-        for (uint i=0; i<solutions.size(); i++)
-          normalize_limits(q_init, solutions[i]);
-        
-        remove_duplicate_solutions();
-
-        penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue1(solutions[i]);
-        break;
-      case Manip2:
-        for (uint i=0; i<solutions.size(); i++)
-          normalize_limits(q_init, solutions[i]);
-        
-        remove_duplicate_solutions();
-
-        penalty = manipPenalty(solutions[i]);
-        err = penalty*TRAC_IK::ManipValue2(solutions[i]);
-        break;
-      case Speed: // Distance and Speed just minimize distance
-      case Distance:
-        for (uint i=0; i<solutions.size(); i++)
-          normalize_seed(q_init,solutions[i]);
-        
-        remove_duplicate_solutions();
-
-        err = TRAC_IK::JointErr(q_init,solutions[i]);
-      }
-      
-      errors.push_back(std::make_pair(err,i));
-    }
-    
     switch (solvetype) {
     case Manip1:
+
+      for (uint i=0; i<solutions.size(); i++)
+        normalize_limits(q_init, solutions[i]);
+
+      remove_duplicate_solutions();
+
+      for (uint i=0; i<solutions.size(); i++)  {
+        penalty = manipPenalty(solutions[i]);
+        err = penalty*TRAC_IK::ManipValue1(solutions[i]);
+        errors.push_back(std::make_pair(err,i));
+      }
+
       std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
+
       break;
     case Manip2:
+      for (uint i=0; i<solutions.size(); i++)
+        normalize_limits(q_init, solutions[i]);
+
+      remove_duplicate_solutions();
+
+      for (uint i=0; i<solutions.size(); i++)  {
+        penalty = manipPenalty(solutions[i]);
+        err = penalty*TRAC_IK::ManipValue2(solutions[i]);
+        errors.push_back(std::make_pair(err,i));
+      }
+
       std::sort(errors.rbegin(),errors.rend()); // rbegin/rend to sort by max
+
       break;
     case Speed: // Distance and Speed just minimize distance
     case Distance:
+      for (uint i=0; i<solutions.size(); i++)
+        normalize_seed(q_init,solutions[i]);
+
+      remove_duplicate_solutions();
+
+      for (uint i=0; i<solutions.size(); i++)  {
+        err = TRAC_IK::JointErr(q_init,solutions[i]);
+        errors.push_back(std::make_pair(err,i));
+      }
+
       std::sort(errors.begin(),errors.end());
+
+      break;
     }
-    
+
     q_out = solutions[errors[0].second];
-  
-    return solutions.size();    
+
+    return solutions.size();
   }
-  
+
 
   TRAC_IK::~TRAC_IK(){
     // Force all threads to return from io_service::run().
     io_service.stop();
-      
+
     // Suppress all exceptions.
     try
       {
         threads.join_all();
       }
-    catch ( ... ) {}      
+    catch ( ... ) {}
 
   }
 

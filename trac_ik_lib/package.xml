@@ -1,6 +1,6 @@
 <package>
   <name>trac_ik_lib</name> 
-  <version>1.3.3</version>
+  <version>1.3.4</version>
   <description>
 
     TRAC-IK is a faster, significantly more reliable drop-in replacement for
