@@ -38,21 +38,25 @@ namespace KDL
     chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(_chain), fksolver(_chain), delta_q(_chain.getNrOfJoints()),
     maxtime(_maxtime),eps(_eps),rr(_random_restart),wrap(_try_jl_wrap)
   {
+
+    assert(chain.getNrOfJoints()==_q_min.data.size());
+    assert(chain.getNrOfJoints()==_q_max.data.size());
+
     reset();
 
-    if (wrap) {
-      for (uint i=0; i<chain.segments.size(); i++) {
-        std::string type = chain.segments[i].getJoint().getTypeName();
-        if (type.find("Rot")!=std::string::npos)
-          types.push_back(KDL::BasicJointType::RotJoint);
-        if (type.find("Trans")!=std::string::npos)
-          types.push_back(KDL::BasicJointType::TransJoint);
+    for (uint i=0; i<chain.segments.size(); i++) {
+      std::string type = chain.segments[i].getJoint().getTypeName();
+      if (type.find("Rot")!=std::string::npos) {
+        if (_q_max(types.size())-_q_min(types.size()) < boost::math::tools::epsilon<double>())
+          types.push_back(KDL::BasicJointType::Continuous);
+        else types.push_back(KDL::BasicJointType::RotJoint);
       }
+      else if (type.find("Trans")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::TransJoint);
       
-      assert(types.size()==q_max.data.size());
-
     }
-
+    
+    assert(types.size()==_q_max.data.size());
   }
 
 
@@ -104,6 +108,8 @@ namespace KDL
       Add(q_out,delta_q,q_curr);
       
       for(unsigned int j=0; j<q_min.data.size(); j++) {
+        if (types[j]==KDL::BasicJointType::Continuous)
+          continue;
         if(q_curr(j) < q_min(j)) 
           if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
             // KDL's default 
@@ -122,6 +128,9 @@ namespace KDL
       }
       
       for(unsigned int j=0; j<q_max.data.size(); j++) {
+        if (types[j]==KDL::BasicJointType::Continuous)
+          continue;
+
         if(q_curr(j) > q_max(j)) 
           if (!wrap || types[j]==KDL::BasicJointType::TransJoint)
             // KDL's default 
@@ -143,7 +152,10 @@ namespace KDL
       if (q_out.data.isZero(boost::math::tools::epsilon<float>())) {
         if (rr) {
           for (unsigned int j=0; j<q_out.data.size(); j++) 
-            q_curr(j)=fRand(q_min(j),q_max(j));
+            if (types[j]==KDL::BasicJointType::Continuous)
+              q_curr(j)=fRand(-FLT_MAX,FLT_MAX);
+            else
+              q_curr(j)=fRand(q_min(j),q_max(j));
         }
         // Below would be an optimization to the normal KDL, where when it
         // gets stuck, it returns immediately.  Don't use to compare KDL with

@@ -77,8 +77,8 @@ namespace TRAC_IK {
 
     bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
-    void normalize(const KDL::JntArray& seed, KDL::JntArray& solution);
-    void normalize(KDL::JntArray& solution);
+    void normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution);
+    void normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution);
 
     std::vector<double> lb, ub;
   

@@ -61,15 +61,19 @@ namespace TRAC_IK {
 
     for (uint i=0; i<chain.segments.size(); i++) {
       std::string type = chain.segments[i].getJoint().getTypeName();
-      if (type.find("Rot")!=std::string::npos)
-        types.push_back(KDL::BasicJointType::RotJoint);
-      if (type.find("Trans")!=std::string::npos)
+      if (type.find("Rot")!=std::string::npos) {
+        if (_q_max(types.size())-_q_min(types.size()) < boost::math::tools::epsilon<double>())
+          types.push_back(KDL::BasicJointType::Continuous);
+        else
+          types.push_back(KDL::BasicJointType::RotJoint);
+      }
+      else if (type.find("Trans")!=std::string::npos)
         types.push_back(KDL::BasicJointType::TransJoint);
     }
-     
+    
     assert(types.size()==lb.size());
- 
-
+    
+    
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
@@ -135,7 +139,10 @@ namespace TRAC_IK {
         break;
       
       for (unsigned int j=0; j<seed.data.size(); j++) 
-        seed(j)=fRand(lb[j], ub[j]);     
+        if (types[j]==KDL::BasicJointType::Continuous)
+          seed(j)=fRand(-FLT_MAX, FLT_MAX);
+        else
+          seed(j)=fRand(lb[j], ub[j]);     
     }     
     nl_solver.abort();
 
@@ -175,9 +182,12 @@ namespace TRAC_IK {
         break;
       
       for (unsigned int j=0; j<seed.data.size(); j++) 
-        seed(j)=fRand(lb[j], ub[j]);     
+        if (types[j]==KDL::BasicJointType::Continuous)
+          seed(j)=fRand(-FLT_MAX, FLT_MAX);
+        else 
+          seed(j)=fRand(lb[j], ub[j]);     
     }     
-
+    
     iksolver.abort();
 
     nl_solver.setMaxtime(fulltime);
@@ -185,7 +195,7 @@ namespace TRAC_IK {
     return true;
   }
 
-  void TRAC_IK::normalize(const KDL::JntArray& seed, KDL::JntArray& solution) {
+  void TRAC_IK::normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution) {
     // Make sure rotational joint values are within 1 revolution of seed; then
     // ensure joint limits are met.
    
@@ -213,6 +223,11 @@ namespace TRAC_IK {
         val = target - diffangle + 2*M_PI;
       }
 
+      if (types[i]==KDL::BasicJointType::Continuous) {
+        solution(i) = val;
+        continue;
+      }
+
       if (val > ub[i]) {
         //Find actual angle offset
         double diffangle = fmod(val-ub[i],2*M_PI);
@@ -231,18 +246,22 @@ namespace TRAC_IK {
     }   
   }
 
-  void TRAC_IK::normalize(KDL::JntArray& solution) {
+  void TRAC_IK::normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution) {
     // Make sure rotational joint values are within 1 revolution of middle of
     // limits; then ensure joint limits are met.
    
     bool improved = false;
-
+    
     for (uint i=0; i<lb.size(); i++) {
       
-      if (types[i]==KDL::BasicJointType::TransJoint)
+      if (types[i] == KDL::BasicJointType::TransJoint)
         continue;
+      
+      double target = seed(i);
+      
+      if (types[i] == KDL::BasicJointType::RotJoint)
+        target = (ub[i]+lb[i])/2.0;
 
-      double target = (ub[i]+lb[i])/2.0;
       double val = solution(i);
       
       if (val > target+M_PI) {
@@ -257,6 +276,11 @@ namespace TRAC_IK {
         double diffangle = fmod(target-val,2*M_PI);
         // Add that to upper bound and go back a full rotation
         val = target - diffangle + 2*M_PI;
+      }
+
+      if (types[i]==KDL::BasicJointType::Continuous) {
+        solution(i) = val;
+        continue;
       }
 
       if (val > ub[i]) {
@@ -281,9 +305,9 @@ namespace TRAC_IK {
   double TRAC_IK::manipPenalty(const KDL::JntArray& arr) {
     double penalty = 1.0;
     for (uint i=0; i< arr.data.size(); i++) {
-      double range = ub[i]-lb[i];
-      if (range <= boost::math::tools::epsilon<double>())
+      if (types[i] == KDL::BasicJointType::Continuous)
         continue;
+      double range = ub[i]-lb[i];
       penalty *= ((arr(i)-lb[i])*(ub[i]-arr(i))/(range*range));
     }
     return (1.0 - exp(-1*penalty));
@@ -369,7 +393,7 @@ namespace TRAC_IK {
       switch (solvetype) {
       case Manip1:
         for (uint i=0; i<solutions.size(); i++)
-          normalize(solutions[i]);
+          normalize_limits(q_init, solutions[i]);
         
         remove_duplicate_solutions();
 
@@ -378,7 +402,7 @@ namespace TRAC_IK {
         break;
       case Manip2:
         for (uint i=0; i<solutions.size(); i++)
-          normalize(solutions[i]);
+          normalize_limits(q_init, solutions[i]);
         
         remove_duplicate_solutions();
 
@@ -388,7 +412,7 @@ namespace TRAC_IK {
       case Speed: // Distance and Speed just minimize distance
       case Distance:
         for (uint i=0; i<solutions.size(); i++)
-          normalize(q_init,solutions[i]);
+          normalize_seed(q_init,solutions[i]);
         
         remove_duplicate_solutions();
 

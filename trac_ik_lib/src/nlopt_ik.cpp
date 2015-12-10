@@ -197,6 +197,10 @@ namespace NLOPT_IK {
   NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
     chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
   {
+    assert(chain.getNrOfJoints()==_q_min.data.size());
+    assert(chain.getNrOfJoints()==_q_max.data.size());
+
+
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
     //iterations, and an (optional) desired error.
@@ -207,20 +211,24 @@ namespace NLOPT_IK {
       return;
     }
     opt = nlopt::opt(nlopt::LD_SLSQP, _chain.getNrOfJoints());
-      
-    for (uint i=0; i<chain.segments.size(); i++) {
-      std::string type = chain.segments[i].getJoint().getTypeName();
-      if (type.find("Rot")!=std::string::npos)
-        types.push_back(KDL::BasicJointType::RotJoint);
-      if (type.find("Trans")!=std::string::npos)
-        types.push_back(KDL::BasicJointType::TransJoint);
-    }
 
     for (uint i=0; i<chain.getNrOfJoints(); i++) {
       lb.push_back(_q_min(i)); 
       ub.push_back(_q_max(i));
     }
      
+    for (uint i=0; i<chain.segments.size(); i++) {
+      std::string type = chain.segments[i].getJoint().getTypeName();
+      if (type.find("Rot")!=std::string::npos) {
+        if (_q_max(types.size())-_q_min(types.size()) < boost::math::tools::epsilon<double>())
+          types.push_back(KDL::BasicJointType::Continuous);
+        else
+          types.push_back(KDL::BasicJointType::RotJoint);
+      }
+      else if (type.find("Trans")!=std::string::npos)
+        types.push_back(KDL::BasicJointType::TransJoint);
+    }
+    
     assert(types.size()==lb.size());
    
     std::vector<double> tolerance(1,boost::math::tools::epsilon<float>());
@@ -517,6 +525,9 @@ namespace NLOPT_IK {
     for (uint i=0; i < x.size(); i++) {
       x[i] = q_init(i);
       
+      if (types[i]==KDL::BasicJointType::Continuous)
+        continue;
+
       if (types[i]==KDL::BasicJointType::TransJoint) {
         x[i] = std::min(x[i],ub[i]);
         x[i] = std::max(x[i],lb[i]);
@@ -551,23 +562,27 @@ namespace NLOPT_IK {
     std::vector<double> artificial_lower_limits(lb.size());
 
     for (uint i=0; i< lb.size(); i++)
-      if (types[i]==KDL::BasicJointType::TransJoint) 
+      if (types[i]==KDL::BasicJointType::Continuous) 
+        artificial_lower_limits[i] = best_x[i]-2*M_PI;
+      else if (types[i]==KDL::BasicJointType::TransJoint) 
         artificial_lower_limits[i] = lb[i];
       else
         artificial_lower_limits[i] = std::max(lb[i],best_x[i]-2*M_PI);
-
+    
     opt.set_lower_bounds(artificial_lower_limits);
 
     std::vector<double> artificial_upper_limits(lb.size());
 
     for (uint i=0; i< ub.size(); i++)
-      if (types[i]==KDL::BasicJointType::TransJoint) 
+      if (types[i]==KDL::BasicJointType::Continuous) 
+        artificial_upper_limits[i] = best_x[i]+2*M_PI;
+      else if (types[i]==KDL::BasicJointType::TransJoint) 
         artificial_upper_limits[i] = ub[i];
       else
         artificial_upper_limits[i] = std::min(ub[i],best_x[i]+2*M_PI);
     
     opt.set_upper_bounds(artificial_upper_limits);
-
+    
     if (q_desired.data.size()==0) {
       des=x;
     }
