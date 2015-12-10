@@ -39,13 +39,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 namespace NLOPT_IK {
-
-  // No need to search over all real values for continuous joints -- Too large
-  // of a range (FLT_MAX) was deterimental.  But too small a range +/- M_PI
-  // was also deterimental.  experiments showed +/- SEARCH_MAX value worked
-  // well.
-#define SEARCH_MAX 1000.0
-  
   
   dual_quaternion targetDQ;
 
@@ -224,21 +217,12 @@ namespace NLOPT_IK {
     }
 
     for (uint i=0; i<chain.getNrOfJoints(); i++) {
-      if (types[i]==KDL::BasicJointType::RotJoint) {
-        lb.push_back(std::max(-SEARCH_MAX,_q_min(i))); 
-        ub.push_back(std::min(SEARCH_MAX,_q_max(i)));
-      }
-      else  {
-        lb.push_back(_q_min(i)); 
-        ub.push_back(_q_max(i));
-      }
+      lb.push_back(_q_min(i)); 
+      ub.push_back(_q_max(i));
     }
      
     assert(types.size()==lb.size());
-
-    opt.set_lower_bounds(lb);
-    opt.set_upper_bounds(ub);
-    
+   
     std::vector<double> tolerance(1,boost::math::tools::epsilon<float>());
     opt.set_xtol_abs(tolerance[0]);
 
@@ -564,6 +548,26 @@ namespace NLOPT_IK {
     best_x=x;
     progress = -3;
 
+    std::vector<double> artificial_lower_limits(lb.size());
+
+    for (uint i=0; i< lb.size(); i++)
+      if (types[i]==KDL::BasicJointType::TransJoint) 
+        artificial_lower_limits[i] = lb[i];
+      else
+        artificial_lower_limits[i] = std::max(lb[i],best_x[i]-2*M_PI);
+
+    opt.set_lower_bounds(artificial_lower_limits);
+
+    std::vector<double> artificial_upper_limits(lb.size());
+
+    for (uint i=0; i< ub.size(); i++)
+      if (types[i]==KDL::BasicJointType::TransJoint) 
+        artificial_upper_limits[i] = ub[i];
+      else
+        artificial_upper_limits[i] = std::min(ub[i],best_x[i]+2*M_PI);
+    
+    opt.set_upper_bounds(artificial_upper_limits);
+
     if (q_desired.data.size()==0) {
       des=x;
     }
@@ -592,7 +596,7 @@ namespace NLOPT_IK {
       while (time_left > 0 && !aborted && progress < 0) {
 
         for (uint i=0; i< x.size(); i++)
-          x[i]=fRand(lb[i], ub[i]);
+          x[i]=fRand(artificial_lower_limits[i], artificial_upper_limits[i]);
 
         opt.set_maxtime(time_left);
 	

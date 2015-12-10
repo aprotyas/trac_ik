@@ -80,10 +80,10 @@ namespace TRAC_IK {
   void TRAC_IK::remove_duplicate_solutions() {
     std::vector<KDL::JntArray> subset;
 
-    for (uint i=0; i < solutions.size(); i++)
+    for (uint i=0; i < solutions.size(); i++) {
       if (unique_vector(solutions[i],subset))
         subset.push_back(solutions[i]);
-
+    }
     solutions=subset;
   }
 
@@ -124,7 +124,7 @@ namespace TRAC_IK {
       
       iksolver.setMaxtime(time_left);
 
-      int kdlRC = iksolver.CartToJnt(q_init,p_in,q_out,bounds);
+      int kdlRC = iksolver.CartToJnt(seed,p_in,q_out,bounds);
       if (kdlRC >=0) {
         mtx_.lock();
         solutions.push_back(q_out);
@@ -164,7 +164,7 @@ namespace TRAC_IK {
      
       nl_solver.setMaxtime(time_left);
 
-      int nloptRC = nl_solver.CartToJnt(q_init,p_in,q_out,bounds);
+      int nloptRC = nl_solver.CartToJnt(seed,p_in,q_out,bounds);
       if (nloptRC >=0) {
         mtx_.lock();
         solutions.push_back(q_out);
@@ -185,8 +185,9 @@ namespace TRAC_IK {
     return true;
   }
 
-  bool TRAC_IK::reeval(const KDL::JntArray& seed, KDL::JntArray& solution) {
-
+  void TRAC_IK::normalize(const KDL::JntArray& seed, KDL::JntArray& solution) {
+    // Make sure rotational joint values are within 1 revolution of seed; then
+    // ensure joint limits are met.
    
     bool improved = false;
 
@@ -226,16 +227,56 @@ namespace TRAC_IK {
         val = lb[i] - diffangle + 2*M_PI;
       }
 
-      //      if (std::abs(val-solution(i)) > 0.1) {
-      //        improved = true;
-        solution(i) = val;
-        //      }
-    }
-    
-    return true;
-    //    return improved;
-    
+      solution(i) = val;
+    }   
   }
+
+  void TRAC_IK::normalize(KDL::JntArray& solution) {
+    // Make sure rotational joint values are within 1 revolution of middle of
+    // limits; then ensure joint limits are met.
+   
+    bool improved = false;
+
+    for (uint i=0; i<lb.size(); i++) {
+      
+      if (types[i]==KDL::BasicJointType::TransJoint)
+        continue;
+
+      double target = (ub[i]+lb[i])/2.0;
+      double val = solution(i);
+      
+      if (val > target+M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(val-target,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target + diffangle - 2*M_PI;
+      }
+
+      if (val < target-M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(target-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target - diffangle + 2*M_PI;
+      }
+
+      if (val > ub[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(val-ub[i],2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = ub[i] + diffangle - 2*M_PI;
+      }
+
+      if (val < lb[i]) {
+        //Find actual angle offset
+        double diffangle = fmod(lb[i]-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = lb[i] - diffangle + 2*M_PI;
+      }
+
+      solution(i) = val;
+    }   
+  }
+
 
   double TRAC_IK::manipPenalty(const KDL::JntArray& arr) {
     double penalty = 1.0;
@@ -317,31 +358,40 @@ namespace TRAC_IK {
       return -3;
     }
 
-    for (uint i=0; i<solutions.size(); i++)
-      reeval(q_init,solutions[i]);
-
-    remove_duplicate_solutions();
-
     std::vector<std::pair<double,uint> >  errors;
 
 
-    double minerr = FLT_MAX;
     for (uint i=0; i<solutions.size(); i++)  {
 
       double err;
       double penalty;
-      
+     
       switch (solvetype) {
       case Manip1:
+        for (uint i=0; i<solutions.size(); i++)
+          normalize(solutions[i]);
+        
+        remove_duplicate_solutions();
+
         penalty = manipPenalty(solutions[i]);
         err = penalty*TRAC_IK::ManipValue1(solutions[i]);
         break;
       case Manip2:
+        for (uint i=0; i<solutions.size(); i++)
+          normalize(solutions[i]);
+        
+        remove_duplicate_solutions();
+
         penalty = manipPenalty(solutions[i]);
         err = penalty*TRAC_IK::ManipValue2(solutions[i]);
         break;
       case Speed: // Distance and Speed just minimize distance
       case Distance:
+        for (uint i=0; i<solutions.size(); i++)
+          normalize(q_init,solutions[i]);
+        
+        remove_duplicate_solutions();
+
         err = TRAC_IK::JointErr(q_init,solutions[i]);
       }
       
@@ -367,15 +417,15 @@ namespace TRAC_IK {
   
 
   TRAC_IK::~TRAC_IK(){
-      // Force all threads to return from io_service::run().
-      io_service.stop();
+    // Force all threads to return from io_service::run().
+    io_service.stop();
       
-      // Suppress all exceptions.
-      try
-        {
-          threads.join_all();
-        }
-      catch ( ... ) {}      
+    // Suppress all exceptions.
+    try
+      {
+        threads.join_all();
+      }
+    catch ( ... ) {}      
 
   }
 

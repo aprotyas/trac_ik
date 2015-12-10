@@ -309,7 +309,12 @@ namespace trac_ik_kinematics_plugin
 
     node_handle.param(group_name+"/position_only_ik", position_ik_, false);
 
+    ROS_INFO_NAMED("trac-ik plugin","Looking in private handle: %s for param name: %s",
+                    node_handle.getNamespace().c_str(),
+                    (group_name+"/solve_type").c_str());
+
     node_handle.param(group_name+"/solve_type", solve_type, std::string("Speed"));
+    ROS_INFO_NAMED("trac_ik plugin","Using solve type %s",solve_type.c_str());
 
     active_ = true;
     return true;
