@@ -34,6 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
 #include <ros/ros.h>
+#include <cfloat>
 
 namespace TRAC_IK {
 
