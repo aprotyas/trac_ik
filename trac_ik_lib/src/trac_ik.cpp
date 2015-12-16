@@ -34,7 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
 #include <ros/ros.h>
-#include <cfloat>
+#include <limits>
 
 namespace TRAC_IK {
 
@@ -150,7 +150,7 @@ namespace TRAC_IK {
       
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
-          seed(j)=fRand(-FLT_MAX, FLT_MAX);
+          seed(j)=fRand(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         else
           seed(j)=fRand(lb[j], ub[j]);
     }
@@ -222,7 +222,7 @@ namespace TRAC_IK {
       
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
-          seed(j)=fRand(-FLT_MAX, FLT_MAX);
+          seed(j)=fRand(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
         else
           seed(j)=fRand(lb[j], ub[j]);
     }

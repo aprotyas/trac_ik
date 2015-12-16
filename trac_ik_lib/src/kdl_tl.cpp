@@ -31,7 +31,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/kdl_tl.hpp>
 #include <boost/date_time.hpp>
 #include <ros/ros.h>
-#include <cfloat>
+#include <limits>
 
 namespace KDL
 {
@@ -154,7 +154,7 @@ namespace KDL
         if (rr) {
           for (unsigned int j=0; j<q_out.data.size(); j++) 
             if (types[j]==KDL::BasicJointType::Continuous)
-              q_curr(j)=fRand(-FLT_MAX,FLT_MAX);
+              q_curr(j)=fRand(-std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
             else
               q_curr(j)=fRand(q_min(j),q_max(j));
         }
