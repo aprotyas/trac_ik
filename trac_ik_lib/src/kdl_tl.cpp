@@ -31,6 +31,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/kdl_tl.hpp>
 #include <boost/date_time.hpp>
 #include <ros/ros.h>
+#include <cfloat>
 
 namespace KDL
 {
