@@ -20,6 +20,7 @@
 
   <run_depend>trac_ik_lib</run_depend>
   <run_depend>trac_ik_kinematics_plugin</run_depend>
+  <run_depend>trac_ik_trajectories</run_depend>
 
   <export>
     <metapackage/>
