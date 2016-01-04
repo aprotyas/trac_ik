@@ -303,7 +303,7 @@ namespace NLOPT_IK {
       return;
     }
 
-    KDL::Twist delta_twist = KDL::diff(targetPose,currentPose);
+    KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
 
     if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
@@ -365,7 +365,7 @@ namespace NLOPT_IK {
       return;
     }
 
-    KDL::Twist delta_twist = KDL::diff(targetPose,currentPose);
+    KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
 
     if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
@@ -430,7 +430,7 @@ namespace NLOPT_IK {
 
 
 
-    KDL::Twist delta_twist = KDL::diff(targetPose,currentPose);
+    KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
     if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
       delta_twist.vel.x(0);

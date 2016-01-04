@@ -97,6 +97,23 @@ namespace KDL {
 
   };
 
+  /**
+   * determines the rotation axis necessary to rotate from frame b1 to the
+   * orientation of frame b2 and the vector necessary to translate the origin
+   * of b1 to the origin of b2, and stores the result in a Twist
+   * datastructure.  The result is w.r.t. frame b1.
+   * \param F_a_b1 frame b1 expressed with respect to some frame a.
+   * \param F_a_b2 frame b2 expressed with respect to some frame a.
+   * \warning The result is not a real Twist!
+   * \warning In contrast to standard KDL diff methods, the result of
+   * diffRelative is w.r.t. frame b1 instead of frame a.
+   */
+  IMETHOD Twist diffRelative(const Frame & F_a_b1, const Frame & F_a_b2, double dt = 1)
+  {
+      return Twist(F_a_b1.M.Inverse() * diff(F_a_b1.p, F_a_b2.p, dt),
+                   F_a_b1.M.Inverse() * diff(F_a_b1.M, F_a_b2.M, dt));
+  }
+
 }
 
 #endif

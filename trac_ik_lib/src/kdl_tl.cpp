@@ -78,7 +78,7 @@ namespace KDL
 
     do {
       fksolver.JntToCart(q_out,f);
-      delta_twist = diff(f,p_in);
+      delta_twist = diffRelative(p_in, f);
         
       if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
         delta_twist.vel.x(0);
