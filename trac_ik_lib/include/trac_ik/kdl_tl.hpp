@@ -114,6 +114,13 @@ namespace KDL {
                    F_a_b1.M.Inverse() * diff(F_a_b1.M, F_a_b2.M, dt));
   }
 
+  IMETHOD Twist diffAbsolute(const Frame & F_a_b1, const Twist & Delta)
+  {
+    return Twist(F_a_b1.M * Delta.vel,
+                 F_a_b1.M * Delta.rot);
+  }
+
+
 }
 
 #endif

@@ -79,7 +79,7 @@ namespace KDL
     do {
       fksolver.JntToCart(q_out,f);
       delta_twist = diffRelative(p_in, f);
-        
+
       if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
         delta_twist.vel.x(0);
       
@@ -98,11 +98,11 @@ namespace KDL
       if (std::abs(delta_twist.rot.z()) <= std::abs(bounds.rot.z()))
         delta_twist.rot.z(0);
 
-
       if(Equal(delta_twist,Twist::Zero(),eps))
         return 1;
-        
-      
+
+      delta_twist = diffAbsolute(p_in, -delta_twist);
+
       vik_solver.CartToJnt(q_out,delta_twist,delta_q);
       KDL::JntArray q_curr;
       
