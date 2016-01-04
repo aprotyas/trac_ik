@@ -450,9 +450,6 @@ namespace NLOPT_IK {
     if (std::abs(delta_twist.rot.z()) <= std::abs(bounds.rot.z()))
       delta_twist.rot.z(0);
 
-    currentPose = addDelta(targetPose,delta_twist,1);
-
-
     math3d::matrix3x3<double> currentRotationMatrix(currentPose.M.data); 
     math3d::quaternion<double> currentQuaternion = math3d::rot_matrix_to_quaternion<double>(currentRotationMatrix);
     math3d::point3d currentTranslation (currentPose.p.data);
