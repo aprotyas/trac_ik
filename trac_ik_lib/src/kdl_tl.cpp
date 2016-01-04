@@ -75,7 +75,6 @@ namespace KDL
            
     double time_left;
 
-
     do {
       fksolver.JntToCart(q_out,f);
       delta_twist = diffRelative(p_in, f);
@@ -154,10 +153,11 @@ namespace KDL
         if (rr) {
           for (unsigned int j=0; j<q_out.data.size(); j++) 
             if (types[j]==KDL::BasicJointType::Continuous)
-              q_curr(j)=fRand(-std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
+              q_curr(j)=fRand(q_curr(j)-2*M_PI,q_curr(j)+2*M_PI);
             else
               q_curr(j)=fRand(q_min(j),q_max(j));
         }
+
         // Below would be an optimization to the normal KDL, where when it
         // gets stuck, it returns immediately.  Don't use to compare KDL with
         // random restarts or TRAC-IK to plain KDL.

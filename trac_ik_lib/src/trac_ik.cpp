@@ -150,7 +150,7 @@ namespace TRAC_IK {
       
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
-          seed(j)=fRand(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+          seed(j)=fRand(q_init(j)-2*M_PI, q_init(j)+2*M_PI);
         else
           seed(j)=fRand(lb[j], ub[j]);
     }
@@ -222,7 +222,7 @@ namespace TRAC_IK {
       
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
-          seed(j)=fRand(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+          seed(j)=fRand(q_init(j)-2*M_PI, q_init(j)+2*M_PI);
         else
           seed(j)=fRand(lb[j], ub[j]);
     }
