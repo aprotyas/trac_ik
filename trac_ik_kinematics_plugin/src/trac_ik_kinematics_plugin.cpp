@@ -244,8 +244,8 @@ namespace trac_ik_kinematics_plugin
                   {
                     if(joint->safety)
                       {
-                        lower = joint->safety->soft_lower_limit;
-                        upper = joint->safety->soft_upper_limit;
+                        lower = std::max(joint->limits->lower, joint->safety->soft_lower_limit);
+                        upper = std::min(joint->limits->upper, joint->safety->soft_upper_limit);
                       } else {
                       lower = joint->limits->lower;
                       upper = joint->limits->upper;
