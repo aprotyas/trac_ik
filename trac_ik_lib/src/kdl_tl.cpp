@@ -101,7 +101,7 @@ namespace KDL
       if(Equal(delta_twist,Twist::Zero(),eps))
         return 1;
 
-      delta_twist = diffAbsolute(p_in, -delta_twist);
+      delta_twist = diff(f, p_in);
 
       vik_solver.CartToJnt(q_out,delta_twist,delta_q);
       KDL::JntArray q_curr;
