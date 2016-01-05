@@ -48,7 +48,9 @@ namespace KDL
     for (uint i=0; i<chain.segments.size(); i++) {
       std::string type = chain.segments[i].getJoint().getTypeName();
       if (type.find("Rot")!=std::string::npos) {
-        if (_q_max(types.size())==0 && _q_min(types.size())==0)
+        if ((_q_max(types.size())==0 && _q_min(types.size())==0) ||
+            (_q_max(types.size())>=std::numeric_limits<float>::max() && 
+             _q_min(types.size())<=-std::numeric_limits<float>::max()))
           types.push_back(KDL::BasicJointType::Continuous);
         else types.push_back(KDL::BasicJointType::RotJoint);
       }
