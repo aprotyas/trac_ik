@@ -15,7 +15,7 @@ KDL::ChainFkSolverPos_recursive fk_solver(chain);
 KDL::ChainIkSolverVel_pinv vik_solver(chain);
 KDL::ChainJntToJacSolver jac_solver(chain);
 
-KDL::ChainIkSolverPos_NR_JL ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, fk_solver, vik_solver, int num_iterations, double error);
+KDL::ChainIkSolverPos_NR_JL ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, fk_solver, vik_solver, int num_iterations, double error);
 
 int rc = ik_solver.CartToJnt(KDL::JntArray joint_seed, KDL::Frame desired_end_effector_pose, KDL::JntArray& return_joints);
 
@@ -32,7 +32,7 @@ TRAC-IK:
 ```c++
 #include <trac_ik/trac_ik.hpp>
 
-TRAC_IK::TRAC_IK ik_solver(KDL::Frame chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
+TRAC_IK::TRAC_IK ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
 
 % NOTE: The last argument to the constructor is optional, and can be one of the following: 
 % Speed: returns very quickly the first solution found
