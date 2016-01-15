@@ -47,6 +47,8 @@ namespace TRAC_IK {
   public:
     TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
 
+    TRAC_IK(const std::string& base_frame, const std::string& tip_frame, const std::string& robot_description, double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
+
     ~TRAC_IK();
 
     static double JointErr(const KDL::JntArray& arr1, const KDL::JntArray& arr2) {
@@ -60,15 +62,20 @@ namespace TRAC_IK {
 
     int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds=KDL::Twist::Zero());
 
+    inline void SetSolveType(SolveType _type) {
+      solvetype = _type;
+    }
+
   private:
     KDL::Chain chain;
-    KDL::ChainJntToJacSolver jacsolver;
+    KDL::JntArray lb, ub;
+    boost::scoped_ptr<KDL::ChainJntToJacSolver> jacsolver;
     double eps;
     double maxtime;
     SolveType solvetype;
 
-    NLOPT_IK::NLOPT_IK nl_solver;
-    KDL::ChainIkSolverPos_TL iksolver;
+    boost::scoped_ptr<NLOPT_IK::NLOPT_IK> nl_solver;
+    boost::scoped_ptr<KDL::ChainIkSolverPos_TL> iksolver;
 
     boost::posix_time::ptime start_time;
 
@@ -80,7 +87,6 @@ namespace TRAC_IK {
     void normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution);
     void normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution);
 
-    std::vector<double> lb, ub;
   
     std::vector<KDL::BasicJointType> types;
 
@@ -102,15 +108,20 @@ namespace TRAC_IK {
       return min + f * (max - min);
     }
 
-    double manipPenalty(const KDL::JntArray&);
-    double ManipValue1(const KDL::JntArray&);
+    /* @brief Manipulation metrics and penalties taken from "Workspace
+    Geometric Characterization and Manipulability of Industrial Robots",
+    Ming-June, Tsia, PhD Thesis, Ohio State University, 1986. 
+    https://etd.ohiolink.edu/!etd.send_file?accession=osu1260297835
+    */
+    double manipPenalty(const KDL::JntArray&); 
+    double ManipValue1(const KDL::JntArray&); 
     double ManipValue2(const KDL::JntArray&);
 
     inline bool myEqual(const KDL::JntArray& a, const KDL::JntArray& b) {
       return (a.data-b.data).isZero(1e-4);
     }
 
-
+    void initialize();
 
   };
 
