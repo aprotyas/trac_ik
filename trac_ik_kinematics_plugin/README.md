@@ -8,7 +8,7 @@ solver with the TRAC-IK solver.  To use:
 (or similar) with
 ```kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin```
 - Set parameters as desired:
-    - _kinematics\_solver\_timeout_ and _position\_only\_ik_ **ARE** supported.
+    - _kinematics\_solver\_timeout_ (timeout in seconds, e.g., 0.005) and _position\_only\_ik_ **ARE** supported.
     - _solve\_type_ can be Speed, Distance, Manipulation1, Manipulation2 (see trac\_ik\_lib documentation for details).  Default is Speed.
     - _kinematics\_solver\_attempts_ parameter is unneeded: unlike KDL, TRAC-IK solver already restarts when it gets stuck
     - _kinematics\_solver\_search\_resolution_ is not applicable here.

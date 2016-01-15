@@ -21,10 +21,9 @@ int rc = ik_solver.CartToJnt(KDL::JntArray joint_seed, KDL::Frame desired_end_ef
 
 % NOTE: CartToJnt succeeded if rc >=0
 
-% NOTE: to set a timeout in ms, the iterations can be set to 1, and this
-% can be called in a loop without seeing any real penalty in runtime.
+% NOTE: to use a timeout in seconds (e.g., 0.005), the iterations can be set to 1, and this can be called in a loop with your own timer.
 
-% NOTE: error == 1e-3 is acceptable for most purposes
+% NOTE: error == 1e-5 is acceptable for most purposes
 ```
 
 TRAC-IK:
@@ -32,11 +31,11 @@ TRAC-IK:
 ```c++
 #include <trac_ik/trac_ik.hpp>
 
-TRAC_IK::TRAC_IK ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_ms, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
+TRAC_IK::TRAC_IK ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_secs, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
 
 % NOTE: The last argument to the constructor is optional, and can be one of the following: 
 % Speed: returns very quickly the first solution found
-% Distance: runs for the full timeout_in_ms, then returns the solution that minimizes SSE from the seed
+% Distance: runs for the full timeout_in_secs, then returns the solution that minimizes SSE from the seed
 % Manip1: runs for full timeout, returns solution that maximizes sqrt(det(J*J^T))
 % Manip2: runs for full timeout, returns solution that minimizes cond(J) = |J|*|J^-1|
 
