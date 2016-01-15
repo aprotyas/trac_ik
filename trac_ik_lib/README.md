@@ -31,9 +31,14 @@ TRAC-IK:
 ```c++
 #include <trac_ik/trac_ik.hpp>
 
-TRAC_IK::TRAC_IK ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_secs, double error, TRAC_IK::SolveType type=TRAC_IK::Speed);  
+TRAC_IK::TRAC_IK ik_solver(KDL::Chain chain, KDL::JntArray lower_joint_limits, KDL::JntArray upper_joint_limits, double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);  
 
-% NOTE: The last argument to the constructor is optional, and can be one of the following: 
+% OR
+
+TRAC_IK::TRAC_IK ik_solver(string base_link, string tip_link, string URDF_param="/robot_description", double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);  
+
+% NOTE: The last arguments to the constructors are optional.
+% The type can be one of the following: 
 % Speed: returns very quickly the first solution found
 % Distance: runs for the full timeout_in_secs, then returns the solution that minimizes SSE from the seed
 % Manip1: runs for full timeout, returns solution that maximizes sqrt(det(J*J^T))

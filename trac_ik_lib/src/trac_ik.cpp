@@ -40,7 +40,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace TRAC_IK {
 
-  TRAC_IK::TRAC_IK(const std::string& base_frame, const std::string& tip_frame, const std::string& robot_description, double _maxtime, double _eps, SolveType _type ) :
+  TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param, double _maxtime, double _eps, SolveType _type ) :
     eps(_eps),
     maxtime(_maxtime),
     solvetype(_type),
@@ -53,7 +53,7 @@ namespace TRAC_IK {
     std::string xml_string;
 
     std::string urdf_xml,full_urdf_xml;
-    node_handle.param("urdf_xml",urdf_xml,robot_description);
+    node_handle.param("urdf_xml",urdf_xml,URDF_param);
     node_handle.searchParam(urdf_xml,full_urdf_xml);
     
     ROS_DEBUG_NAMED("trac_ik","Reading xml file from parameter server");
@@ -68,10 +68,10 @@ namespace TRAC_IK {
     
     ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");
     
-    boost::shared_ptr<urdf::Link> link = boost::const_pointer_cast<urdf::Link>(robot_model.getLink(tip_frame));
+    boost::shared_ptr<urdf::Link> link = boost::const_pointer_cast<urdf::Link>(robot_model.getLink(tip_link));
 
     std::vector<double> l_bounds, u_bounds;
-    while(link->name != base_frame)
+    while(link->name != base_link)
       {
         ROS_DEBUG_NAMED("trac_ik","Link %s",link->name.c_str());
         boost::shared_ptr<urdf::Joint> joint = link->parent_joint;
@@ -128,8 +128,8 @@ namespace TRAC_IK {
     if (!kdl_parser::treeFromUrdfModel(robot_model, tree))
       ROS_FATAL("Failed to extract kdl tree from xml robot description");
 
-    if(!tree.getChain(base_frame, tip_frame, chain))
-      ROS_FATAL("Couldn't find chain %s to %s",base_frame.c_str(),tip_frame.c_str());
+    if(!tree.getChain(base_link, tip_link, chain))
+      ROS_FATAL("Couldn't find chain %s to %s",base_link.c_str(),tip_link.c_str());
 
     initialize();
   }
