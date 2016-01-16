@@ -1,6 +1,36 @@
 Change history
 ==============
 
+1.4.0 (2016-01-16)
+------------------
+
+ * Added example program for using TRAC-IK.
+ * Added ability to get KDL chain structures from TRAC-IK class.
+
+1.3.9 (2016-01-16)
+------------------
+
+ * Added new TRAC-IK constructor that takes URDF location, base link, and tip link, instead of KDL structures.
+ * Some README fixes based on user comments
+
+1.3.8 (2016-01-04)
+------------------
+
+ * Fixed how continuous joints are handled in random restarts
+
+1.3.7 (2016-01-04)
+------------------
+
+ * Fixed bug introduced in 1.3.6 where tip frame was being used for Inverse Jacobian, which was never converging.
+
+1.3.6 (2016-01-04)
+------------------
+
+ * Fixed tolerances to be in tip frame, not base frame.
+ * Fixed Hydro compile issue
+ * Changed to std::numeric_limits for +/-FLT_MAX and epsilons
+ * Fixed potential error with URDF soft limits
+
 1.3.5 (2015-12-08)
 ------------------
 

@@ -9,7 +9,7 @@ Redistribution and use in source and binary forms, with or without modification,
        this list of conditions and the following disclaimer.
 
     2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation 
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
 
     3. Neither the name of the copyright holder nor the names of its contributors
@@ -51,6 +51,18 @@ namespace TRAC_IK {
 
     ~TRAC_IK();
 
+    bool getKDLChain(KDL::Chain& chain_) {
+      chain_=chain;
+      return initialized;
+    }
+
+    bool getKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_) {
+      lb_=lb;
+      ub_=ub;
+      return initialized;
+    }
+
+
     static double JointErr(const KDL::JntArray& arr1, const KDL::JntArray& arr2) {
       double err = 0;
       for (uint i=0; i<arr1.data.size(); i++) {
@@ -67,6 +79,7 @@ namespace TRAC_IK {
     }
 
   private:
+    bool initialized;
     KDL::Chain chain;
     KDL::JntArray lb, ub;
     boost::scoped_ptr<KDL::ChainJntToJacSolver> jacsolver;

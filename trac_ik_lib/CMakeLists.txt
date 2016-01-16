@@ -5,7 +5,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS roscpp eigen_conversions)
+find_package(catkin REQUIRED COMPONENTS roscpp eigen_conversions kdl_parser)
 
 catkin_package(
   INCLUDE_DIRS include

@@ -41,6 +41,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace TRAC_IK {
 
   TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param, double _maxtime, double _eps, SolveType _type ) :
+    initialized(false),
     eps(_eps),
     maxtime(_maxtime),
     solvetype(_type),
@@ -136,6 +137,7 @@ namespace TRAC_IK {
 
 
   TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, SolveType _type):
+    initialized(false),
     chain(_chain),
     lb(_q_min),
     ub(_q_max),
@@ -180,6 +182,7 @@ namespace TRAC_IK {
     threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                       &io_service));
 
+    initialized = true;
   }
 
   bool TRAC_IK::unique_solution(const KDL::JntArray& sol) {
@@ -484,8 +487,11 @@ namespace TRAC_IK {
 
   int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& _bounds) {
 
-    static uint calls =0;
-    static uint inconsistent =0;
+    if (!initialized) {
+      ROS_ERROR("TRAC-IK was not properly initialized with a valid chain or limits.  IK cannot proceed");
+      return -1;
+    }
+
 
     start_time = boost::posix_time::microsec_clock::local_time();
 
