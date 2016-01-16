@@ -265,7 +265,7 @@ namespace trac_ik_kinematics_plugin
                 else
                   {
                     joint_has_limits_vector_.push_back(false);
-                    joint_min_vector_.push_back(-std::numeric_limits<float>::max());
+                    joint_min_vector_.push_back(std::numeric_limits<float>::lowest());
                     joint_max_vector_.push_back(std::numeric_limits<float>::max());
                   }
               }

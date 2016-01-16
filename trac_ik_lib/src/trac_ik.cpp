@@ -163,9 +163,8 @@ namespace TRAC_IK {
     for (uint i=0; i<chain.segments.size(); i++) {
       std::string type = chain.segments[i].getJoint().getTypeName();
       if (type.find("Rot")!=std::string::npos) {
-        if ((ub(types.size())==0 && lb(types.size())==0) ||
-            (ub(types.size())>=std::numeric_limits<float>::max() && 
-             lb(types.size())<=std::numeric_limits<float>::lowest()))
+        if (ub(types.size())>=std::numeric_limits<float>::max() && 
+            lb(types.size())<=std::numeric_limits<float>::lowest())
           types.push_back(KDL::BasicJointType::Continuous);
         else
           types.push_back(KDL::BasicJointType::RotJoint);
