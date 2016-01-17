@@ -130,7 +130,7 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
       ROS_INFO_STREAM_THROTTLE(1,int((i)/num_samples*100)<<"\% done");
   }
 
-  ROS_INFO_STREAM("KDL found "<<success<<" solutions ("<<100.0*success/num_samples<<"\% in an average of "<<total_time/num_samples<<" secs per sample");
+  ROS_INFO_STREAM("KDL found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "<<total_time/num_samples<<" secs per sample");
 
 
   total_time=0;
@@ -153,7 +153,7 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
       ROS_INFO_STREAM_THROTTLE(1,int((i)/num_samples*100)<<"\% done");
   }
 
-  ROS_INFO_STREAM("TRAC-IK found "<<success<<" solutions ("<<100.0*success/num_samples<<"\% in an average of "<<total_time/num_samples<<" secs per sample");
+  ROS_INFO_STREAM("TRAC-IK found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "<<total_time/num_samples<<" secs per sample");
 
 
 
