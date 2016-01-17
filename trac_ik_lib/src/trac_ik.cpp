@@ -68,62 +68,7 @@ namespace TRAC_IK {
     robot_model.initString(xml_string);
     
     ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");
-    
-    boost::shared_ptr<urdf::Link> link = boost::const_pointer_cast<urdf::Link>(robot_model.getLink(tip_link));
 
-    std::vector<double> l_bounds, u_bounds;
-    while(link->name != base_link)
-      {
-        ROS_DEBUG_NAMED("trac_ik","Link %s",link->name.c_str());
-        boost::shared_ptr<urdf::Joint> joint = link->parent_joint;
-        if(joint) {
-          if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
-              
-            ROS_DEBUG_STREAM_NAMED("trac_ik","Adding joint " << joint->name );
-            
-            float lower, upper;
-            int hasLimits;
-            if ( joint->type != urdf::Joint::CONTINUOUS ) {
-              if(joint->safety) {
-                lower = std::max(joint->limits->lower, joint->safety->soft_lower_limit);
-                upper = std::min(joint->limits->upper, joint->safety->soft_upper_limit);
-              } else {
-                lower = joint->limits->lower;
-                upper = joint->limits->upper;
-              }
-              hasLimits = 1;
-            }
-            else {
-              hasLimits = 0;
-            }
-            if(hasLimits) {
-              l_bounds.push_back(lower);
-              u_bounds.push_back(upper);
-            }
-            else {
-              l_bounds.push_back(std::numeric_limits<float>::lowest());
-              u_bounds.push_back(std::numeric_limits<float>::max());
-            }
-          }
-        } else {
-          ROS_WARN_NAMED("trac_ik","no joint corresponding to %s",link->name.c_str());
-        }
-        link = link->getParent();
-      }
-    
-    uint num_joints_ = l_bounds.size();
-    
-    std::reverse(l_bounds.begin(),l_bounds.end());
-    std::reverse(u_bounds.begin(),u_bounds.end());
-    
-    lb.resize(num_joints_);
-    ub.resize(num_joints_);
-
-    for(uint i=0; i <num_joints_; ++i) {
-      lb(i)=l_bounds[i];
-      ub(i)=u_bounds[i];
-    }
-    
     KDL::Tree tree;
     
     if (!kdl_parser::treeFromUrdfModel(robot_model, tree))
@@ -132,6 +77,48 @@ namespace TRAC_IK {
     if(!tree.getChain(base_link, tip_link, chain))
       ROS_FATAL("Couldn't find chain %s to %s",base_link.c_str(),tip_link.c_str());
 
+    std::vector<KDL::Segment> chain_segs = chain.segments;
+
+    boost::shared_ptr<const urdf::Joint> joint;
+
+    std::vector<double> l_bounds, u_bounds;
+
+    lb.resize(chain.getNrOfJoints());
+    ub.resize(chain.getNrOfJoints());
+
+    uint joint_num=0;
+    for(unsigned int i = 0; i < chain_segs.size(); ++i) {
+      ROS_INFO_STREAM("Link "<<chain_segs[i].getName());
+      joint = robot_model.getJoint(chain_segs[i].getJoint().getName());
+      if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
+        joint_num++;
+        float lower, upper;
+        int hasLimits;
+        if ( joint->type != urdf::Joint::CONTINUOUS ) {
+          if(joint->safety) {
+            lower = std::max(joint->limits->lower, joint->safety->soft_lower_limit);
+            upper = std::min(joint->limits->upper, joint->safety->soft_upper_limit);
+          } else {
+            lower = joint->limits->lower;
+            upper = joint->limits->upper;
+          }
+          hasLimits = 1;
+        }
+        else {
+          hasLimits = 0;
+        }
+        if(hasLimits) {
+          lb(joint_num-1)=lower;
+          ub(joint_num-1)=upper;
+        }
+        else {
+          lb(joint_num-1)=std::numeric_limits<float>::lowest();
+          ub(joint_num-1)=std::numeric_limits<float>::max();
+        }
+        ROS_INFO_STREAM("IK Using joint "<<joint->name<<" "<<lb(joint_num-1)<<" "<<ub(joint_num-1));
+      }
+    }
+    
     initialize();
   }
 
