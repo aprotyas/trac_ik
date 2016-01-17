@@ -1,6 +1,12 @@
 Change history
 ==============
 
+1.4.1 (2016-01-16)
+------------------
+
+ * Fixed weird parsing issue with certain URDFs.
+
+
 1.4.0 (2016-01-16)
 ------------------
 
