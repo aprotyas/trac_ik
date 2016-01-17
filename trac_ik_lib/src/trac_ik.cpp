@@ -88,7 +88,6 @@ namespace TRAC_IK {
 
     uint joint_num=0;
     for(unsigned int i = 0; i < chain_segs.size(); ++i) {
-      ROS_INFO_STREAM("Link "<<chain_segs[i].getName());
       joint = robot_model.getJoint(chain_segs[i].getJoint().getName());
       if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
         joint_num++;
