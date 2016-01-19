@@ -242,8 +242,8 @@ namespace trac_ik_kinematics_plugin
 
     std::vector<double> l_bounds, u_bounds;
 
-    joint_min.resize(chain.getNrOfJoints());
-    joint_max.resize(chain.getNrOfJoints());
+    joint_min.resize(num_joints_);
+    joint_max.resize(num_joints_);
 
     uint joint_num=0;
     for(unsigned int i = 0; i < chain_segs.size(); ++i) {
@@ -252,7 +252,7 @@ namespace trac_ik_kinematics_plugin
       joint = robot_model.getJoint(chain_segs[i].getJoint().getName());
       if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
         joint_num++;
-        assert(joint_num<=num_joints);
+        assert(joint_num<=num_joints_);
         float lower, upper;
         int hasLimits;
         joint_names_.push_back(joint->name);
