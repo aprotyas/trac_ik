@@ -224,12 +224,18 @@ namespace trac_ik_kinematics_plugin
 
     KDL::Tree tree;
     
-    if (!kdl_parser::treeFromUrdfModel(robot_model, tree))
+    if (!kdl_parser::treeFromUrdfModel(robot_model, tree)) {
       ROS_FATAL("Failed to extract kdl tree from xml robot description");
+      return false;
+    }
 
-    if(!tree.getChain(base_name, tip_name, chain))
+    if(!tree.getChain(base_name, tip_name, chain)) {
       ROS_FATAL("Couldn't find chain %s to %s",base_name.c_str(),tip_name.c_str());
-
+      return false;
+    }
+    
+    num_joints_=chain.getNrOfJoints();
+    
     std::vector<KDL::Segment> chain_segs = chain.segments;
 
     boost::shared_ptr<const urdf::Joint> joint;
@@ -246,6 +252,7 @@ namespace trac_ik_kinematics_plugin
       joint = robot_model.getJoint(chain_segs[i].getJoint().getName());
       if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED) {
         joint_num++;
+        assert(joint_num<=num_joints);
         float lower, upper;
         int hasLimits;
         joint_names_.push_back(joint->name);
