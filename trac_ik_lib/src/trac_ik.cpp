@@ -388,7 +388,7 @@ namespace TRAC_IK {
 
       double target = seed(i);
 
-      if (types[i] == KDL::BasicJointType::RotJoint)
+      if (types[i] == KDL::BasicJointType::RotJoint && types[i]!=KDL::BasicJointType::Continuous)
         target = (ub(i)+lb(i))/2.0;
 
       double val = solution(i);
