@@ -6,11 +6,10 @@ platforms.  TRAC-IK concurrently runs two IK implementations.  One is a simple
 extension to KDL's Newton-based convergence algorithm that detects and
 mitigates local minima due to joint limits by random jumps.  The second is an
 SQP (Sequential Quadratic Programming) nonlinear optimization approach which
-uses quasi-Newton methods that better handle joint limits.  Currently, the IK
+uses quasi-Newton methods that better handle joint limits.  By default, the IK
 search returns immediately when either of these algorithms converges to an
-answer.  Future work plans to allow secondary constraints and sorting
-functions to be provided to the main TRAC-IK call in order to receive back the
-"best" IK solution.
+answer.  Secondary constraints of distance and manipulability are also provided 
+in order to receive back the "best" IK solution.
 
 ###This repo contains 4 ROS packages:###
 
