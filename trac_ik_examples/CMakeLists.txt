@@ -3,7 +3,11 @@ project(trac_ik_examples)
 
 find_package(catkin REQUIRED COMPONENTS trac_ik_lib eigen_conversions)
 
-catkin_package()
+catkin_package(
+  LIBRARIES
+  CATKIN_DEPENDS
+    trac_ik_lib
+)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
