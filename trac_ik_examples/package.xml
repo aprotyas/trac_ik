@@ -2,7 +2,7 @@
 <package>
   <name>trac_ik_examples</name>
   <version>1.4.1</version>
-  <description>    This package contains the source code for testing and comparing trac_ik</description>
+  <description> This package contains the source code for testing and comparing trac_ik</description>
 
   <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
 
@@ -14,6 +14,7 @@
   
   <run_depend>trac_ik_lib</run_depend>
   <run_depend>pr2_description</run_depend>
+  <run_depend>xacro</run_depend>
 
 
 </package>
