@@ -17,7 +17,7 @@ include_directories(
 add_executable(ik_tests src/ik_tests.cpp)
 target_link_libraries(ik_tests ${catkin_LIBRARIES})
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ik_tests
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
