@@ -23,7 +23,7 @@ add_library(trac_ik src/trac_ik.cpp src/nlopt_ik.cpp src/kdl_tl.cpp)
 
 target_link_libraries(trac_ik ${catkin_LIBRARIES} nlopt)
 
-install(DIRECTORY include/trac_ik/
+install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   PATTERN ".svn" EXCLUDE
 )
