@@ -36,6 +36,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <kdl/chainjnttojacsolver.hpp>
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
+#include <boost/scoped_ptr.hpp>
 
 
 namespace TRAC_IK {
