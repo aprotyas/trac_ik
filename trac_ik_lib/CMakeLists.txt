@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(trac_ik_lib)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCXX OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
     set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 endif()
 
@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp eigen_conversions kdl_parser)
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp
-  LIBRARIES trac_ik 
+  LIBRARIES trac_ik
 )
 
 include_directories(
@@ -28,7 +28,7 @@ install(DIRECTORY include/
   PATTERN ".svn" EXCLUDE
 )
 
-install(TARGETS trac_ik 
+install(TARGETS trac_ik
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
