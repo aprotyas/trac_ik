@@ -504,7 +504,12 @@ namespace trac_ik_kinematics_plugin
       solvetype = TRAC_IK::Manip2;
     else if (solve_type == "Distance")
       solvetype = TRAC_IK::Distance;
-    else solvetype = TRAC_IK::Speed;
+    else {
+        if (solve_type != "Speed") {
+            ROS_WARN_STREAM_NAMED("trac_ik", solve_type << " is not a valid solve_type; setting to default: Speed");
+        }
+        solvetype = TRAC_IK::Speed;
+    }
     
     TRAC_IK::TRAC_IK ik_solver(chain, joint_min, joint_max, timeout, epsilon, solvetype);
 
