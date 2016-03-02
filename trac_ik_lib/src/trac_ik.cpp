@@ -440,7 +440,7 @@ namespace TRAC_IK {
       double range = ub(i)-lb(i);
       penalty *= ((arr(i)-lb(i))*(ub(i)-arr(i))/(range*range));
     }
-    return (1.0 - exp(-1*penalty));
+    return std::max(0.0,1.0 - exp(-1*penalty));
   }
 
 
