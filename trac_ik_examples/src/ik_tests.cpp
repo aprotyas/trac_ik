@@ -189,14 +189,14 @@ int main(int argc, char** argv)
   test(nh, num_samples, chain_start, chain_end, timeout, urdf_param);
 
   // Useful when you make a script that loops over multiple launch files that test different robot chains
-  std::vector<char *> commandVector;
-  commandVector.push_back((char*)"killall");
-  commandVector.push_back((char*)"-9");
-  commandVector.push_back((char*)"roslaunch");
-  commandVector.push_back(NULL);  
+  // std::vector<char *> commandVector;
+  // commandVector.push_back((char*)"killall");
+  // commandVector.push_back((char*)"-9");
+  // commandVector.push_back((char*)"roslaunch");
+  // commandVector.push_back(NULL);  
 
-  char **command = &commandVector[0];
-  execvp(command[0],command);
+  // char **command = &commandVector[0];
+  // execvp(command[0],command);
 
   return 0;
 }
