@@ -5,27 +5,56 @@ if(CMAKE_COMPILER_IS_GNUCXX OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
     set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS roscpp eigen_conversions kdl_parser)
+find_package(catkin REQUIRED
+  COMPONENTS
+    cmake_modules
+    kdl_parser
+    roscpp
+    urdf
+)
+
+find_package(Eigen REQUIRED)
+find_package(Boost REQUIRED COMPONENTS date_time)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(pkg_nlopt REQUIRED nlopt)
+# TODO: resolve libraries to absolute paths
+
 
 catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp
-  LIBRARIES trac_ik
+  CATKIN_DEPENDS
+    kdl_parser
+    roscpp
+    urdf
+  DEPENDS
+    Boost
+    Eigen
+    # purposefully not including nlopt here, see earlier note
+  INCLUDE_DIRS
+    include
+  LIBRARIES
+    trac_ik
 )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${eigen_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${pkg_nlopt_INCLUDE_DIRS}
 )
 
-add_library(trac_ik src/trac_ik.cpp src/nlopt_ik.cpp src/kdl_tl.cpp)
-
-target_link_libraries(trac_ik ${catkin_LIBRARIES} nlopt)
+add_library(trac_ik
+  src/kdl_tl.cpp
+  src/nlopt_ik.cpp
+  src/trac_ik.cpp)
+target_link_libraries(trac_ik
+  ${catkin_LIBRARIES}
+  ${pkg_nlopt_LIBRARIES}
+  ${Boost_LIBRARIES})
 
 install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
-  PATTERN ".svn" EXCLUDE
 )
 
 install(TARGETS trac_ik
@@ -33,4 +62,3 @@ install(TARGETS trac_ik
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
