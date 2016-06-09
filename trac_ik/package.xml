@@ -1,5 +1,5 @@
+<?xml version="1.0"?>
 <package>
-
   <name>trac_ik</name>
   <version>1.4.1</version>
   <description>
@@ -13,17 +13,16 @@
   <author>Barrett Ames</author>
   <license>BSD</license>
 
-  <url type="website">http://www.ros.org/wiki/trac_ik</url>
+  <url type="website">http://wiki.ros.org/trac_ik</url>
   <url type="repository">https://bitbucket.org/traclabs/trac_ik</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>trac_ik_lib</run_depend>
-  <run_depend>trac_ik_kinematics_plugin</run_depend>
   <run_depend>trac_ik_examples</run_depend>
+  <run_depend>trac_ik_kinematics_plugin</run_depend>
+  <run_depend>trac_ik_lib</run_depend>
 
   <export>
     <metapackage/>
   </export>
-
 </package>
