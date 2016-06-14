@@ -1,3 +1,7 @@
+1.4.2 (2016-06-16)
+------------------
+* New revision for ROS Package release.  Thanks to Gijs van der Hoorn
+
 1.4.1 (2016-01-16)
 ------------------
 * Fixed weird parsing issue with certain URDFs.
