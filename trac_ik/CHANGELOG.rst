@@ -1,3 +1,7 @@
+1.4.3 (2016-06-16)
+------------------
+* trac_ik_kinematics_plugin and trac_ik_examples needed build depends on libnlopt-dev
+
 1.4.2 (2016-06-16)
 ------------------
 * New revision for ROS Package release.  Thanks to Gijs van der Hoorn
