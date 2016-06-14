@@ -13,7 +13,7 @@ in order to receive back the "best" IK solution.
 
 ###This repo contains 4 ROS packages:###
 
-- trac\_ik is a metapackage with build and [Changelog](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik/CHANGELOG.rst) info.
+- trac\_ik is a metapackage with build and complete [Changelog](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik/CHANGELOG.rst) info.
 
 - trac\_ik\_examples contains examples on how to use the standalone TRAC-IK library.
 
