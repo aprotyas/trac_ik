@@ -11,7 +11,6 @@
   <build_depend>boost</build_depend>
   <build_depend>trac_ik_lib</build_depend>
   <build_depend>orocos_kdl</build_depend>
-  <build_depend>libnlopt-dev</build_depend>
 
   <run_depend>boost</run_depend>
   <run_depend>orocos_kdl</run_depend>

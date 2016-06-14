@@ -29,6 +29,7 @@
 
   <run_depend>boost</run_depend>
   <run_depend>kdl_parser</run_depend>
+  <run_depend>libnlopt-dev</run_depend>
   <run_depend>libnlopt0</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>urdf</run_depend>
