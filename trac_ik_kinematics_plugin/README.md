@@ -4,6 +4,7 @@ solver with the TRAC-IK solver.  Currently mimic joints are *not* supported.
 ###As of v1.4.3, this package is part of the ROS Indigo/Jade binaries: `sudo apt-get install ros-jade-trac-ik-kinematics-plugin`
 
 To use:
+
 - Add this package and trac_ik_lib package to your catkin workspace.
 - Find the MoveIt! [kinematics.yaml](http://docs.ros.org/indigo/api/pr2_moveit_tutorials/html/kinematics/src/doc/kinematics_configuration.html) file created for your robot.
 - Replace
