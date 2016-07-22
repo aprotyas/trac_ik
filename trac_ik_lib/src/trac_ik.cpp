@@ -145,7 +145,6 @@ namespace TRAC_IK {
     nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain,lb,ub,maxtime,eps,NLOPT_IK::SumSq));
     iksolver.reset(new KDL::ChainIkSolverPos_TL(chain,lb,ub,maxtime,eps,true,true));
 
-
     for (uint i=0; i<chain.segments.size(); i++) {
       std::string type = chain.segments[i].getJoint().getTypeName();
       if (type.find("Rot")!=std::string::npos) {
@@ -178,6 +177,41 @@ namespace TRAC_IK {
     return true;
 
   }
+
+  inline void normalizeAngle(double& val, const double& min, const double& max)
+  {
+      if (val > max) {
+        //Find actual angle offset
+        double diffangle = fmod(val-max,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = max + diffangle - 2*M_PI;
+      }
+
+      if (val < min) {
+        //Find actual angle offset
+        double diffangle = fmod(min-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = min - diffangle + 2*M_PI;
+      }
+  }
+
+  inline void normalizeAngle(double& val, const double& target)
+  {
+      if (val > target+M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(val-target,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target + diffangle - 2*M_PI;
+      }
+
+      if (val < target-M_PI) {
+        //Find actual angle offset
+        double diffangle = fmod(target-val,2*M_PI);
+        // Add that to upper bound and go back a full rotation
+        val = target - diffangle + 2*M_PI;
+      }
+  }
+
 
   bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
@@ -338,38 +372,14 @@ namespace TRAC_IK {
       double target = seed(i);
       double val = solution(i);
 
-      if (val > target+M_PI) {
-        //Find actual angle offset
-        double diffangle = fmod(val-target,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = target + diffangle - 2*M_PI;
-      }
-
-      if (val < target-M_PI) {
-        //Find actual angle offset
-        double diffangle = fmod(target-val,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = target - diffangle + 2*M_PI;
-      }
+      normalizeAngle( val, target );
 
       if (types[i]==KDL::BasicJointType::Continuous) {
         solution(i) = val;
         continue;
       }
 
-      if (val > ub(i)) {
-        //Find actual angle offset
-        double diffangle = fmod(val-ub(i),2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = ub(i) + diffangle - 2*M_PI;
-      }
-
-      if (val < lb(i)) {
-        //Find actual angle offset
-        double diffangle = fmod(lb(i)-val,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = lb(i) - diffangle + 2*M_PI;
-      }
+      normalizeAngle( val, lb(i), ub(i) );
 
       solution(i) = val;
     }
@@ -393,38 +403,14 @@ namespace TRAC_IK {
 
       double val = solution(i);
 
-      if (val > target+M_PI) {
-        //Find actual angle offset
-        double diffangle = fmod(val-target,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = target + diffangle - 2*M_PI;
-      }
-
-      if (val < target-M_PI) {
-        //Find actual angle offset
-        double diffangle = fmod(target-val,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = target - diffangle + 2*M_PI;
-      }
+      normalizeAngle( val, target );
 
       if (types[i]==KDL::BasicJointType::Continuous) {
         solution(i) = val;
         continue;
       }
 
-      if (val > ub(i)) {
-        //Find actual angle offset
-        double diffangle = fmod(val-ub(i),2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = ub(i) + diffangle - 2*M_PI;
-      }
-
-      if (val < lb(i)) {
-        //Find actual angle offset
-        double diffangle = fmod(lb(i)-val,2*M_PI);
-        // Add that to upper bound and go back a full rotation
-        val = lb(i) - diffangle + 2*M_PI;
-      }
+      normalizeAngle( val, lb(i), ub(i) );
 
       solution(i) = val;
     }
