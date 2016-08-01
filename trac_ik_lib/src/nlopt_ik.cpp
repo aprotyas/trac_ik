@@ -307,24 +307,10 @@ namespace NLOPT_IK {
 
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
-
-    if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
-      delta_twist.vel.x(0);
-    
-    if (std::abs(delta_twist.vel.y()) <= std::abs(bounds.vel.y()))
-      delta_twist.vel.y(0);
-    
-    if (std::abs(delta_twist.vel.z()) <= std::abs(bounds.vel.z()))
-      delta_twist.vel.z(0);
-    
-    if (std::abs(delta_twist.rot.x()) <= std::abs(bounds.rot.x()))
-      delta_twist.rot.x(0);
-    
-    if (std::abs(delta_twist.rot.y()) <= std::abs(bounds.rot.y()))
-      delta_twist.rot.y(0);
-    
-    if (std::abs(delta_twist.rot.z()) <= std::abs(bounds.rot.z()))
-      delta_twist.rot.z(0);
+    for (int i=0; i<6; i++) {
+        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+            delta_twist[i] = 0.0;
+    }
     
     error[0] = KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot);
 
@@ -369,24 +355,10 @@ namespace NLOPT_IK {
 
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
-
-    if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
-      delta_twist.vel.x(0);
-    
-    if (std::abs(delta_twist.vel.y()) <= std::abs(bounds.vel.y()))
-      delta_twist.vel.y(0);
-      
-    if (std::abs(delta_twist.vel.z()) <= std::abs(bounds.vel.z()))
-      delta_twist.vel.z(0);
-      
-    if (std::abs(delta_twist.rot.x()) <= std::abs(bounds.rot.x()))
-      delta_twist.rot.x(0);
-      
-    if (std::abs(delta_twist.rot.y()) <= std::abs(bounds.rot.y()))
-      delta_twist.rot.y(0);
-      
-    if (std::abs(delta_twist.rot.z()) <= std::abs(bounds.rot.z()))
-      delta_twist.rot.z(0);
+    for (int i=0; i<6; i++) {
+        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+            delta_twist[i] = 0.0;
+    }
 
     error[0] = std::sqrt(KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot));
 
@@ -430,27 +402,12 @@ namespace NLOPT_IK {
       return;
     }
 
-
-
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
-    if (std::abs(delta_twist.vel.x()) <= std::abs(bounds.vel.x()))
-      delta_twist.vel.x(0);
-      
-    if (std::abs(delta_twist.vel.y()) <= std::abs(bounds.vel.y()))
-      delta_twist.vel.y(0);
-      
-    if (std::abs(delta_twist.vel.z()) <= std::abs(bounds.vel.z()))
-      delta_twist.vel.z(0);
-      
-    if (std::abs(delta_twist.rot.x()) <= std::abs(bounds.rot.x()))
-      delta_twist.rot.x(0);
-      
-    if (std::abs(delta_twist.rot.y()) <= std::abs(bounds.rot.y()))
-      delta_twist.rot.y(0);
-      
-    if (std::abs(delta_twist.rot.z()) <= std::abs(bounds.rot.z()))
-      delta_twist.rot.z(0);
+        for (int i=0; i<6; i++) {
+        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+            delta_twist[i] = 0.0;
+    }
 
     math3d::matrix3x3<double> currentRotationMatrix(currentPose.M.data); 
     math3d::quaternion<double> currentQuaternion = math3d::rot_matrix_to_quaternion<double>(currentRotationMatrix);
