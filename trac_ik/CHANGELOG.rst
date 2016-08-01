@@ -1,3 +1,7 @@
+1.4.4 (2016-08-01)
+------------------
+* Minor formatting and speed improvements based on user Issues and Pull Requests.
+
 1.4.3 (2016-06-16)
 ------------------
 * trac_ik_kinematics_plugin and trac_ik_examples needed build depends on libnlopt-dev

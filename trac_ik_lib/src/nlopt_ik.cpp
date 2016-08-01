@@ -68,19 +68,15 @@ namespace NLOPT_IK {
     c->cartDQError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartDQError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1];	
-        c->cartDQError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2*jump);
+        grad[i]=(v1[0]-result[0])/(2*jump);
       }
     }
 
@@ -103,19 +99,15 @@ namespace NLOPT_IK {
     c->cartSumSquaredError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartSumSquaredError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1];
-        c->cartSumSquaredError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2.0*jump);
+        grad[i]=(v1[0]-result[0])/(2.0*jump);
       }
     }
 
@@ -138,19 +130,15 @@ namespace NLOPT_IK {
     c->cartL2NormError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartL2NormError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1]; 
-        c->cartL2NormError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2.0*jump);
+        grad[i]=(v1[0]-result[0])/(2.0*jump);
       }
     }
 
@@ -178,16 +166,13 @@ namespace NLOPT_IK {
 
     if (grad!=NULL) {
       std::vector<double> v1(m);
-      std::vector<double> v2(m);
       for (uint i=0; i<n; i++) {
         double o=vals[i];
         vals[i]=o+jump;
         c->cartSumSquaredError(vals, v1.data());
-        vals[i]=o-jump;
-        c->cartSumSquaredError(vals, v2.data());
         vals[i]=o;
         for (uint j=0; j<m; j++)  {
-          grad[j*n+i]=(v1[j]-v2[j])/(2*jump);
+          grad[j*n+i]=(v1[j]-result[j])/(2*jump);
         }
       }
     }
