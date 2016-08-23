@@ -63,6 +63,10 @@ namespace TRAC_IK {
       return initialized;
     }
 
+    bool setKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_) {
+      lb=lb_;
+      ub=ub_;
+    }
 
     static double JointErr(const KDL::JntArray& arr1, const KDL::JntArray& arr2) {
       double err = 0;
