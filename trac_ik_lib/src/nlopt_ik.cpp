@@ -68,19 +68,15 @@ namespace NLOPT_IK {
     c->cartDQError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartDQError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1];	
-        c->cartDQError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2*jump);
+        grad[i]=(v1[0]-result[0])/(2*jump);
       }
     }
 
@@ -103,23 +99,19 @@ namespace NLOPT_IK {
     c->cartSumSquaredError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartSumSquaredError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1]; 
-        c->cartSumSquaredError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2.0*jump);
+        grad[i]=(v1[0]-result[0])/(2.0*jump);
       }
     }
 
-    return result[0]; 
+    return result[0];
   }
 
 
@@ -138,25 +130,20 @@ namespace NLOPT_IK {
     c->cartL2NormError(vals, result);
 
     if (!grad.empty()) {
+      double v1[1];
       for (uint i=0; i<x.size(); i++) {
         double original=vals[i];
 
         vals[i]=original+jump;
-        double v1[1];
         c->cartL2NormError(vals, v1);
 
-        vals[i]=original-jump;
-        double v2[1]; 
-        c->cartL2NormError(vals, v2);
-
         vals[i]=original;
-        grad[i]=(v1[0]-v2[0])/(2.0*jump);
+        grad[i]=(v1[0]-result[0])/(2.0*jump);
       }
     }
 
-    return result[0]; 
+    return result[0];
   }
-
 
 
 
@@ -174,21 +161,18 @@ namespace NLOPT_IK {
     }
 
     double jump=boost::math::tools::epsilon<float>();
- 
+
     c->cartSumSquaredError(vals, result);
 
     if (grad!=NULL) {
+      std::vector<double> v1(m);
       for (uint i=0; i<n; i++) {
         double o=vals[i];
         vals[i]=o+jump;
-        double v1[m];
-        c->cartSumSquaredError(vals, v1);
-        vals[i]=o-jump;
-        double v2[m];
-        c->cartSumSquaredError(vals, v2);
+        c->cartSumSquaredError(vals, v1.data());
         vals[i]=o;
         for (uint j=0; j<m; j++)  {
-          grad[j*n+i]=(v1[j]-v2[j])/(2*jump);
+          grad[j*n+i]=(v1[j]-result[j])/(2*jump);
         }
       }
     }
@@ -200,7 +184,6 @@ namespace NLOPT_IK {
   {
     assert(chain.getNrOfJoints()==_q_min.data.size());
     assert(chain.getNrOfJoints()==_q_max.data.size());
-
 
     //Constructor for an IK Class.  Takes in a Chain to operate on,
     //the min and max joint limits, an (optional) maximum number of
@@ -308,8 +291,8 @@ namespace NLOPT_IK {
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
     for (int i=0; i<6; i++) {
-        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
-            delta_twist[i] = 0.0;
+      if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+        delta_twist[i] = 0.0;
     }
     
     error[0] = KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot);
@@ -334,7 +317,7 @@ namespace NLOPT_IK {
       opt.force_stop();
       return;     
     }
-  
+
     KDL::JntArray q(x.size());
 
     for (uint i=0; i<x.size(); i++)
@@ -356,8 +339,8 @@ namespace NLOPT_IK {
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
     for (int i=0; i<6; i++) {
-        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
-            delta_twist[i] = 0.0;
+      if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+        delta_twist[i] = 0.0;
     }
 
     error[0] = std::sqrt(KDL::dot(delta_twist.vel,delta_twist.vel) + KDL::dot(delta_twist.rot,delta_twist.rot));
@@ -404,9 +387,9 @@ namespace NLOPT_IK {
 
     KDL::Twist delta_twist = KDL::diffRelative(targetPose,currentPose);
 
-        for (int i=0; i<6; i++) {
-        if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
-            delta_twist[i] = 0.0;
+    for (int i=0; i<6; i++) {
+      if (std::abs(delta_twist[i]) <= std::abs(bounds[i]))
+        delta_twist[i] = 0.0;
     }
 
     math3d::matrix3x3<double> currentRotationMatrix(currentPose.M.data); 
