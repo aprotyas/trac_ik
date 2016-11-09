@@ -3,7 +3,7 @@
   <arg name="num_samples" default="1000" />
   <arg name="chain_start" default="torso_lift_link" />
   <arg name="chain_end" default="r_wrist_roll_link" />
-  <arg name="timeout" default="0.01" />
+  <arg name="timeout" default="0.005" />
 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find pr2_description)/robots/pr2.urdf.xacro'" />
 
