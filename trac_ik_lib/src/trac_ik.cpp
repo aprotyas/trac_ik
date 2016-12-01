@@ -56,21 +56,21 @@ namespace TRAC_IK {
     std::string urdf_xml,full_urdf_xml;
     node_handle.param("urdf_xml",urdf_xml,URDF_param);
     node_handle.searchParam(urdf_xml,full_urdf_xml);
-    
-    ROS_DEBUG_NAMED("trac_ik","Reading xml file from parameter server");
+
+    ROS_DEBUG_NAMED("trac_ik", "Reading xml file from parameter server");
     if (!node_handle.getParam(full_urdf_xml, xml_string))
       {
-        ROS_FATAL_NAMED("trac_ik","Could not load the xml from parameter server: %s", urdf_xml.c_str());
+        ROS_FATAL_NAMED("trac_ik", "Could not load the xml from parameter server: %s", urdf_xml.c_str());
         return;
       }
-    
+
     node_handle.param(full_urdf_xml,xml_string,std::string());
     robot_model.initString(xml_string);
-    
-    ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");
+
+    ROS_DEBUG_STREAM_NAMED("trac_ik", "Reading joints and links from URDF");
 
     KDL::Tree tree;
-    
+
     if (!kdl_parser::treeFromUrdfModel(robot_model, tree))
       ROS_FATAL("Failed to extract kdl tree from xml robot description");
 
@@ -114,10 +114,10 @@ namespace TRAC_IK {
           lb(joint_num-1)=std::numeric_limits<float>::lowest();
           ub(joint_num-1)=std::numeric_limits<float>::max();
         }
-        ROS_INFO_STREAM("IK Using joint "<<joint->name<<" "<<lb(joint_num-1)<<" "<<ub(joint_num-1));
+        ROS_DEBUG_STREAM_NAMED("trac_ik", "IK Using joint "<<joint->name<<" "<<lb(joint_num-1)<<" "<<ub(joint_num-1));
       }
     }
-    
+
     initialize();
   }
 
@@ -132,7 +132,6 @@ namespace TRAC_IK {
     solvetype(_type),
     work(io_service)
   {
-
     initialize();
   }
 
@@ -148,7 +147,7 @@ namespace TRAC_IK {
     for (uint i=0; i<chain.segments.size(); i++) {
       std::string type = chain.segments[i].getJoint().getTypeName();
       if (type.find("Rot")!=std::string::npos) {
-        if (ub(types.size())>=std::numeric_limits<float>::max() && 
+        if (ub(types.size())>=std::numeric_limits<float>::max() &&
             lb(types.size())<=std::numeric_limits<float>::lowest())
           types.push_back(KDL::BasicJointType::Continuous);
         else
@@ -157,7 +156,7 @@ namespace TRAC_IK {
       else if (type.find("Trans")!=std::string::npos)
         types.push_back(KDL::BasicJointType::TransJoint);
     }
-    
+
     assert(types.size()==lb.data.size());
 
 
@@ -268,10 +267,10 @@ namespace TRAC_IK {
         }
         mtx_.unlock();
       }
-      
+
       if (!solutions.empty() && solvetype == Speed)
         break;
-      
+
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(q_init(j)-2*M_PI, q_init(j)+2*M_PI);
@@ -340,10 +339,10 @@ namespace TRAC_IK {
         }
         mtx_.unlock();
       }
-      
+
       if (!solutions.empty() && solvetype == Speed)
         break;
-      
+
       for (unsigned int j=0; j<seed.data.size(); j++)
         if (types[j]==KDL::BasicJointType::Continuous)
           seed(j)=fRand(q_init(j)-2*M_PI, q_init(j)+2*M_PI);
