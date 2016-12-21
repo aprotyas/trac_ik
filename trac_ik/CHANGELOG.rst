@@ -1,3 +1,7 @@
+1.4.5 (2016-12-21)
+------------------
+* Updated CMake file to work with Eigen on 14.04 through 16.04
+
 1.4.4 (2016-08-01)
 ------------------
 * Minor formatting and speed improvements based on user Issues and Pull Requests.
