@@ -66,6 +66,8 @@ namespace TRAC_IK {
     bool setKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_) {
       lb=lb_;
       ub=ub_;
+      nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain,lb,ub,maxtime,eps,NLOPT_IK::SumSq));
+      iksolver.reset(new KDL::ChainIkSolverPos_TL(chain,lb,ub,maxtime,eps,true,true));
       return true;
     }
 
