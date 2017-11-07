@@ -98,19 +98,12 @@ namespace TRAC_IK {
                    const KDL::JntArray &q_init,
                    const KDL::Frame &p_in);
 
-    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
-    {
-      runSolver( *iksolver.get(), *nl_solver.get(), q_init, p_in);
-    }
-    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
-    {
-      runSolver( *nl_solver.get(), *iksolver.get(), q_init, p_in);
-    }
+    bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in);
+    bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
     void normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution);
     void normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution);
 
-  
     std::vector<KDL::BasicJointType> types;
 
     boost::mutex mtx_;
@@ -147,6 +140,16 @@ namespace TRAC_IK {
     void initialize();
 
   };
+
+  inline bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
+  {
+    runSolver( *iksolver.get(), *nl_solver.get(), q_init, p_in);
+  }
+
+  inline bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
+  {
+    runSolver( *nl_solver.get(), *iksolver.get(), q_init, p_in);
+  }
 
 }
 

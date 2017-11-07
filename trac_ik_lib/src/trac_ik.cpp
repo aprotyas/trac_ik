@@ -235,8 +235,8 @@ namespace TRAC_IK {
 
       solver.setMaxtime(time_left);
 
-      int kdlRC = solver.CartToJnt(seed,p_in,q_out,bounds);
-      if (kdlRC >=0) {
+      int RC = solver.CartToJnt(seed,p_in,q_out,bounds);
+      if (RC >=0) {
         switch (solvetype) {
         case Manip1:
         case Manip2:
