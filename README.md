@@ -25,7 +25,7 @@ functions for KDL chains. Details for use are in trac\_ik\_lib/README.md.
 replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
 Details for use are in trac\_ik\_kinematics\_plugin/README.md. (Note prior to v1.1.2, the plugin was not thread safe.)
 
-###As of v1.4.3, this package is part of the ROS Indigo/Jade binaries: `sudo apt-get install ros-jade-trac-ik`
+###As of v1.4.5, this package is part of the ROS Kinetic binaries: `sudo apt-get install ros-kinetic-trac-ik` (or indigo or jade).
 
 ###A detailed writeup on TRAC-IK can be found here:###
 
