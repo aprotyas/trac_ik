@@ -213,7 +213,10 @@ namespace TRAC_IK {
   }
 
 
-  bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
+  template<typename T1, typename T2>
+  bool TRAC_IK::runSolver(T1& solver, T2& other_solver,
+                          const KDL::JntArray &q_init,
+                          const KDL::Frame &p_in)
   {
     KDL::JntArray q_out;
 
@@ -230,9 +233,9 @@ namespace TRAC_IK {
       if (time_left <= 0)
         break;
 
-      iksolver->setMaxtime(time_left);
+      solver.setMaxtime(time_left);
 
-      int kdlRC = iksolver->CartToJnt(seed,p_in,q_out,bounds);
+      int kdlRC = solver.CartToJnt(seed,p_in,q_out,bounds);
       if (kdlRC >=0) {
         switch (solvetype) {
         case Manip1:
@@ -278,85 +281,13 @@ namespace TRAC_IK {
         else
           seed(j)=fRand(lb(j), ub(j));
     }
-    nl_solver->abort();
+    other_solver.abort();
 
-    iksolver->setMaxtime(fulltime);
-
-    return true;
-  }
-
-  bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
-  {
-    KDL::JntArray q_out;
-
-    double fulltime = maxtime;
-    KDL::JntArray seed = q_init;
-
-    boost::posix_time::time_duration timediff;
-    double time_left;
-
-    while (true) {
-      timediff=boost::posix_time::microsec_clock::local_time()-start_time;
-      time_left = fulltime - timediff.total_nanoseconds()/1000000000.0;
-
-      if (time_left <= 0)
-        break;
-
-      nl_solver->setMaxtime(time_left);
-
-      int nloptRC = nl_solver->CartToJnt(seed,p_in,q_out,bounds);
-      if (nloptRC >=0) {
-        switch (solvetype) {
-        case Manip1:
-        case Manip2:
-          normalize_limits(q_init, q_out);
-          break;
-        default:
-          normalize_seed(q_init, q_out);
-          break;
-        }
-        mtx_.lock();
-        if (unique_solution(q_out)) {
-          solutions.push_back(q_out);
-          uint curr_size=solutions.size();
-          errors.resize(curr_size);
-          mtx_.unlock();
-          double err, penalty;
-          switch (solvetype) {
-          case Manip1:
-            penalty = manipPenalty(q_out);
-            err = penalty*TRAC_IK::ManipValue1(q_out);
-            break;
-          case Manip2:
-            penalty = manipPenalty(q_out);
-            err = penalty*TRAC_IK::ManipValue2(q_out);
-            break;
-          default:
-            err = TRAC_IK::JointErr(q_init,q_out);
-            break;
-          }
-          mtx_.lock();
-          errors[curr_size-1] = std::make_pair(err,curr_size-1);
-        }
-        mtx_.unlock();
-      }
-      
-      if (!solutions.empty() && solvetype == Speed)
-        break;
-      
-      for (unsigned int j=0; j<seed.data.size(); j++)
-        if (types[j]==KDL::BasicJointType::Continuous)
-          seed(j)=fRand(q_init(j)-2*M_PI, q_init(j)+2*M_PI);
-        else
-          seed(j)=fRand(lb(j), ub(j));
-    }
-
-    iksolver->abort();
-
-    nl_solver->setMaxtime(fulltime);
+    solver.setMaxtime(fulltime);
 
     return true;
   }
+
 
   void TRAC_IK::normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution) {
     // Make sure rotational joint values are within 1 revolution of seed; then
