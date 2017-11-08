@@ -1,4 +1,8 @@
-1.4.5 (2016-12-21)
+1.4.6 (2017-11-8)
+------------------
+* Incorporated PR to fix plugin header and templatize the KDL/NLOpt solver threads used by TRAC-IK
+
+1.4.6 (2016-12-21)
 ------------------
 * Updated CMake file to work with Eigen on 14.04 through 16.04
 
