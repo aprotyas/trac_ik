@@ -122,18 +122,15 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
       diff = boost::posix_time::microsec_clock::local_time() - start_time;
       elapsed = diff.total_nanoseconds() / 1e9;
     } while (rc < 0 && elapsed < timeout);
-
-    if (rc>=0){
-      total_time+=elapsed;
+    total_time+=elapsed;
+    if (rc>=0)
       success++;
-    }
     
     if (int((double)i/num_samples*100)%10 == 0)
       ROS_INFO_STREAM_THROTTLE(1,int((i)/num_samples*100)<<"\% done");
   }
 
-  ROS_INFO_STREAM("KDL found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "
-                  <<1000*total_time/success<<" msecs per succesful sample");
+  ROS_INFO_STREAM("KDL found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "<<total_time/num_samples<<" secs per sample");
 
 
   total_time=0;
@@ -148,18 +145,15 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
     rc=tracik_solver.CartToJnt(nominal,end_effector_pose,result);
     diff = boost::posix_time::microsec_clock::local_time() - start_time;
     elapsed = diff.total_nanoseconds() / 1e9;
-
-    if (rc>=0){
-      total_time+=elapsed;
+    total_time+=elapsed;
+    if (rc>=0)
       success++;
-    }
     
     if (int((double)i/num_samples*100)%10 == 0)
       ROS_INFO_STREAM_THROTTLE(1,int((i)/num_samples*100)<<"\% done");
   }
 
-  ROS_INFO_STREAM("TRAC-IK found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "
-                  <<1000*total_time/success<<" msecs per succesful sample");
+  ROS_INFO_STREAM("TRAC-IK found "<<success<<" solutions ("<<100.0*success/num_samples<<"\%) with an average of "<<total_time/num_samples<<" secs per sample");
 
 
 
