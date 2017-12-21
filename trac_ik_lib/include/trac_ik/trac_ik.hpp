@@ -143,12 +143,12 @@ namespace TRAC_IK {
 
   inline bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
-    runSolver( *iksolver.get(), *nl_solver.get(), q_init, p_in);
+    return runSolver( *iksolver.get(), *nl_solver.get(), q_init, p_in);
   }
 
   inline bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
   {
-    runSolver( *nl_solver.get(), *iksolver.get(), q_init, p_in);
+    return runSolver( *nl_solver.get(), *iksolver.get(), q_init, p_in);
   }
 
 }
