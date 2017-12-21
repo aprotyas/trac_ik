@@ -1,3 +1,7 @@
+1.4.7 (2017-12-21)
+------------------
+* Fixed bug introduced in 1.4.6 where threaded function call should be returning a bool but was not returning anything
+
 1.4.6 (2017-11-8)
 ------------------
 * Incorporated PR to fix plugin header and templatize the KDL/NLOpt solver threads used by TRAC-IK
