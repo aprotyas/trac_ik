@@ -87,7 +87,7 @@ namespace trac_ik_kinematics_plugin
 
     std::vector<KDL::Segment> chain_segs = chain.segments;
 
-    boost::shared_ptr<const urdf::Joint> joint;
+    urdf::JointConstSharedPtr joint;
 
     std::vector<double> l_bounds, u_bounds;
 
