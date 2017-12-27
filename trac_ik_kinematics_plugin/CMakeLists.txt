@@ -15,10 +15,13 @@ find_package(catkin REQUIRED
 )
 
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 catkin_package(
+  INCLUDE_DIRS
+    include
   CATKIN_DEPENDS
     moveit_core
     pluginlib
@@ -31,6 +34,10 @@ set(TRAC_IK_LIBRARY_NAME trac_ik_kinematics_plugin)
 
 add_library(${TRAC_IK_LIBRARY_NAME} src/trac_ik_kinematics_plugin.cpp)
 target_link_libraries(${TRAC_IK_LIBRARY_NAME} ${catkin_LIBRARIES})
+
+install(DIRECTORY include/
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
+)
 
 install(TARGETS ${TRAC_IK_LIBRARY_NAME}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})

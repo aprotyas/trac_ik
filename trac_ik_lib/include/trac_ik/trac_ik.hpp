@@ -100,14 +100,16 @@ namespace TRAC_IK {
 
     boost::posix_time::ptime start_time;
 
+    template<typename T1, typename T2>
+    bool runSolver(T1& solver, T2& other_solver,
+                   const KDL::JntArray &q_init,
+                   const KDL::Frame &p_in);
+
     bool runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in);
-
-
     bool runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in);
 
     void normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution);
     void normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solution);
-
 
     std::vector<KDL::BasicJointType> types;
 
@@ -145,6 +147,16 @@ namespace TRAC_IK {
     void initialize();
 
   };
+
+  inline bool TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in)
+  {
+    return runSolver( *iksolver.get(), *nl_solver.get(), q_init, p_in);
+  }
+
+  inline bool TRAC_IK::runNLOPT(const KDL::JntArray &q_init, const KDL::Frame &p_in)
+  {
+    return runSolver( *nl_solver.get(), *iksolver.get(), q_init, p_in);
+  }
 
 }
 

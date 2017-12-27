@@ -25,7 +25,7 @@ functions for KDL chains. Details for use are in trac\_ik\_lib/README.md.
 replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
 Details for use are in trac\_ik\_kinematics\_plugin/README.md. (Note prior to v1.1.2, the plugin was not thread safe.)
 
-###As of v1.4.3, this package is part of the ROS Indigo/Jade binaries: `sudo apt-get install ros-jade-trac-ik`
+###As of v1.4.5, this package is part of the ROS Kinetic binaries: `sudo apt-get install ros-kinetic-trac-ik` (or indigo or jade).  Starting with v1.4.8, this has been released for ROS Lunar as well.
 
 ###A detailed writeup on TRAC-IK can be found here:###
 
@@ -35,7 +35,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md. (Note prior to v1
 
 _Orocos' **KDL**_ (inverse Jacobian w/ joint limits), _**KDL-RR**_ (our fixes to KDL joint limit handling), and _**TRAC-IK**_ (our concurrent inverse Jacobian and non-linear optimization solver; Speed mode) are compared below.
 
-IK success and average speed (for successful solves) as of TRAC-IK tag v1.4.1.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
+IK success and average speed (for successful solves) as of TRAC-IK tag v1.4.6.  All results are from 10,000 randomly generated, reachable joint configurations.  Full 3D pose IK was requested at 1e-5 Cartesian error for x,y,z,roll,pitch,yaw with a maximum solve time of 5 ms.  All IK queries are seeded from the chain's "nominal" pose midway between joint limits.
 
 **Note on success**: Neither KDL nor TRAC-IK uses any mesh information to determine if _valid_ IK solutions result in self-collisions.  IK solutions deal with link distances and joint ranges, and remain agnostic about self-collisions due to volumes.  Expected future enhancements to TRAC-IK that search for multiple solutions may also include the ability to throw out solutions that result in self collisions (provided the URDF has valid geometry information); however, this is currently not the behaviour of any generic IK solver examined to date.
 
@@ -43,23 +43,21 @@ IK success and average speed (for successful solves) as of TRAC-IK tag v1.4.1.  
 
 Chain | DOFs | Orocos' _KDL_ solve rate | Orocos' _KDL_ Avg Time | _KDL-RR_ solve rate | _KDL-RR_ Avg Time | _TRAC-IK_ solve rate | _TRAC-IK_ Avg Time
 - | - | - | - | - | - | - | -
-Atlas 2013 arm | 6 | **75.54%** | 1.35ms | **97.13%** | 0.39ms | **99.97%** | 0.33ms
-Atlas 2015 arm | 7 | **75.71%** | 1.50ms | **93.13%** | 0.81ms | **99.18%** | 0.48ms
-Baxter arm | 7 | **61.07%** | 2.21ms | **89.52%** | 1.02ms | **99.17%** | 0.60ms
-Denso VS-068 | 6 | **27.92%** | 3.69ms | **98.13%** | 0.42ms | **99.78%** | 0.38ms
-Fanuc M-430iA/2F | 5 | **21.07%** | 3.99ms | **88.34%** | 0.92ms | **99.16%** | 0.58ms
-Fetch arm | 7 | **92.49%** | 0.73ms | **93.82%** | 0.72ms | **99.96%** | 0.44ms
-Jaco2 | 6 | **26.23%** | 3.79ms | **97.66%** | 0.58ms | **99.51%** | 0.58ms
-KUKA LBR iiwa 14 R820 | 7 | **37.71%** | 3.37ms | **94.02%** | 0.73ms | **99.63%** | 0.56ms
-KUKA LWR 4+ | 7 | **67.80%** | 1.88ms | **95.40%** | 0.62ms | **99.95%** | 0.38ms
-PR2 arm | 7 | **83.14%** | 1.37ms | **86.96%** | 1.27ms | **99.84%** | 0.59ms
-NASA Robonaut2 'grasping leg' | 7 | **61.27%** | 2.29ms | **87.57%** | 1.10ms | **99.31%** | 0.67ms
-NASA Robonaut2 'leg' + waist + arm | 15 | **97.99%** | 0.80ms | **98.00%** | 0.84ms | **99.86%** | 0.79ms
-NASA Robonaut2 arm | 7 | **86.28%** | 1.02ms | **94.26%** | 0.73ms | **99.25%** | 0.50ms
-NASA Robosimian arm | 7 | **61.74%** | 2.44ms | **99.87%** | 0.36ms | **99.93%** | 0.44ms
-TRACLabs modular arm | 7 | **79.11%** | 1.35ms | **95.12%** | 0.63ms | **99.80%** | 0.53ms
-UR10 | 6 | **36.16%** | 3.29ms | **88.05%** | 0.82ms | **99.47%** | 0.49ms
-UR5 | 6 | **35.88%** | 3.30ms | **88.69%** | 0.78ms | **99.55%** | 0.42ms
-NASA Valkyrie arm | 7 | **45.18%** | 3.01ms | **90.05%** | 1.29ms | **99.63%** | 0.61ms
+Atlas 2013 arm | 6 | **75.54%** | 1.35ms | **97.11%** | 0.39ms | **99.96%** | 0.24ms
+Atlas 2015 arm | 7 | **75.67%** | 1.50ms | **93.24%** | 0.81ms | **99.56%** | 0.39ms
+Baxter arm | 7 | **61.07%** | 2.21ms | **89.62%** | 1.02ms | **99.62%** | 0.43ms
+Denso VS-068 | 6 | **27.92%** | 3.68ms | **98.18%** | 0.41ms | **99.81%** | 0.30ms
+Fanuc M-430iA/2F | 5 | **21.07%** | 3.99ms | **88.37%** | 0.91ms | **99.69%** | 0.42ms
+Fetch arm | 7 | **92.46%** | 0.73ms | **93.80%** | 0.72ms | **99.99%** | 0.26ms
+Jaco2 | 6 | **26.23%** | 3.79ms | **97.65%** | 0.58ms | **99.78%** | 0.41ms
+KUKA LBR iiwa 14 R820 | 7 | **37.64%** | 3.38ms | **93.70%** | 0.77ms | **99.84%** | 0.31ms
+KUKA LWR 4+ | 7 | **67.81%** | 1.88ms | **95.35%** | 0.62ms | **99.99%** | 0.27ms
+PR2 arm | 7 | **83.18%** | 1.37ms | **86.87%** | 1.28ms | **99.95%** | 0.38ms
+NASA Robonaut2 'grasping leg' | 7 | **61.04%** | 2.30ms | **87.25%** | 1.13ms | **99.85%** | 0.46ms
+NASA Robonaut2 'leg' + waist + arm | 15 | **97.85%** | 0.84ms | **98.01%** | 0.83ms | **99.83%** | 0.65ms
+NASA Robonaut2 arm | 7 | **86.18%** | 1.04ms | **94.19%** | 0.74ms | **99.76%** | 0.33ms
+NASA Robosimian arm | 7 | **61.69%** | 2.45ms | **99.87%** | 0.36ms | **99.94%** | 0.38ms
+TRACLabs modular arm | 7 | **79.05%** | 1.36ms | **95.06%** | 0.63ms | **99.95%** | 0.33ms
+NASA Valkyrie arm | 7 | **45.14%** | 3.01ms | **89.86%** | 1.31ms | **99.81%** | 0.46ms
 
 Feel free to [email Patrick](mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.

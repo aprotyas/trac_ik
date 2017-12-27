@@ -1,3 +1,19 @@
+1.4.8 (2017-12-26)
+------------------
+* Updated type to use generic typedef so boost (xenial) and C++ (zesty) pointers can be used as needed
+
+1.4.7 (2017-12-21)
+------------------
+* Fixed bug introduced in 1.4.6 where threaded function call should be returning a bool but was not returning anything
+
+1.4.6 (2017-11-8)
+------------------
+* Incorporated PR to fix plugin header and templatize the KDL/NLOpt solver threads used by TRAC-IK
+
+1.4.5 (2016-12-21)
+------------------
+* Updated CMake file to work with Eigen on 14.04 through 16.04
+
 1.4.4 (2016-08-01)
 ------------------
 * Minor formatting and speed improvements based on user Issues and Pull Requests.
