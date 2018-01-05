@@ -11,7 +11,7 @@ search returns immediately when either of these algorithms converges to an
 answer.  Secondary constraints of distance and manipulability are also provided 
 in order to receive back the "best" IK solution.
 
-###This repo contains 4 ROS packages:###
+###This repo contains 5 ROS packages:###
 
 - trac\_ik is a metapackage with build and complete [Changelog](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik/CHANGELOG.rst) info.
 
@@ -25,7 +25,11 @@ functions for KDL chains. Details for use are in trac\_ik\_lib/README.md.
 replace the default KDL plugin for MoveIt! with TRAC-IK for use in planning.
 Details for use are in trac\_ik\_kinematics\_plugin/README.md. (Note prior to v1.1.2, the plugin was not thread safe.)
 
+- [trac\_ik\_python](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_python), SWIG based python wrapper to use TRAC-IK. Details for use are in trac\_ik\_python/README.md.
+
+
 ###As of v1.4.5, this package is part of the ROS Kinetic binaries: `sudo apt-get install ros-kinetic-trac-ik` (or indigo or jade).  Starting with v1.4.8, this has been released for ROS Lunar as well.
+
 
 ###A detailed writeup on TRAC-IK can be found here:###
 
