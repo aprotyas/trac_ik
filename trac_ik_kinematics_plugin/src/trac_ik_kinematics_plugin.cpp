@@ -130,17 +130,10 @@ namespace trac_ik_kinematics_plugin
       }
     }
 
-    ROS_INFO_NAMED("trac-ik plugin","Looking in private handle: %s for param name: %s",
-                    node_handle.getNamespace().c_str(),
-                    (group_name+"/position_only_ik").c_str());
-
-    node_handle.param(group_name+"/position_only_ik", position_ik_, false);
-
-    ROS_INFO_NAMED("trac-ik plugin","Looking in private handle: %s for param name: %s",
-                    node_handle.getNamespace().c_str(),
-                    (group_name+"/solve_type").c_str());
-
-    node_handle.param(group_name+"/solve_type", solve_type, std::string("Speed"));
+    ROS_INFO_NAMED("trac-ik plugin", "Looking in common namespaces for param name: %s", (group_name + "/position_only_ik").c_str());
+    lookupParam(group_name+"/position_only_ik", position_ik_, false);
+    ROS_INFO_NAMED("trac-ik plugin", "Looking in common namespaces for param name: %s", (group_name + "/solve_type").c_str());
+    lookupParam(group_name+"/solve_type", solve_type, std::string("Speed"));
     ROS_INFO_NAMED("trac_ik plugin","Using solve type %s",solve_type.c_str());
 
     active_ = true;
