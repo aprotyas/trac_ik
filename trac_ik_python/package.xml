@@ -21,7 +21,6 @@
   <run_depend>swig</run_depend>
   <run_depend>trac_ik_lib</run_depend>
   <run_depend>tf_conversions</run_depend>
-  <run_depend>kdl_parser_py</run_depend>
   <run_depend>tf</run_depend>
 
 
