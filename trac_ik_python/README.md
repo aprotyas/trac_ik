@@ -1,6 +1,7 @@
 # trac_ik_python
 
 Python wrapper for TRAC IK library using SWIG to generate the bindings.
+Please send any questions to [Sam Pfeiffer](mailto:Sammy.Pfeiffer@student.uts.edu.au)
 
 # Example usage
 Upload a robot to the param server:

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>trac_ik_python</name>
-  <version>0.0.1</version>
-  <description>The trac_ik_python package contains
-    a python wrapper using SWIG for trac_ik_lib.</description>
+  <version>1.4.9</version>
+  <description>The trac_ik_python package contains a python wrapper using SWIG
+  for trac_ik_lib</description>
 
   <maintainer email="Sammy.Pfeiffer@student.uts.edu.au">Sam Pfeiffer</maintainer>
 

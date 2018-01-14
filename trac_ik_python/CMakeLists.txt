@@ -26,7 +26,7 @@ catkin_package()
 ## Build ##
 ###########
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # SWIG stuff
 include(${SWIG_USE_FILE})
@@ -65,7 +65,7 @@ SWIG_ADD_MODULE(trac_ik_wrap python
 )
 
 # Link the wrapper with the actual library
-SWIG_LINK_LIBRARIES(trac_ik_wrap trac_ik ${PYTHON_LIBRARIES} ${catkin_LIBRARIES})
+SWIG_LINK_LIBRARIES(trac_ik_wrap ${PYTHON_LIBRARIES} ${catkin_LIBRARIES})
 
 # The name '_trac_ik_wrap' is given by SWIG, haven't found how to change it
 set_target_properties(_trac_ik_wrap

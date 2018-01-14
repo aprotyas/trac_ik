@@ -11,6 +11,7 @@
  #include <kdl_parser/kdl_parser.hpp>
  #include <limits>
  #include <tf_conversions/tf_kdl.h>
+ using namespace TRAC_IK;
  %}
 
  // We need this or we will get on runtime
