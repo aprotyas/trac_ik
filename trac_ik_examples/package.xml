@@ -3,6 +3,7 @@
   <name>trac_ik_examples</name>
   <version>1.4.9</version>
   <description> This package contains the source code for testing and comparing trac_ik</description>
+  <author>Patrick Beeson</author>
   <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
   <license>BSD</license>
 
