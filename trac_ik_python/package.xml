@@ -4,9 +4,8 @@
   <version>1.4.9</version>
   <description>The trac_ik_python package contains a python wrapper using SWIG
   for trac_ik_lib</description>
-
+  <author>Sam Pfeiffer</author>
   <maintainer email="Sammy.Pfeiffer@student.uts.edu.au">Sam Pfeiffer</maintainer>
-
   <license>BSD</license>
 
 
