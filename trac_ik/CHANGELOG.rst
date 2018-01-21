@@ -1,3 +1,7 @@
+1.4.10 (2018-01-21)
+------------------
+* Fix URDF types to work in Indigo through Lunar on trusty through zesty
+
 1.4.9 (2018-01-11)
 ------------------
 * Fixed MoveIt! plugin params to look in the correct place
