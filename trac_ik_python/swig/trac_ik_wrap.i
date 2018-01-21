@@ -84,7 +84,7 @@ namespace std {
       
       std::vector<KDL::Segment> chain_segs = chain.segments;
 
-      boost::shared_ptr<const urdf::Joint> joint;
+      urdf::JointConstSharedPtr joint;
 
       std::vector<double> l_bounds, u_bounds;
 
@@ -220,7 +220,7 @@ namespace std {
 
       std::vector<std::string> joint_names_;
       std::vector<std::string> link_names_;
-      boost::shared_ptr<const urdf::Joint> joint;
+      urdf::JointConstSharedPtr joint;
 
       urdf::Model robot_model;
       robot_model.initString(urdf_string);
