@@ -1,5 +1,9 @@
+1.4.11 (2018-02-06)
+-------------------
+* Change to python install location for swig wrapper
+
 1.4.10 (2018-01-21)
-------------------
+-------------------
 * Fix URDF types to work in Indigo through Lunar on trusty through zesty
 
 1.4.9 (2018-01-11)
