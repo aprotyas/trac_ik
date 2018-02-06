@@ -72,6 +72,7 @@ set_target_properties(_trac_ik_wrap
   PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}
 )
 
+
 #############
 ## Install ##
 #############
@@ -86,12 +87,12 @@ add_custom_command(TARGET _trac_ik_wrap POST_BUILD
 
 # Install the trac_ik_wrap.py generated file
 # Needs to be done after creating the python wrapper (usually this is done at the top)
-# catkin_python_setup()
 
-install(TARGETS _trac_ik_wrap
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+
+install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}/trac_ik_wrap.py ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}/_trac_ik_wrap.so
+src/trac_ik_python/trac_ik.py
+src/trac_ik_python/__init__.py
+  DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
 )
 
 #############
