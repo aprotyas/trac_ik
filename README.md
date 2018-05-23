@@ -47,6 +47,7 @@ IK success and average speed (for successful solves) as of TRAC-IK tag v1.4.6.  
 
 Chain | DOFs | Orocos' _KDL_ solve rate | Orocos' _KDL_ Avg Time | _KDL-RR_ solve rate | _KDL-RR_ Avg Time | _TRAC-IK_ solve rate | _TRAC-IK_ Avg Time
 - | - | - | - | - | - | - | -
+ABB IRB120 | 6 | **39.41%** | 3.09ms | **98.48%** | 0.35ms | **99.91%** | 0.26ms
 ABB Yumi 'single arm' | 7 | **77.28%** | 1.44ms | **91.37%** | 0.86ms | **99.60%** | 0.42ms
 Atlas 2013 arm | 6 | **75.54%** | 1.35ms | **97.11%** | 0.39ms | **99.96%** | 0.24ms
 Atlas 2015 arm | 7 | **75.67%** | 1.50ms | **93.24%** | 0.81ms | **99.56%** | 0.39ms
