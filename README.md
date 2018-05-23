@@ -66,5 +66,6 @@ NASA Robonaut2 arm | 7 | **86.18%** | 1.04ms | **94.19%** | 0.74ms | **99.76%** 
 NASA Robosimian arm | 7 | **61.69%** | 2.45ms | **99.87%** | 0.36ms | **99.94%** | 0.38ms
 TRACLabs modular arm | 7 | **79.05%** | 1.36ms | **95.06%** | 0.63ms | **99.95%** | 0.33ms
 NASA Valkyrie arm | 7 | **45.14%** | 3.01ms | **89.86%** | 1.31ms | **99.81%** | 0.46ms
+Schunk LWA4D | 7 | **68.40%** | 1.81ms | **97.02%** | 0.47ms | **100.00%** | 0.23ms
 
 Feel free to [email Patrick](mailto:pbeeson@traclabs.com) if there is a robot chain that you would like to see added above.
