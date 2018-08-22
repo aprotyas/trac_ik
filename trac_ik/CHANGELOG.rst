@@ -1,4 +1,4 @@
-1.5 (2018-08-22)
+1.5.0 (2018-08-22)
 -------------------
 * Switch to C++-11 threads and pointers instead of Boost
 
