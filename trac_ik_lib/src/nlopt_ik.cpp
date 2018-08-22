@@ -29,8 +29,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
 #include <trac_ik/nlopt_ik.hpp>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
 #include <ros/ros.h>
 #include <limits>
 #include <boost/date_time.hpp>

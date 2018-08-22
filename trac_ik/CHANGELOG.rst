@@ -1,3 +1,7 @@
+1.5 (2018-08-22)
+-------------------
+* Switch to C++-11 threads and pointers instead of Boost
+
 1.4.11 (2018-02-06)
 -------------------
 * Change to python install location for swig wrapper

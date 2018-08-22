@@ -31,7 +31,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/trac_ik.hpp>
 #include <boost/date_time.hpp>
-#include <boost/make_shared.hpp>
 #include <Eigen/Geometry>
 #include <ros/ros.h>
 #include <limits>
@@ -44,8 +43,7 @@ namespace TRAC_IK {
     initialized(false),
     eps(_eps),
     maxtime(_maxtime),
-    solvetype(_type),
-    work(io_service)
+    solvetype(_type)
   {
 
     ros::NodeHandle node_handle("~");
@@ -129,8 +127,7 @@ namespace TRAC_IK {
     ub(_q_max),
     eps(_eps),
     maxtime(_maxtime),
-    solvetype(_type),
-    work(io_service)
+    solvetype(_type)
   {
     initialize();
   }
@@ -158,12 +155,6 @@ namespace TRAC_IK {
     }
 
     assert(types.size()==lb.data.size());
-
-
-    threads.create_thread(boost::bind(&boost::asio::io_service::run,
-                                      &io_service));
-    threads.create_thread(boost::bind(&boost::asio::io_service::run,
-                                      &io_service));
 
     initialized = true;
   }
@@ -402,32 +393,14 @@ namespace TRAC_IK {
     solutions.clear();
     errors.clear();
 
-
     bounds=_bounds;
 
-    std::vector<boost::shared_future<bool> > pending_data;
+    task1 = std::thread(&TRAC_IK::runKDL, this, q_init, p_in);
+    task2 = std::thread(&TRAC_IK::runNLOPT, this, q_init, p_in);
 
-    typedef boost::packaged_task<bool> task_t;
-    boost::shared_ptr<task_t> task1 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runKDL, this, boost::cref(q_init), boost::cref(p_in)));
-
-    boost::shared_ptr<task_t> task2 = boost::make_shared<task_t>(boost::bind(&TRAC_IK::runNLOPT, this, boost::cref(q_init), boost::cref(p_in)));
-
-    boost::shared_future<bool> fut1(task1->get_future());
-    boost::shared_future<bool> fut2(task2->get_future());
-
-    /*
-    // this was for pre-c++11
-    pending_data.push_back(boost::move(fut1));
-    pending_data.push_back(boost::move(fut2));
-    */
-    pending_data.push_back(fut1);
-    pending_data.push_back(fut2);
-
-    io_service.post(boost::bind(&task_t::operator(), task1));
-    io_service.post(boost::bind(&task_t::operator(), task2));
-
-    boost::wait_for_all(pending_data.begin(), pending_data.end());
-
+    task1.join();
+    task2.join();
+    
     if (solutions.empty()) {
       q_out=q_init;
       return -3;
@@ -450,16 +423,9 @@ namespace TRAC_IK {
 
 
   TRAC_IK::~TRAC_IK(){
-    // Force all threads to return from io_service::run().
-    io_service.stop();
-
-    // Suppress all exceptions.
-    try
-      {
-        threads.join_all();
-      }
-    catch ( ... ) {}
-
+    if (task1.joinable())
+      task1.join();
+    if (task2.joinable())
+      task2.join();
   }
-
 }

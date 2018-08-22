@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(trac_ik_examples)
 
+if(CMAKE_COMPILER_IS_GNUCXX OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+    set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+endif()
+
 find_package(catkin REQUIRED
   COMPONENTS
     trac_ik_lib

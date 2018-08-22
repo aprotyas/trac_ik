@@ -34,10 +34,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/nlopt_ik.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
-#include <boost/thread.hpp>
-#include <boost/asio.hpp>
-#include <boost/scoped_ptr.hpp>
-
+#include <thread>
+#include <mutex>
+#include <memory>
+#include <boost/date_time.hpp>
 
 namespace TRAC_IK {
 
@@ -90,13 +90,13 @@ namespace TRAC_IK {
     bool initialized;
     KDL::Chain chain;
     KDL::JntArray lb, ub;
-    boost::scoped_ptr<KDL::ChainJntToJacSolver> jacsolver;
+    std::unique_ptr<KDL::ChainJntToJacSolver> jacsolver;
     double eps;
     double maxtime;
     SolveType solvetype;
 
-    boost::scoped_ptr<NLOPT_IK::NLOPT_IK> nl_solver;
-    boost::scoped_ptr<KDL::ChainIkSolverPos_TL> iksolver;
+    std::unique_ptr<NLOPT_IK::NLOPT_IK> nl_solver;
+    std::unique_ptr<KDL::ChainIkSolverPos_TL> iksolver;
 
     boost::posix_time::ptime start_time;
 
@@ -113,14 +113,11 @@ namespace TRAC_IK {
 
     std::vector<KDL::BasicJointType> types;
 
-    boost::mutex mtx_;
+    std::mutex mtx_;
     std::vector<KDL::JntArray> solutions;
     std::vector<std::pair<double,uint> >  errors;
 
-
-    boost::asio::io_service io_service;
-    boost::thread_group threads;
-    boost::asio::io_service::work work;
+    std::thread task1,task2;
     KDL::Twist bounds;
 
     bool unique_solution(const KDL::JntArray& sol);
