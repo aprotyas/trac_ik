@@ -15,7 +15,6 @@
 
   <run_depend>boost</run_depend>
   <run_depend>orocos_kdl</run_depend>
-  <run_depend>pr2_description</run_depend>
   <run_depend>trac_ik_lib</run_depend>
   <run_depend>xacro</run_depend>
 </package>
