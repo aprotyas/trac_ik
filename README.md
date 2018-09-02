@@ -28,7 +28,7 @@ Details for use are in trac\_ik\_kinematics\_plugin/README.md. (Note prior to v1
 - [trac\_ik\_python](https://bitbucket.org/traclabs/trac_ik/src/HEAD/trac_ik_python), SWIG based python wrapper to use TRAC-IK. Details for use are in trac\_ik\_python/README.md.
 
 
-###As of v1.4.5, this package is part of the ROS Kinetic binaries: `sudo apt-get install ros-kinetic-trac-ik` (or indigo or jade).  Starting with v1.4.8, this has been released for ROS Lunar as well. melodic packages have veen released with 1.5.0.
+###As of v1.4.5, this package is part of the ROS Kinetic binaries: `sudo apt-get install ros-kinetic-trac-ik` (or indigo or jade).  Starting with v1.4.8, this has been released for ROS Lunar as well. Melodic packages have been released with 1.5.0.
 
 
 ###A detailed writeup on TRAC-IK can be found here:###
