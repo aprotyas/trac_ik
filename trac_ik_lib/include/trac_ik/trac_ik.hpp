@@ -63,6 +63,17 @@ namespace TRAC_IK {
       return initialized;
     }
 
+    // Requires a previous call to CartToJnt()
+    bool getSolutions(std::vector<KDL::JntArray>& solutions_) {
+      solutions_=solutions;
+      return initialized && !solutions.empty();
+    }
+
+    bool getSolutions(std::vector<KDL::JntArray>& solutions_, std::vector<std::pair<double,uint> >& errors_) {
+      errors_=errors;
+      return getSolutions(solutions);
+    }
+
     bool setKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_) {
       lb=lb_;
       ub=ub_;
