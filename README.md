@@ -48,19 +48,19 @@ IK success and average speed as of TRAC-IK tag v1.4.6.  All results are from 10,
 Chain | DOFs | Orocos' _KDL_ solve rate | Orocos' _KDL_ Avg Time | _KDL-RR_ solve rate | _KDL-RR_ Avg Time | _TRAC-IK_ solve rate | _TRAC-IK_ Avg Time
 - | - | - | - | - | - | - | -
 ABB Yumi 'single arm' | 7 | **76.88%** | 1.50ms | **90.84%** | 0.94ms | **99.08%** | 0.56ms
-Atlas 2013 arm | 6 | **75.54%** | 1.35ms | **97.14%** | 0.39ms | **99.91%** | 0.32ms
 ABB IRB120 | 6 | **39.41%** | 3.10ms | **98.32%** | 0.41ms | **99.91%** | 0.33ms
+Atlas 2013 arm | 6 | **75.54%** | 1.35ms | **97.14%** | 0.39ms | **99.91%** | 0.32ms
 Atlas 2015 arm | 7 | **75.63%** | 1.51ms | **93.25%** | 0.81ms | **99.44%** | 0.42ms
 Baxter arm | 7 | **60.98%** | 2.22ms | **89.64%** | 1.03ms | **99.44%** | 0.50ms
 Denso VS-068 | 6 | **27.92%** | 3.69ms | **98.11%** | 0.42ms | **99.89%** | 0.34ms
-Fetch arm | 7 | **92.40%** | 0.74ms | **93.69%** | 0.73ms | **99.98%** | 0.32ms
 Fanuc M-430iA/2F | 5 | **21.07%** | 3.99ms | **88.33%** | 0.92ms | **99.70%** | 0.46ms
+Fetch arm | 7 | **92.40%** | 0.74ms | **93.69%** | 0.73ms | **99.98%** | 0.32ms
+Franka Emika Panda | 7 | **61.52%** | 2.17ms | **92.22%** | 0.92ms | **99.49%** | 0.50ms
 Jaco2 | 6 | **26.22%** | 3.79ms | **97.65%** | 0.58ms | **99.61%** | 0.50ms
 KUKA LBR iiwa 14 R820 | 7 | **37.63%** | 3.38ms | **93.73%** | 0.76ms | **99.84%** | 0.35ms
 KUKA LWR 4+ | 7 | **67.72%** | 1.89ms | **95.33%** | 0.64ms | **99.99%** | 0.29ms
 Motoman MH180 | 6 | **68.44%** | 1.67ms | **99.34%** | 0.27ms | **99.99%** | 0.24ms
 Motoman CSDA10F 'torso/1-arm' | 8 | **52.47%** | 2.85ms | **95.16%** | 0.72ms | **99.81%** | 0.44ms
-Franka Emika Panda | 7 | **61.52%** | 2.17ms | **92.22%** | 0.92ms | **99.49%** | 0.50ms
 PR2 arm | 7 | **82.92%** | 1.39ms | **86.52%** | 1.30ms | **99.97%** | 0.41ms
 NASA Robonaut2 'leg' + waist + arm | 15 | **97.78%** | 0.86ms | **97.94%** | 0.85ms | **99.88%** | 0.72ms
 NASA Robonaut2 arm | 7 | **86.11%** | 1.05ms | **93.95%** | 0.76ms | **99.56%** | 0.41ms
