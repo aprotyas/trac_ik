@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(trac_ik_python)
 
-set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
+add_compile_options(-std=c++11 -Wno-deprecated)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -43,7 +43,6 @@ SET_SOURCE_FILES_PROPERTIES(
 )
 
 include_directories(
-  include
   ${PYTHON_INCLUDE_DIRS} # This solved Python.h: No such file or directory
   ${Boost_INCLUDE_DIRS}
 )
@@ -52,7 +51,6 @@ include_directories(
 # /opt/ros/indigo/include/kdl/utilities/utility.h:27:19: fatal error: cstdlib: No such file or directory
 # ...build/trac_ik_lib/swig/trac_ik_wrapPYTHON_wrap.c:2977:21: fatal error: stdexcept: No such file or directory
 set(CMAKE_C_COMPILER ${CMAKE_CXX_COMPILER})
-set(CMAKE_C_FLAGS "-std=c++0x ${CMAKE_C_FLAGS}")
 
 # To force SWIG on generating a C++ file-wrapper so we overcome
 # error: expected primary-expression before ‘=’ token
@@ -94,6 +92,10 @@ src/trac_ik_python/trac_ik.py
 src/trac_ik_python/__init__.py
   DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
 )
+
+catkin_install_python(PROGRAMS scripts/test_pkg.py scripts/test_wrapper.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 
 #############
 ## Testing ##
