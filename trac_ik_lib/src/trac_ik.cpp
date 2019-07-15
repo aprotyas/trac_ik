@@ -203,20 +203,22 @@ inline void normalizeAngle(double& val, const double& min, const double& max)
 
 inline void normalizeAngle(double& val, const double& target)
 {
-  if (val > target + M_PI)
+  double new_target = target + M_PI;
+  if (val > new_target)
   {
     //Find actual angle offset
-    double diffangle = fmod(val - target, 2 * M_PI);
+    double diffangle = fmod(val - new_target, 2 * M_PI);
     // Add that to upper bound and go back a full rotation
-    val = target + diffangle - 2 * M_PI;
+    val = new_target + diffangle - 2 * M_PI;
   }
 
-  if (val < target - M_PI)
+  new_target = target - M_PI;
+  if (val < new_target)
   {
     //Find actual angle offset
-    double diffangle = fmod(target - val, 2 * M_PI);
+    double diffangle = fmod(new_target - val, 2 * M_PI);
     // Add that to upper bound and go back a full rotation
-    val = target - diffangle + 2 * M_PI;
+    val = new_target - diffangle + 2 * M_PI;
   }
 }
 
