@@ -1,3 +1,7 @@
+1.5.1 (2019-07-15)
+-------------------
+* Fixed theta normalize bug
+
 1.5.0 (2018-08-22)
 -------------------
 * Switch to C++-11 threads and pointers instead of Boost
