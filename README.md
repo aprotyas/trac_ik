@@ -9,7 +9,8 @@ SQP (Sequential Quadratic Programming) nonlinear optimization approach which
 uses quasi-Newton methods that better handle joint limits.  By default, the IK
 search returns immediately when either of these algorithms converges to an
 answer.  Secondary constraints of distance and manipulability are also provided 
-in order to receive back the "best" IK solution.
+in order to receive back the "best" IK solution.  
+**Note:** TRAC-IK is built on top of the KDL library, which is not thread safe (there's some internals that I think use _static_ variables).  Thus, you should not use multiple instances of TRAC-IK in the same process.
 
 ###This repo contains 5 ROS packages:###
 
