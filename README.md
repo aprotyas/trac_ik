@@ -74,4 +74,4 @@ Universal UR3 | 6 | **17.11%** | 4.18ms | **89.08%** | 0.77ms | **98.60%** | 0.4
 UR5 | 6 | **16.52%** | 4.21ms | **88.58%** | 0.74ms | **99.17%** | 0.37ms
 UR10 | 6 | **14.90%** | 4.29ms | **88.63%** | 0.74ms | **99.33%** | 0.36ms
 
-Feel free to [email TRACLabs Robotics](mailto:robotics@traclabs.com) if there is a robot chain that you would like to see added above.
+Feel free to [email TRACLabs Robotics](mailto:robotics@traclabs.com) if you have any issues.
