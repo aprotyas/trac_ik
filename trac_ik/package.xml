@@ -8,7 +8,7 @@
     methods in KDL.  TRAC-IK handles joint-limited chains better than KDL
     without increasing solve time.
   </description> 
-  <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
+  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <author>Patrick Beeson</author>
   <author>Barrett Ames</author>
   <license>BSD</license>

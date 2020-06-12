@@ -4,7 +4,7 @@
   <version>1.5.1</version>
   <description> This package contains the source code for testing and comparing trac_ik</description>
   <author>Patrick Beeson</author>
-  <maintainer email="pbeeson@traclabs.com">Patrick Beeson</maintainer>
+  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
