@@ -13,7 +13,18 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(SWIG REQUIRED)
-find_package(PythonLibs REQUIRED)
+
+if(DEFINED ENV{ROS_PYTHON_VERSION} AND ENV{ROS_PYTHON_VERSION} EQUAL 3)
+  # Python 3
+  find_package(Python3 COMPONENTS Development)
+else()
+  # Python 2
+  find_package(PythonLibs REQUIRED)
+endif()
+
+
+
+
 
 catkin_python_setup()
 
@@ -42,10 +53,19 @@ SET_SOURCE_FILES_PROPERTIES(
   swig/trak_ik_wrap.i PROPERTIES CPLUSPLUS ON 
 )
 
-include_directories(
-  ${PYTHON_INCLUDE_DIRS} # This solved Python.h: No such file or directory
-  ${Boost_INCLUDE_DIRS}
-)
+if(DEFINED ENV{ROS_PYTHON_VERSION} AND ENV{ROS_PYTHON_VERSION} EQUAL 3)
+  include_directories(
+    ${Python3_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+  )
+else()
+  include_directories(
+    ${PYTHON_INCLUDE_DIRS} # This solved Python.h: No such file or directory
+    ${Boost_INCLUDE_DIRS}
+  )
+endif()
+
+
 
 # To overcome (took me hours to notice):
 # /opt/ros/indigo/include/kdl/utilities/utility.h:27:19: fatal error: cstdlib: No such file or directory
@@ -58,12 +78,18 @@ set(CMAKE_C_COMPILER ${CMAKE_CXX_COMPILER})
 set(CMAKE_SWIG_FLAGS "-c++")
 
 # This actually makes the compilation of the generated trac_ik_wrapPYTHON_wrap.c happen
-SWIG_ADD_MODULE(trac_ik_wrap python
-  swig/trac_ik_wrap.i
+SWIG_ADD_LIBRARY(trac_ik_wrap
+  LANGUAGE python
+  SOURCES swig/trac_ik_wrap.i
 )
 
 # Link the wrapper with the actual library
-SWIG_LINK_LIBRARIES(trac_ik_wrap ${PYTHON_LIBRARIES} ${catkin_LIBRARIES})
+
+if(DEFINED ENV{ROS_PYTHON_VERSION} AND ENV{ROS_PYTHON_VERSION} EQUAL 3)
+  SWIG_LINK_LIBRARIES(trac_ik_wrap ${Python3_LIBRARIES} ${catkin_LIBRARIES})
+else()
+  SWIG_LINK_LIBRARIES(trac_ik_wrap ${PYTHON_LIBRARIES} ${catkin_LIBRARIES})
+endif()
 
 # The name '_trac_ik_wrap' is given by SWIG, haven't found how to change it
 set_target_properties(_trac_ik_wrap

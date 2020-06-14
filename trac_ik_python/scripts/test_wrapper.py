@@ -62,10 +62,10 @@ if __name__ == '__main__':
             num_solutions_found += 1
     avg_time = avg_time / NUM_COORDS
 
-    print
-    print "Found " + str(num_solutions_found) + " of 200 random coords"
-    print "Average IK call time: " + str(avg_time)
-    print
+    print()
+    print("Found " + str(num_solutions_found) + " of 200 random coords")
+    print("Average IK call time: " + str(avg_time))
+    print()
 
     # Check if orientation bounds work
     avg_time = 0.0
@@ -80,18 +80,18 @@ if __name__ == '__main__':
                                   brx, bry, brz)
         fin_t = time.time()
         call_time = fin_t - ini_t
-        # print "IK call took: " + str(call_time)
+        # print("IK call took: " + str(call_time))
         avg_time += call_time
         if sol:
-            # print "X, Y, Z: " + str( (x, y, z) )
-            # print "SOL: " + str(sol)
+            # print("X, Y, Z: " + str( (x, y, z) ))
+            # print("SOL: " + str(sol))
             num_solutions_found += 1
 
     avg_time = avg_time / NUM_COORDS
-    print
-    print "Found " + str(num_solutions_found) + " of 200 random coords ignoring orientation"
-    print "Average IK call time: " + str(avg_time)
-    print
+    print()
+    print("Found " + str(num_solutions_found) + " of 200 random coords ignoring orientation")
+    print("Average IK call time: " + str(avg_time))
+    print()
 
     # Check if big position and orientation bounds work
     avg_time = 0.0
@@ -107,19 +107,19 @@ if __name__ == '__main__':
                                   brx, bry, brz)
         fin_t = time.time()
         call_time = fin_t - ini_t
-        # print "IK call took: " + str(call_time)
+        # print("IK call took: " + str(call_time))
         avg_time += call_time
         if sol:
-            # print "X, Y, Z: " + str( (x, y, z) )
-            # print "SOL: " + str(sol)
+            # print("X, Y, Z: " + str( (x, y, z) ))
+            # print("SOL: " + str(sol))
             num_solutions_found += 1
 
     avg_time = avg_time / NUM_COORDS
 
-    print
-    print "Found " + str(num_solutions_found) + " of 200 random coords ignoring everything"
-    print "Average IK call time: " + str(avg_time)
-    print
+    print()
+    print("Found " + str(num_solutions_found) + " of 200 random coords ignoring everything")
+    print("Average IK call time: " + str(avg_time))
+    print()
 
 # std::vector<double> CartToJnt(const std::vector<double> q_init,
 # const double x, const double y, const double z,
