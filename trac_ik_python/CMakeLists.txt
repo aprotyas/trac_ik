@@ -78,10 +78,17 @@ set(CMAKE_C_COMPILER ${CMAKE_CXX_COMPILER})
 set(CMAKE_SWIG_FLAGS "-c++")
 
 # This actually makes the compilation of the generated trac_ik_wrapPYTHON_wrap.c happen
-SWIG_ADD_LIBRARY(trac_ik_wrap
-  LANGUAGE python
-  SOURCES swig/trac_ik_wrap.i
-)
+if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+  # SWIG_ADD_MODULE is deprecated from 3.8.0
+  SWIG_ADD_MODULE(trac_ik_wrap python
+  swig/trac_ik_wrap.i
+  )
+else()
+  SWIG_ADD_LIBRARY(trac_ik_wrap
+    LANGUAGE python
+    SOURCES swig/trac_ik_wrap.i
+  )
+endif()
 
 # Link the wrapper with the actual library
 
