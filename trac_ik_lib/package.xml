@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>trac_ik_lib</name> 
-  <version>1.5.1</version>
+  <version>1.6.0</version>
   <description>
     TRAC-IK is a faster, significantly more reliable drop-in replacement for
     KDL's pseudoinverse Jacobian solver.

@@ -2,6 +2,7 @@ The TRAC-IK kinematics solver is built in trac\_ik\_lib as a .so library (this
 has been tested using ROS Indigo using Catkin).  The headers and shared
 objects in this package can be linked against by user programs.
 
+###As of v1.6.0, this package is part of the ROS Noetic binaries: `sudo apt-get install ros-noetic-trac-ik`
 ###As of v1.4.3, this package is part of the ROS Indigo/Jade binaries: `sudo apt-get install ros-jade-trac-ik`
 
 This requires the Ubuntu packages for NLOpt Libraries to be installed (the
