@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>trac_ik_examples</name>
   <version>1.5.1</version>
   <description> This package contains the source code for testing and comparing trac_ik</description>
@@ -11,10 +11,12 @@
 
   <build_depend>boost</build_depend>
   <build_depend>trac_ik_lib</build_depend>
-  <build_depend>orocos_kdl</build_depend>
+  <build_depend condition="$ROS_DISTRO != noetic">orocos_kdl</build_depend>
+  <build_depend condition="$ROS_DISTRO == noetic">liborocos-kdl-dev</build_depend>
 
-  <run_depend>boost</run_depend>
-  <run_depend>orocos_kdl</run_depend>
-  <run_depend>trac_ik_lib</run_depend>
-  <run_depend>xacro</run_depend>
+  <exec_depend>boost</exec_depend>
+  <exec_depend condition="$ROS_DISTRO != noetic">orocos_kdl</exec_depend>
+  <exec_depend condition="$ROS_DISTRO == noetic">liborocos-kdl</exec_depend>
+  <exec_depend>trac_ik_lib</exec_depend>
+  <exec_depend>xacro</exec_depend>
 </package>
