@@ -48,7 +48,8 @@ bool TRAC_IKKinematicsPlugin::initialize(const std::string &robot_description,
     const std::string& tip_name,
     double search_discretization)
 {
-  setValues(robot_description, group_name, base_name, tip_name, search_discretization);
+  std::vector<std::string> tip_names = {tip_name};
+  setValues(robot_description, group_name, base_name, tip_names, search_discretization);
 
   ros::NodeHandle node_handle("~");
 
