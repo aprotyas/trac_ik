@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>trac_ik</name>
   <version>1.6.1</version>
   <description>
@@ -18,10 +18,10 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>trac_ik_examples</run_depend>
-  <run_depend>trac_ik_kinematics_plugin</run_depend>
-  <run_depend>trac_ik_lib</run_depend>
-  <run_depend>trac_ik_python</run_depend>
+  <exec_depend>trac_ik_examples</exec_depend>
+  <exec_depend>trac_ik_kinematics_plugin</exec_depend>
+  <exec_depend>trac_ik_lib</exec_depend>
+  <exec_depend>trac_ik_python</exec_depend>
 
   <export>
     <metapackage/>

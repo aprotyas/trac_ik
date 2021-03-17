@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>trac_ik_kinematics_plugin</name>
   <version>1.6.1</version>
   <description>A MoveIt! Kinematics plugin using TRAC-IK</description>
@@ -15,11 +15,11 @@
   <build_depend>tf_conversions</build_depend>
   <build_depend>trac_ik_lib</build_depend>
 
-  <run_depend>moveit_core</run_depend>
-  <run_depend>pluginlib</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>tf_conversions</run_depend>
-  <run_depend>trac_ik_lib</run_depend>
+  <exec_depend>moveit_core</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>tf_conversions</exec_depend>
+  <exec_depend>trac_ik_lib</exec_depend>
 
   <export>
     <moveit_core plugin="${prefix}/trac_ik_kinematics_description.xml"/>
