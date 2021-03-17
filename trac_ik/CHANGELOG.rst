@@ -1,3 +1,12 @@
+Forthcoming
+-----------
+* changed package.xmls to format 3
+* Contributors: Stephen Hart
+
+1.6.1 (2021-03-17)
+-------------------
+* Pushing changes for noetic compatibility
+
 1.5.1 (2019-07-15)
 -------------------
 * Fixed theta normalize bug
