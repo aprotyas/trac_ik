@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>trac_ik_python</name>
-  <version>1.6.3</version>
+  <version>1.6.4</version>
   <description>The trac_ik_python package contains a python wrapper using SWIG
   for trac_ik_lib</description>
   <author>Sam Pfeiffer</author>
