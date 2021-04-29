@@ -28,7 +28,7 @@ catkin_package(
     urdf
   DEPENDS
     Boost
-    # purposefully not including nlopt here, see earlier note
+    nlopt
   INCLUDE_DIRS
     include
   LIBRARIES

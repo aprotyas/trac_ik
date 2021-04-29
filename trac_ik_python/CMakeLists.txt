@@ -22,10 +22,6 @@ else()
   find_package(PythonLibs REQUIRED)
 endif()
 
-
-
-
-
 catkin_python_setup()
 
 ###################################
