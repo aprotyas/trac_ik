@@ -76,7 +76,7 @@ public:
   bool getSolutions(std::vector<KDL::JntArray>& solutions_, std::vector<std::pair<double, uint> >& errors_)
   {
     errors_ = errors;
-    return getSolutions(solutions);
+    return getSolutions(solutions_);
   }
 
   bool setKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_)
