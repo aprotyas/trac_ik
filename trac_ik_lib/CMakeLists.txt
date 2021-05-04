@@ -18,8 +18,6 @@ find_package(Boost REQUIRED COMPONENTS date_time)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(pkg_nlopt REQUIRED nlopt)
 pkg_check_modules(Eigen REQUIRED eigen3)
-# TODO: resolve libraries to absolute paths
-
 
 catkin_package(
   CATKIN_DEPENDS
@@ -28,7 +26,7 @@ catkin_package(
     urdf
   DEPENDS
     Boost
-    nlopt
+    pkg_nlopt
   INCLUDE_DIRS
     include
   LIBRARIES
