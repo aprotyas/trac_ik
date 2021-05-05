@@ -32,7 +32,6 @@ catkin_package(
     roscpp
     tf_conversions
     trac_ik_lib
-    pkg_nlopt
 )
 
 set(TRAC_IK_LIBRARY_NAME trac_ik_kinematics_plugin)
