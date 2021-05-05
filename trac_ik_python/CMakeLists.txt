@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   tf_conversions
 )
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(pkg_nlopt REQUIRED nlopt)
+
 find_package(SWIG REQUIRED)
 
 if(DEFINED ENV{ROS_PYTHON_VERSION} AND ENV{ROS_PYTHON_VERSION} EQUAL 3)
@@ -40,7 +43,7 @@ include(${SWIG_USE_FILE})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/swig)
 
 # To add trac_ik_lib headers (from this ros answers: http://answers.ros.org/question/201977/include-header-file-from-another-package-indigo/)
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${pkg_nlopt_INCLUDE_DIRS})
 
 
 # Python trac_ik wrapper using SWIG
@@ -53,6 +56,7 @@ if(DEFINED ENV{ROS_PYTHON_VERSION} AND ENV{ROS_PYTHON_VERSION} EQUAL 3)
   include_directories(
     ${Python3_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
+    ${pkg_nlopt_INCLUDE_DIRS}
   )
 else()
   include_directories(

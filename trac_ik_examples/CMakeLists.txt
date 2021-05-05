@@ -10,6 +10,9 @@ find_package(catkin REQUIRED
     trac_ik_lib
 )
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(pkg_nlopt REQUIRED nlopt)
+
 find_package(Boost REQUIRED COMPONENTS date_time)
 find_package(orocos_kdl REQUIRED)
 
@@ -19,12 +22,14 @@ catkin_package(
   DEPENDS
     Boost
     orocos_kdl
+    pkg_nlopt
 )
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${orocos_kdl_INCLUDE_DIRS}
+  ${pkg_nlopt_INCLUDE_DIRS}
 )
 
 add_executable(ik_tests src/ik_tests.cpp)
@@ -32,6 +37,7 @@ target_link_libraries(ik_tests
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   ${orocos_kdl_LIBRARIES}
+  ${pkg_nlopt_LIBRARIES}
 )
 
 install(TARGETS ik_tests

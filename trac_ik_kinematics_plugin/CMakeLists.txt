@@ -5,6 +5,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
     set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 endif()
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(pkg_nlopt REQUIRED nlopt)
+
 find_package(catkin REQUIRED
   COMPONENTS
     moveit_core
@@ -17,6 +20,7 @@ find_package(catkin REQUIRED
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${pkg_nlopt_INCLUDE_DIRS}
 )
 
 catkin_package(
@@ -28,12 +32,13 @@ catkin_package(
     roscpp
     tf_conversions
     trac_ik_lib
+    pkg_nlopt
 )
 
 set(TRAC_IK_LIBRARY_NAME trac_ik_kinematics_plugin)
 
 add_library(${TRAC_IK_LIBRARY_NAME} src/trac_ik_kinematics_plugin.cpp)
-target_link_libraries(${TRAC_IK_LIBRARY_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${TRAC_IK_LIBRARY_NAME} ${catkin_LIBRARIES} ${pkg_nlopt_LIBRARIES})
 
 install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
