@@ -2,8 +2,8 @@
 Changelog for package trac_ik_kinematics_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.6 (2021-05-05)
+------------------
 * removed bad depends
 * propagated nlopt deps to sat packages
 * Contributors: Stephen Hart

@@ -2,8 +2,8 @@
 Changelog for package trac_ik_examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.6 (2021-05-05)
+------------------
 * propagated nlopt deps to sat packages
 * Contributors: Stephen Hart
 
