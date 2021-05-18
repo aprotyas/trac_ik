@@ -194,7 +194,7 @@ void constrainfuncm(uint m, double* result, uint n, const double* x, double* gra
 
 
 NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
-  chain(_chain), fksolver(_chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
+  chain(_chain), fksolver(chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
 {
   assert(chain.getNrOfJoints() == _q_min.data.size());
   assert(chain.getNrOfJoints() == _q_max.data.size());

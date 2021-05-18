@@ -36,7 +36,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace KDL
 {
 ChainIkSolverPos_TL::ChainIkSolverPos_TL(const Chain& _chain, const JntArray& _q_min, const JntArray& _q_max, double _maxtime, double _eps, bool _random_restart, bool _try_jl_wrap):
-  chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(_chain), fksolver(_chain), delta_q(_chain.getNrOfJoints()),
+  chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(chain), fksolver(chain), delta_q(chain.getNrOfJoints()),
   maxtime(_maxtime), eps(_eps), rr(_random_restart), wrap(_try_jl_wrap)
 {
 
