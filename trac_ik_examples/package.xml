@@ -23,5 +23,6 @@
   <exec_depend>xacro</exec_depend>
   <exec_depend>libnlopt-dev</exec_depend>
   <exec_depend>libnlopt0</exec_depend>
+  <exec_depend>pr2_description</exec_depend>
 
 </package>
