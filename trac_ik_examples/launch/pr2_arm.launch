@@ -5,7 +5,7 @@
   <arg name="chain_end" default="r_wrist_roll_link" />
   <arg name="timeout" default="0.005" />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find pr2_description)/robots/pr2.urdf.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find pr2_description)/robots/pr2.urdf.xacro'" />
 
 
   <node name="trac_ik_tests" pkg="trac_ik_examples" type="ik_tests" output="screen">
