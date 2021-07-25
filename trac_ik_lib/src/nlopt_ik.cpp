@@ -28,13 +28,17 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
-#include <trac_ik/nlopt_ik.hpp>
-#include <ros/ros.h>
-#include <limits>
-#include <boost/date_time.hpp>
-#include <trac_ik/dual_quaternion.h>
 #include <cmath>
+#include <limits>
 
+// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
+#include <boost/date_time.hpp>
+
+// TODO(aprotyas): Fix logging macros
+#include <rclcpp/logging.hpp>
+
+#include <trac_ik/dual_quaternion.h>
+#include <trac_ik/nlopt_ik.hpp>
 
 
 namespace NLOPT_IK

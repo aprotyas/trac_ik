@@ -37,6 +37,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <thread>
 #include <mutex>
 #include <memory>
+
+// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
 #include <boost/date_time.hpp>
 
 namespace TRAC_IK

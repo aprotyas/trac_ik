@@ -30,11 +30,19 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include <trac_ik/trac_ik.hpp>
+
+// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
 #include <boost/date_time.hpp>
+
 #include <Eigen/Geometry>
+
+// TODO(aprotyas): Replace with rclcpp stuff
 #include <ros/ros.h>
+
 #include <limits>
 #include <kdl_parser/kdl_parser.hpp>
+
+// TODO(aprotyas): Investigate this header, why is it needed? Might have to change to ROS 2 equivalent
 #include <urdf/model.h>
 
 namespace TRAC_IK

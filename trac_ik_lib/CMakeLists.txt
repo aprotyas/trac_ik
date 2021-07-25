@@ -9,7 +9,7 @@ find_package(catkin REQUIRED
   COMPONENTS
     cmake_modules
     kdl_parser
-    roscpp
+    rclcpp
     urdf
 )
 
@@ -22,7 +22,7 @@ pkg_check_modules(Eigen REQUIRED eigen3)
 catkin_package(
   CATKIN_DEPENDS
     kdl_parser
-    roscpp
+    rclcpp
     urdf
   DEPENDS
     Boost
