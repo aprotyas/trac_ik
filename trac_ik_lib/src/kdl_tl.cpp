@@ -29,7 +29,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
 #include <trac_ik/kdl_tl.hpp>
+
+// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
 #include <boost/date_time.hpp>
+
+// TODO(aprotyas): remove this header. This is not being used for anything
 #include <ros/ros.h>
 #include <limits>
 
