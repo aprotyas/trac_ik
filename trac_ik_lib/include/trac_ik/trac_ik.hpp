@@ -40,13 +40,14 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <thread>
 
 #include <kdl/chainjnttojacsolver.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 namespace TRAC_IK
 {
 
 enum SolveType { Speed, Distance, Manip1, Manip2 };
 
-class TRAC_IK_PUBLIC TRAC_IK
+class TRAC_IK_PUBLIC TRAC_IK : public rclcpp::Node
 {
 public:
   TRAC_IK_PUBLIC
