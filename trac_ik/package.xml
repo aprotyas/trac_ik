@@ -7,7 +7,7 @@
     alternative Inverse Kinematics solver to the popular inverse Jacobian
     methods in KDL.  TRAC-IK handles joint-limited chains better than KDL
     without increasing solve time.
-  </description> 
+  </description>
   <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <author>Patrick Beeson</author>
   <author>Barrett Ames</author>
@@ -16,7 +16,7 @@
   <url type="website">http://wiki.ros.org/trac_ik</url>
   <url type="repository">https://bitbucket.org/traclabs/trac_ik</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>trac_ik_examples</exec_depend>
   <exec_depend>trac_ik_kinematics_plugin</exec_depend>
@@ -24,6 +24,6 @@
   <exec_depend>trac_ik_python</exec_depend>
 
   <export>
-    <metapackage/>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
