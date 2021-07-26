@@ -31,9 +31,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/trac_ik.hpp>
 
-// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
-#include <boost/date_time.hpp>
-
 #include <Eigen/Geometry>
 
 // TODO(aprotyas): Replace with rclcpp stuff
@@ -51,7 +48,7 @@ namespace TRAC_IK
 TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param, double _maxtime, double _eps, SolveType _type) :
   initialized(false),
   eps(_eps),
-  maxtime(_maxtime),
+  maxtime(std::chrono::duration<double>(_maxtime)),
   solvetype(_type)
 {
 
@@ -144,7 +141,7 @@ TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KD
   lb(_q_min),
   ub(_q_max),
   eps(_eps),
-  maxtime(_maxtime),
+  maxtime(std::chrono::duration<double>(_maxtime)),
   solvetype(_type)
 {
   initialize();
@@ -157,8 +154,8 @@ void TRAC_IK::initialize()
   assert(chain.getNrOfJoints() == ub.data.size());
 
   jacsolver.reset(new KDL::ChainJntToJacSolver(chain));
-  nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain, lb, ub, maxtime, eps, NLOPT_IK::SumSq));
-  iksolver.reset(new KDL::ChainIkSolverPos_TL(chain, lb, ub, maxtime, eps, true, true));
+  nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain, lb, ub, maxtime.count(), eps, NLOPT_IK::SumSq));
+  iksolver.reset(new KDL::ChainIkSolverPos_TL(chain, lb, ub, maxtime.count(), eps, true, true));
 
   for (uint i = 0; i < chain.segments.size(); i++)
   {
@@ -238,21 +235,17 @@ bool TRAC_IK::runSolver(T1& solver, T2& other_solver,
 {
   KDL::JntArray q_out;
 
-  double fulltime = maxtime;
+  std::chrono::duration<double> fulltime(maxtime);
   KDL::JntArray seed = q_init;
-
-  boost::posix_time::time_duration timediff;
-  double time_left;
 
   while (true)
   {
-    timediff = boost::posix_time::microsec_clock::local_time() - start_time;
-    time_left = fulltime - timediff.total_nanoseconds() / 1000000000.0;
+    std::chrono::duration<double> timediff(std::chrono::system_clock::now() - start_time);
 
-    if (time_left <= 0)
+    if (timediff <= fulltime)
       break;
 
-    solver.setMaxtime(time_left);
+    solver.setMaxtime((fulltime - timediff).count());
 
     int RC = solver.CartToJnt(seed, p_in, q_out, bounds);
     if (RC >= 0)
@@ -306,7 +299,7 @@ bool TRAC_IK::runSolver(T1& solver, T2& other_solver,
   }
   other_solver.abort();
 
-  solver.setMaxtime(fulltime);
+  solver.setMaxtime(fulltime.count());
 
   return true;
 }
@@ -430,7 +423,8 @@ int TRAC_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL:
   }
 
 
-  start_time = boost::posix_time::microsec_clock::local_time();
+  start_time = std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>>(
+          std::chrono::system_clock::now());
 
   nl_solver->reset();
   iksolver->reset();
