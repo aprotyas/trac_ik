@@ -46,21 +46,26 @@ namespace TRAC_IK
 
 enum SolveType { Speed, Distance, Manip1, Manip2 };
 
-class TRAC_IK
+class TRAC_IK_PUBLIC TRAC_IK
 {
 public:
+  TRAC_IK_PUBLIC
   TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime = 0.005, double _eps = 1e-5, SolveType _type = Speed);
 
+  TRAC_IK_PUBLIC
   TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param = "/robot_description", double _maxtime = 0.005, double _eps = 1e-5, SolveType _type = Speed);
 
+  TRAC_IK_PUBLIC
   ~TRAC_IK();
 
+  TRAC_IK_PUBLIC
   bool getKDLChain(KDL::Chain& chain_)
   {
     chain_ = chain;
     return initialized;
   }
 
+  TRAC_IK_PUBLIC
   bool getKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_)
   {
     lb_ = lb;
@@ -68,6 +73,7 @@ public:
     return initialized;
   }
 
+  TRAC_IK_PUBLIC
   // Requires a previous call to CartToJnt()
   bool getSolutions(std::vector<KDL::JntArray>& solutions_)
   {
@@ -75,12 +81,14 @@ public:
     return initialized && !solutions.empty();
   }
 
+  TRAC_IK_PUBLIC
   bool getSolutions(std::vector<KDL::JntArray>& solutions_, std::vector<std::pair<double, uint> >& errors_)
   {
     errors_ = errors;
     return getSolutions(solutions_);
   }
 
+  TRAC_IK_PUBLIC
   bool setKDLLimits(KDL::JntArray& lb_, KDL::JntArray& ub_)
   {
     lb = lb_;
@@ -90,6 +98,7 @@ public:
     return true;
   }
 
+  TRAC_IK_PUBLIC
   static double JointErr(const KDL::JntArray& arr1, const KDL::JntArray& arr2)
   {
     double err = 0;
@@ -101,6 +110,7 @@ public:
     return err;
   }
 
+  TRAC_IK_PUBLIC
   int CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL::JntArray &q_out, const KDL::Twist& bounds = KDL::Twist::Zero());
 
   inline void SetSolveType(SolveType _type)
