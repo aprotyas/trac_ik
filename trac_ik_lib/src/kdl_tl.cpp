@@ -31,9 +31,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/kdl_tl.hpp>
 
 #include <chrono>
-
-// TODO(aprotyas): remove this header. This is not being used for anything
-#include <ros/ros.h>
 #include <limits>
 
 namespace KDL
