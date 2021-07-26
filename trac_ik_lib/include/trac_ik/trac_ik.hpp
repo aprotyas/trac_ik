@@ -33,13 +33,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TRAC_IK_HPP
 
 #include <trac_ik/nlopt_ik.hpp>
-#include <kdl/chainjnttojacsolver.hpp>
-#include <thread>
-#include <mutex>
-#include <memory>
 
-// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
-#include <boost/date_time.hpp>
+#include <chrono>
+#include <memory>
+#include <mutex>
+#include <thread>
+
+#include <kdl/chainjnttojacsolver.hpp>
 
 namespace TRAC_IK
 {
@@ -85,8 +85,8 @@ public:
   {
     lb = lb_;
     ub = ub_;
-    nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain, lb, ub, maxtime, eps, NLOPT_IK::SumSq));
-    iksolver.reset(new KDL::ChainIkSolverPos_TL(chain, lb, ub, maxtime, eps, true, true));
+    nl_solver.reset(new NLOPT_IK::NLOPT_IK(chain, lb, ub, maxtime.count(), eps, NLOPT_IK::SumSq));
+    iksolver.reset(new KDL::ChainIkSolverPos_TL(chain, lb, ub, maxtime.count(), eps, true, true));
     return true;
   }
 
@@ -114,13 +114,13 @@ private:
   KDL::JntArray lb, ub;
   std::unique_ptr<KDL::ChainJntToJacSolver> jacsolver;
   double eps;
-  double maxtime;
+  std::chrono::duration<double> maxtime;
   SolveType solvetype;
 
   std::unique_ptr<NLOPT_IK::NLOPT_IK> nl_solver;
   std::unique_ptr<KDL::ChainIkSolverPos_TL> iksolver;
 
-  boost::posix_time::ptime start_time;
+  std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time;
 
   template<typename T1, typename T2>
   bool runSolver(T1& solver, T2& other_solver,

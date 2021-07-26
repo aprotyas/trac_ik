@@ -58,7 +58,7 @@ public:
 
   inline void setMaxtime(double t)
   {
-    maxtime = t;
+    maxtime = std::chrono::duration<double>(t);
   }
 
 private:
@@ -83,7 +83,7 @@ private:
 
   KDL::ChainFkSolverPos_recursive fksolver;
 
-  double maxtime;
+  std::chrono::duration<double> maxtime;
   double eps;
   int iter_counter;
   OptType TYPE;

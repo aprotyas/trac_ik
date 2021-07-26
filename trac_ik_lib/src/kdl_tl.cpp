@@ -30,8 +30,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <trac_ik/kdl_tl.hpp>
 
-// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
-#include <boost/date_time.hpp>
+#include <chrono>
 
 // TODO(aprotyas): remove this header. This is not being used for anything
 #include <ros/ros.h>
@@ -41,7 +40,7 @@ namespace KDL
 {
 ChainIkSolverPos_TL::ChainIkSolverPos_TL(const Chain& _chain, const JntArray& _q_min, const JntArray& _q_max, double _maxtime, double _eps, bool _random_restart, bool _try_jl_wrap):
   chain(_chain), q_min(_q_min), q_max(_q_max), vik_solver(chain), fksolver(chain), delta_q(chain.getNrOfJoints()),
-  maxtime(_maxtime), eps(_eps), rr(_random_restart), wrap(_try_jl_wrap)
+  maxtime(std::chrono::duration<double>(_maxtime)), eps(_eps), rr(_random_restart), wrap(_try_jl_wrap)
 {
 
   assert(chain.getNrOfJoints() == _q_min.data.size());
@@ -75,13 +74,10 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
   if (aborted)
     return -3;
 
-  boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration timediff;
+  std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time(
+          std::chrono::system_clock::now());
   q_out = q_init;
   bounds = _bounds;
-
-
-  double time_left;
 
   do
   {
@@ -166,7 +162,7 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
 
     Subtract(q_out, q_curr, q_out);
 
-    if (q_out.data.isZero(boost::math::tools::epsilon<float>()))
+    if (q_out.data.isZero(std::numeric_limits<double>::epsilon()))
     {
       if (rr)
       {
@@ -189,10 +185,9 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
 
     q_out = q_curr;
 
-    timediff = boost::posix_time::microsec_clock::local_time() - start_time;
-    time_left = maxtime - timediff.total_nanoseconds() / 1000000000.0;
+    std::chrono::duration<double> timediff(std::chrono::system_clock::now() - start_time);
   }
-  while (time_left > 0 && !aborted);
+  while (timediff < maxtime && !aborted);
 
   return -3;
 }

@@ -1,9 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.12)
 project(trac_ik_lib)
-
-if(CMAKE_COMPILER_IS_GNUCXX OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
-    set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-endif()
 
 find_package(catkin REQUIRED
   COMPONENTS
@@ -12,8 +8,6 @@ find_package(catkin REQUIRED
     rclcpp
     urdf
 )
-
-find_package(Boost REQUIRED COMPONENTS date_time)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(pkg_nlopt REQUIRED nlopt)
@@ -25,7 +19,6 @@ catkin_package(
     rclcpp
     urdf
   DEPENDS
-    Boost
     pkg_nlopt
   INCLUDE_DIRS
     include
@@ -37,7 +30,6 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Eigen_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
   ${pkg_nlopt_INCLUDE_DIRS}
 )
 
@@ -47,8 +39,15 @@ add_library(trac_ik
   src/trac_ik.cpp)
 target_link_libraries(trac_ik
   ${catkin_LIBRARIES}
-  ${pkg_nlopt_LIBRARIES}
-  ${Boost_LIBRARIES})
+  ${pkg_nlopt_LIBRARIES})
+
+# C++20 standard guarantees `std::chrono::system_clock` measures Unix Time
+# i.e. `std::chrono::{duration, time_point}` can then replace `boost::posix_time::{time_duration, ptime}`
+set_target_properties(trac_ik PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
 
 install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}

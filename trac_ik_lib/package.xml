@@ -20,7 +20,6 @@
 
   <depend>rclcpp</depend>
 
-  <build_depend>boost</build_depend>
   <build_depend>cmake_modules</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>kdl_parser</build_depend>
@@ -30,7 +29,6 @@
   <build_depend>urdf</build_depend>
   <build_export_depend condition="$ROS_DISTRO == noetic">libnlopt-cxx-dev</build_export_depend>
 
-  <exec_depend>boost</exec_depend>
   <exec_depend>kdl_parser</exec_depend>
   <exec_depend>libnlopt-dev</exec_depend>
   <exec_depend>libnlopt0</exec_depend>

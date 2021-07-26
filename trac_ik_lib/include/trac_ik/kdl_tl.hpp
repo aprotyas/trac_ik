@@ -32,6 +32,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef KDLCHAINIKSOLVERPOS_TL_HPP
 #define KDLCHAINIKSOLVERPOS_TL_HPP
 
+#include <chrono>
+
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
 
@@ -58,7 +60,7 @@ public:
 
   inline void setMaxtime(double t)
   {
-    maxtime = t;
+    maxtime = std::chrono::duration<double>(t);
   }
 
 private:
@@ -71,7 +73,7 @@ private:
   KDL::ChainIkSolverVel_pinv vik_solver;
   KDL::ChainFkSolverPos_recursive fksolver;
   JntArray delta_q;
-  double maxtime;
+  std::chrono::duration<double> maxtime;
 
   double eps;
 

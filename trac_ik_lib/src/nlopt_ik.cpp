@@ -31,8 +31,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cmath>
 #include <limits>
 
-// TODO(aprotyas): Replace with <chrono> header. Use std::chrono::{duration, time_point} instead
-#include <boost/date_time.hpp>
+#include <chrono>
 
 // TODO(aprotyas): Fix logging macros
 #include <rclcpp/logging.hpp>
@@ -68,7 +67,7 @@ double minfuncDQ(const std::vector<double>& x, std::vector<double>& grad, void* 
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<double>::epsilon();
   double result[1];
   c->cartDQError(vals, result);
 
@@ -102,7 +101,7 @@ double minfuncSumSquared(const std::vector<double>& x, std::vector<double>& grad
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<double>::epsilon();
   double result[1];
   c->cartSumSquaredError(vals, result);
 
@@ -136,7 +135,7 @@ double minfuncL2(const std::vector<double>& x, std::vector<double>& grad, void* 
 
   std::vector<double> vals(x);
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<double>::epsilon();
   double result[1];
   c->cartL2NormError(vals, result);
 
@@ -175,7 +174,7 @@ void constrainfuncm(uint m, double* result, uint n, const double* x, double* gra
     vals[i] = x[i];
   }
 
-  double jump = boost::math::tools::epsilon<float>();
+  double jump = std::numeric_limits<double>::epsilon();
 
   c->cartSumSquaredError(vals, result);
 
@@ -198,7 +197,7 @@ void constrainfuncm(uint m, double* result, uint n, const double* x, double* gra
 
 
 NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime, double _eps, OptType _type):
-  chain(_chain), fksolver(chain), maxtime(_maxtime), eps(std::abs(_eps)), TYPE(_type)
+  chain(_chain), fksolver(chain), maxtime(std::chrono::duration<double>(_maxtime)), eps(std::abs(_eps)), TYPE(_type)
 {
   assert(chain.getNrOfJoints() == _q_min.data.size());
   assert(chain.getNrOfJoints() == _q_max.data.size());
@@ -238,7 +237,7 @@ NLOPT_IK::NLOPT_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const 
 
   assert(types.size() == lb.size());
 
-  std::vector<double> tolerance(1, boost::math::tools::epsilon<float>());
+  std::vector<double> tolerance(1, std::numeric_limits<double>::epsilon());
   opt.set_xtol_abs(tolerance[0]);
 
 
@@ -457,8 +456,9 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
   // Returns -3 if a configuration could not be found within the eps
   // set up in the constructor.
 
-  boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
-  boost::posix_time::time_duration diff;
+  std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time(
+          std::chrono::system_clock::now());
+  std::chrono::duration<double> diff;
 
   bounds = _bounds;
   q_out = q_init;
@@ -475,7 +475,7 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
     return -3;
   }
 
-  opt.set_maxtime(maxtime);
+  opt.set_maxtime(maxtime.count());
 
 
   double minf; /* the minimum objective value, upon return */
@@ -592,17 +592,15 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
   if (!aborted && progress < 0)
   {
 
-    double time_left;
-    diff = boost::posix_time::microsec_clock::local_time() - start_time;
-    time_left = maxtime - diff.total_nanoseconds() / 1000000000.0;
+    std::chrono::duration<double> diff(std::chrono::system_clock::now() - start_time);
 
-    while (time_left > 0 && !aborted && progress < 0)
+    while (diff < maxtime && !aborted && progress < 0)
     {
 
       for (uint i = 0; i < x.size(); i++)
         x[i] = fRand(artificial_lower_limits[i], artificial_upper_limits[i]);
 
-      opt.set_maxtime(time_left);
+      opt.set_maxtime((maxtime - diff).count());
 
       try
       {
@@ -613,8 +611,7 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
       if (progress == -1) // Got NaNs
         progress = -3;
 
-      diff = boost::posix_time::microsec_clock::local_time() - start_time;
-      time_left = maxtime - diff.total_nanoseconds() / 1000000000.0;
+      diff = std::chrono::system_clock::now() - start_time;
     }
   }
 
