@@ -13,24 +13,29 @@
   </description>
   <author>Patrick Beeson</author>
   <author>Barrett Ames</author>
+  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
 
   <license>BSD</license>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
-  <depend>rclcpp</depend>
-
-  <build_depend>cmake_modules</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>kdl_parser</build_depend>
-  <build_depend>libnlopt-dev</build_depend>
-  <build_depend condition="$ROS_DISTRO == noetic">libnlopt-cxx-dev</build_depend>
-  <build_depend>pkg-config</build_depend>
+  <build_depend>libnlopt-cxx-dev</build_depend>
+  <build_depend>rclcpp</build_depend>
   <build_depend>urdf</build_depend>
-  <build_export_depend condition="$ROS_DISTRO == noetic">libnlopt-cxx-dev</build_export_depend>
 
   <exec_depend>kdl_parser</exec_depend>
-  <exec_depend>libnlopt-dev</exec_depend>
   <exec_depend>libnlopt0</exec_depend>
+  <exec_depend>libnlopt-cxx-dev</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
   <exec_depend>urdf</exec_depend>
+
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
