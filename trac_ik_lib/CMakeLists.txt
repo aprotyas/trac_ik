@@ -1,45 +1,22 @@
 cmake_minimum_required(VERSION 3.12)
 project(trac_ik_lib)
 
-find_package(catkin REQUIRED
-  COMPONENTS
-    cmake_modules
-    kdl_parser
-    rclcpp
-    urdf
-)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Werror)
+endif()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(pkg_nlopt REQUIRED nlopt)
-pkg_check_modules(Eigen REQUIRED eigen3)
-
-catkin_package(
-  CATKIN_DEPENDS
-    kdl_parser
-    rclcpp
-    urdf
-  DEPENDS
-    pkg_nlopt
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    trac_ik
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
-  ${pkg_nlopt_INCLUDE_DIRS}
-)
+find_package(ament_cmake REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(kdl_parser REQUIRED)
+find_package(NLopt REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(urdf REQUIRED)
 
 add_library(trac_ik
   src/kdl_tl.cpp
   src/nlopt_ik.cpp
   src/trac_ik.cpp)
-target_link_libraries(trac_ik
-  ${catkin_LIBRARIES}
-  ${pkg_nlopt_LIBRARIES})
 
 # C++20 standard guarantees `std::chrono::system_clock` measures Unix Time
 # i.e. `std::chrono::{duration, time_point}` can then replace `boost::posix_time::{time_duration, ptime}`
@@ -49,12 +26,50 @@ set_target_properties(trac_ik PROPERTIES
     CXX_EXTENSIONS NO
 )
 
+target_include_directories(trac_ik PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>"
+  ${Eigen3_INCLUDE_DIRS}
+  ${NLOPT_INCLUDE_DIRS}
+)
+
+target_compile_definitions(trac_ik PRIVATE "TRAC_IK_BUILDING_LIBRARY")
+
+ament_target_dependencies(trac_ik
+  ament_cmake
+  Eigen3
+  kdl_parser
+  NLopt
+  rclcpp
+  urdf
+)
+
+ament_export_targets(export_trac_ik HAS_LIBRARY_TARGET)
+
+ament_export_dependencies(
+    ament_cmake
+    Eigen3
+    eigen3_cmake_module
+    kdl_parser
+    NLopt
+    rclcpp
+    urdf
+)
+
 install(DIRECTORY include/
-  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
+    DESTINATION include
 )
 
 install(TARGETS trac_ik
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+    EXPORT export_trac_ik
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    INCLUDES DESTINATION include
+    RUNTIME DESTINATION bin)
+
+if(BUILD_TESTING)
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()
