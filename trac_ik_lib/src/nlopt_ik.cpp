@@ -472,7 +472,7 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
     return -3;
   }
 
-  if (q_init.data.size() != types.size())
+  if (static_cast<long unsigned int>(q_init.data.size()) != types.size())
   {
     rclcpp::Clock steady_clock(RCL_STEADY_TIME);
     RCLCPP_ERROR_THROTTLE(LOGGER, steady_clock, 1.0,
