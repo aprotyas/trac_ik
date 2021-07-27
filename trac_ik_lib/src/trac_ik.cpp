@@ -175,7 +175,7 @@ void TRAC_IK::initialize()
       types.push_back(KDL::BasicJointType::TransJoint);
   }
 
-  assert(types.size() == lb.data.size());
+  assert(types.size() == static_cast<long unsigned int>(lb.data.size()));
 
   initialized = true;
 }
@@ -313,8 +313,6 @@ void TRAC_IK::normalize_seed(const KDL::JntArray& seed, KDL::JntArray& solution)
   // Make sure rotational joint values are within 1 revolution of seed; then
   // ensure joint limits are met.
 
-  bool improved = false;
-
   for (uint i = 0; i < lb.data.size(); i++)
   {
 
@@ -342,8 +340,6 @@ void TRAC_IK::normalize_limits(const KDL::JntArray& seed, KDL::JntArray& solutio
 {
   // Make sure rotational joint values are within 1 revolution of middle of
   // limits; then ensure joint limits are met.
-
-  bool improved = false;
 
   for (uint i = 0; i < lb.data.size(); i++)
   {
