@@ -459,7 +459,6 @@ int NLOPT_IK::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame &p_in, KDL
 
   std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time(
           std::chrono::system_clock::now());
-  std::chrono::duration<double> diff;
 
   bounds = _bounds;
   q_out = q_init;

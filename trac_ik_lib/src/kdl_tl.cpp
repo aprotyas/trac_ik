@@ -71,6 +71,7 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
   if (aborted)
     return -3;
 
+  std::chrono::duration<double> timediff;
   std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time(
           std::chrono::system_clock::now());
   q_out = q_init;
@@ -182,7 +183,7 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
 
     q_out = q_curr;
 
-    std::chrono::duration<double> timediff(std::chrono::system_clock::now() - start_time);
+    timediff = std::chrono::system_clock::now() - start_time;
   }
   while (timediff < maxtime && !aborted);
 
