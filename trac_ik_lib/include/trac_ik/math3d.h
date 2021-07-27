@@ -223,7 +223,7 @@ struct triangle
   int id0, id1, id2; // indices to vertices p0, p1, p2
   normal3d n;
   triangle() : id0(-1), id1(-1), id2(-1) {}
-  triangle(int id0, int id1, int id2) : id0(id0), id1(id1), id2(id2) {}
+  triangle(int _id0, int _id1, int _id2) : id0(_id0), id1(_id1), id2(_id2) {}
   triangle(const oriented_point3d& p0_, const oriented_point3d& p1_, const oriented_point3d& p2_, const normal3d& n_)
     : p0(p0_), p1(p1_), p2(p2_), n(n_) {}
   triangle(const oriented_point3d& p0_, const oriented_point3d& p1_, const oriented_point3d& p2_, const normal3d& n_, int id0_, int id1_, int id2_)
