@@ -33,6 +33,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TRAC_IK_HPP
 
 #include <trac_ik/nlopt_ik.hpp>
+#include <trac_ik/visibility_control.hpp>
 
 #include <chrono>
 #include <memory>
@@ -47,7 +48,7 @@ namespace TRAC_IK
 
 enum SolveType { Speed, Distance, Manip1, Manip2 };
 
-class TRAC_IK_PUBLIC TRAC_IK : public rclcpp::Node
+class TRAC_IK_PUBLIC TRAC_IK: public rclcpp::Node
 {
 public:
   TRAC_IK_PUBLIC
