@@ -32,6 +32,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <trac_ik/trac_ik.hpp>
 
 #include <limits>
+#include <map>
 
 #include <Eigen/Geometry>
 #include <kdl_parser/kdl_parser.hpp>
