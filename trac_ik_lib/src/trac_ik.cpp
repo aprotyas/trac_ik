@@ -64,7 +64,7 @@ TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, cons
 
   RCLCPP_DEBUG(this->get_logger(), "Reading xml file from parameter server");
   this->get_parameter(full_urdf_xml, xml_string);
-  if(xml_string == std::string())
+  if(xml_string.empty())
   {
     RCLCPP_FATAL_STREAM(this->get_logger(), "Could not load the xml from parameter server: " << urdf_xml.c_str());
     return;
