@@ -35,7 +35,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cmath>
 #include <limits>
 
-#include <rclcpp/logging.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 
 namespace NLOPT_IK
