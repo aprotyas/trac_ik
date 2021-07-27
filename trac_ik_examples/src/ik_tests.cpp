@@ -28,7 +28,7 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
-#include <boost/date_time.hpp>
+#include <chrono>
 #include <trac_ik/trac_ik.hpp>
 #include <ros/ros.h>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
@@ -104,8 +104,8 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
   }
 
 
-  boost::posix_time::ptime start_time;
-  boost::posix_time::time_duration diff;
+  std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<double>> start_time;
+  std::chrono::duration<double> diff;
 
   KDL::JntArray result;
   KDL::Frame end_effector_pose;
@@ -121,16 +121,15 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
     fk_solver.JntToCart(JointList[i], end_effector_pose);
     double elapsed = 0;
     result = nominal; // start with nominal
-    start_time = boost::posix_time::microsec_clock::local_time();
+    start_time = std::chrono::system_clock::now();
     do
     {
       q = result; // when iterating start with last solution
       rc = kdl_solver.CartToJnt(q, end_effector_pose, result);
-      diff = boost::posix_time::microsec_clock::local_time() - start_time;
-      elapsed = diff.total_nanoseconds() / 1e9;
+      diff = std::chrono::system_clock::now() - start_time;
     }
-    while (rc < 0 && elapsed < timeout);
-    total_time += elapsed;
+    while (rc < 0 && diff.count() < timeout);
+    total_time += diff.count();
     if (rc >= 0)
       success++;
 
@@ -150,11 +149,10 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
   {
     fk_solver.JntToCart(JointList[i], end_effector_pose);
     double elapsed = 0;
-    start_time = boost::posix_time::microsec_clock::local_time();
+    start_time = std::chrono::system_clock::now();
     rc = tracik_solver.CartToJnt(nominal, end_effector_pose, result);
-    diff = boost::posix_time::microsec_clock::local_time() - start_time;
-    elapsed = diff.total_nanoseconds() / 1e9;
-    total_time += elapsed;
+    diff = std::chrono::system_clock::now() - start_time;
+    total_time += diff.count();
     if (rc >= 0)
       success++;
 
