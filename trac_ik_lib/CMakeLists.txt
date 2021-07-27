@@ -35,11 +35,15 @@ target_include_directories(trac_ik PUBLIC
 
 target_compile_definitions(trac_ik PRIVATE "TRAC_IK_BUILDING_LIBRARY")
 
+# Needed since NLopt is not an ament package
+target_link_libraries(trac_ik
+    ${NLOPT_LIBRARIES}
+)
+
 ament_target_dependencies(trac_ik
   ament_cmake
   Eigen3
   kdl_parser
-  NLopt
   rclcpp
   urdf
 )
