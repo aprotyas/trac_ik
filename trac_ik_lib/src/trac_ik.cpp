@@ -42,7 +42,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace TRAC_IK
 {
-TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param, double _maxtime, double _eps, SolveType _type) :
+TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& urdf_xml, double _maxtime, double _eps, SolveType _type) :
   Node("trac_ik"),
   initialized(false),
   eps(_eps),
@@ -50,28 +50,10 @@ TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, cons
   solvetype(_type)
 {
   urdf::Model robot_model;
-  std::string xml_string;
-
-  std::string urdf_xml, full_urdf_xml;
-  this->declare_parameters<std::string>(
-          std::string(), // parameters are not namespaced
-          std::map<std::string, std::string>{
-          {"urdf_xml", URDF_param},
-          {URDF_param, std::string()} // empty robot description
-          }
-          );
-  this->get_parameter("urdf_xml", urdf_xml);
-  this->get_parameter(urdf_xml, full_urdf_xml);
-
-  RCLCPP_DEBUG(this->get_logger(), "Reading xml file from parameter server");
-  this->get_parameter(full_urdf_xml, xml_string);
-  if(xml_string.empty())
+  if(!robot_model.initString(urdf_xml))
   {
-    RCLCPP_FATAL_STREAM(this->get_logger(), "Could not load the xml from parameter server: " << urdf_xml.c_str());
-    return;
+    RCLCPP_FATAL(this->get_logger(), "Unable to initialize urdf::Model from robot description.");
   }
-
-  robot_model.initString(xml_string);
 
   RCLCPP_DEBUG(this->get_logger(), "Reading joints and links from URDF");
 
