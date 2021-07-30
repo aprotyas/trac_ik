@@ -36,7 +36,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Eigen/Geometry>
 #include <kdl_parser/kdl_parser.hpp>
-#include <rclcpp/logging.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_components/register_node_macro.hpp>
 #include <urdf/model.h>
 
 namespace TRAC_IK
@@ -471,3 +472,5 @@ TRAC_IK::~TRAC_IK()
     task2.join();
 }
 }
+
+RCLCPP_COMPONENTS_REGISTER_NODE(TRAC_IK::TRAC_IK)
