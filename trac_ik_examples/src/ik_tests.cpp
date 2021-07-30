@@ -43,9 +43,8 @@ double fRand(double min, double max)
 #include <rclcpp/rclcpp.hpp>
 #include <trac_ik/trac_ik.hpp>
 
-void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std::string chain_end, double timeout, std::string urdf_param)
+void test(const auto node, double num_samples, std::string chain_start, std::string chain_end, double timeout, std::string urdf_param)
 {
-
   double eps = 1e-5;
 
   // This constructor parses the URDF loaded in rosparm urdf_param into the
@@ -60,7 +59,7 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
 
   if (!valid)
   {
-    ROS_ERROR("There was no valid KDL chain found");
+    RCLCPP_ERROR(node->get_logger(), "There was no valid KDL chain found");
     return;
   }
 
@@ -68,14 +67,14 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
 
   if (!valid)
   {
-    ROS_ERROR("There were no valid KDL joint limits found");
+    RCLCPP_ERROR(node->get_logger(), "There were no valid KDL joint limits found");
     return;
   }
 
   assert(chain.getNrOfJoints() == ll.data.size());
   assert(chain.getNrOfJoints() == ul.data.size());
 
-  ROS_INFO("Using %d joints", chain.getNrOfJoints());
+  RCLCPP_INFO(node->get_logger(), "Using %d joints", chain.getNrOfJoints());
 
 
   // Set up KDL IK
@@ -117,7 +116,7 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
   double total_time = 0;
   uint success = 0;
 
-  ROS_INFO_STREAM("*** Testing KDL with " << num_samples << " random samples");
+  RCLCPP_INFO_STREAM(node->get_logger(), "*** Testing KDL with " << num_samples << " random samples");
 
   for (uint i = 0; i < num_samples; i++)
   {
@@ -137,16 +136,21 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
       success++;
 
     if (int((double)i / num_samples * 100) % 10 == 0)
-      ROS_INFO_STREAM_THROTTLE(1, int((i) / num_samples * 100) << "\% done");
+    {
+      RCLCPP_INFO_STREAM_THROTTLE(node->get_logger(),
+              *(node->get_clock()),
+              1.0,
+              int((i) / num_samples * 100) << "\% done");
+    }
   }
 
-  ROS_INFO_STREAM("KDL found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
+  RCLCPP_INFO_STREAM(node->get_logger(), "KDL found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
 
 
   total_time = 0;
   success = 0;
 
-  ROS_INFO_STREAM("*** Testing TRAC-IK with " << num_samples << " random samples");
+  RCLCPP_INFO_STREAM(node->get_logger(), "*** Testing TRAC-IK with " << num_samples << " random samples");
 
   for (uint i = 0; i < num_samples; i++)
   {
@@ -160,10 +164,15 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
       success++;
 
     if (int((double)i / num_samples * 100) % 10 == 0)
-      ROS_INFO_STREAM_THROTTLE(1, int((i) / num_samples * 100) << "\% done");
+    {
+      RCLCPP_INFO_STREAM_THROTTLE(node->get_logger(),
+              *(node->get_clock()),
+              1.0,
+              int((i) / num_samples * 100) << "\% done");
+    }
   }
 
-  ROS_INFO_STREAM("TRAC-IK found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
+  RCLCPP_INFO_STREAM(node->get_logger(), "TRAC-IK found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
 
 
 
@@ -174,30 +183,39 @@ void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std:
 int main(int argc, char** argv)
 {
   srand(1);
-  ros::init(argc, argv, "ik_tests");
-  ros::NodeHandle nh("~");
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("ik_tests");
 
   int num_samples;
   std::string chain_start, chain_end, urdf_param;
   double timeout;
 
-  nh.param("num_samples", num_samples, 1000);
-  nh.param("chain_start", chain_start, std::string(""));
-  nh.param("chain_end", chain_end, std::string(""));
+  node->declare_parameter<int>("num_samples", 1000);
+  node->declare_parameters<double>("timeout", 0.005);
+  node->declare_parameters<std::string>(
+          std::string(), // parameters are not namespaced
+          std::map<std::string, std::string>{
+            {"chain_start", std::string()},
+            {"chain_end", std::string()},
+            {"urdf_param", std::string("/robot_description")}
+          });
 
-  if (chain_start == "" || chain_end == "")
+  node->get_parameter("num_samples", num_samples);
+  node->get_parameter("timeout", timeout);
+  node->get_parameter("chain_start", chain_start);
+  node->get_parameter("chain_end", chain_end);
+  node->get_parameter("urdf_param", urdf_param);
+
+  if (chain_start.empty() || chain_end.empty())
   {
-    ROS_FATAL("Missing chain info in launch file");
+    RCLCPP_FATAL(node->get_logger(), "Missing chain info in launch file");
     exit(-1);
   }
-
-  nh.param("timeout", timeout, 0.005);
-  nh.param("urdf_param", urdf_param, std::string("/robot_description"));
 
   if (num_samples < 1)
     num_samples = 1;
 
-  test(nh, num_samples, chain_start, chain_end, timeout, urdf_param);
+  test(node, num_samples, chain_start, chain_end, timeout, urdf_param);
 
   // Useful when you make a script that loops over multiple launch files that test different robot chains
   // std::vector<char *> commandVector;
