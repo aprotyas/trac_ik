@@ -118,7 +118,6 @@ void test(
   for (uint i = 0; i < num_samples; i++)
   {
     fk_solver.JntToCart(JointList[i], end_effector_pose);
-    double elapsed = 0;
     result = nominal; // start with nominal
     start_time = std::chrono::system_clock::now();
     do
@@ -152,7 +151,6 @@ void test(
   for (uint i = 0; i < num_samples; i++)
   {
     fk_solver.JntToCart(JointList[i], end_effector_pose);
-    double elapsed = 0;
     start_time = std::chrono::system_clock::now();
     rc = tracik_solver.CartToJnt(nominal, end_effector_pose, result);
     diff = std::chrono::system_clock::now() - start_time;
