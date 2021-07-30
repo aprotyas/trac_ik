@@ -25,12 +25,14 @@
   <build_depend>kdl_parser</build_depend>
   <build_depend>libnlopt-cxx-dev</build_depend>
   <build_depend>rclcpp</build_depend>
+  <build_depend>rclcpp_components</build_depend>
   <build_depend>urdf</build_depend>
 
   <exec_depend>kdl_parser</exec_depend>
   <exec_depend>libnlopt0</exec_depend>
   <exec_depend>libnlopt-cxx-dev</exec_depend>
   <exec_depend>rclcpp</exec_depend>
+  <build_depend>rclcpp_components</build_depend>
   <exec_depend>urdf</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
