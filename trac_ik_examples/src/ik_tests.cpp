@@ -37,14 +37,14 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void test(
         const rclcpp::Node::SharedPtr node, double num_samples, std::string chain_start,
-        std::string chain_end, double timeout, std::string urdf_param)
+        std::string chain_end, double timeout, std::string urdf_xml)
 {
   double eps = 1e-5;
 
-  // This constructor parses the URDF loaded in rosparm urdf_param into the
+  // This constructor parses the URDF loaded in rosparm urdf_xml into the
   // needed KDL structures.  We then pull these out to compare against the KDL
   // IK solver.
-  TRAC_IK::TRAC_IK tracik_solver(chain_start, chain_end, urdf_param, timeout, eps);
+  TRAC_IK::TRAC_IK tracik_solver(chain_start, chain_end, urdf_xml, timeout, eps);
 
   KDL::Chain chain;
   KDL::JntArray ll, ul; //lower joint limits, upper joint limits
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
   auto node = rclcpp::Node::make_shared("ik_tests");
 
   int num_samples;
-  std::string chain_start, chain_end, urdf_param;
+  std::string chain_start, chain_end, urdf_xml;
   double timeout;
 
   node->declare_parameter<int>("num_samples", 1000);
@@ -191,14 +191,14 @@ int main(int argc, char** argv)
           std::map<std::string, std::string>{
             {"chain_start", std::string()},
             {"chain_end", std::string()},
-            {"urdf_param", std::string("/robot_description")}
+            {"robot_description", std::string()},
           });
 
   node->get_parameter("num_samples", num_samples);
   node->get_parameter("timeout", timeout);
   node->get_parameter("chain_start", chain_start);
   node->get_parameter("chain_end", chain_end);
-  node->get_parameter("urdf_param", urdf_param);
+  node->get_parameter("robot_description", urdf_xml);
 
   if (chain_start.empty() || chain_end.empty())
   {
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
   if (num_samples < 1)
     num_samples = 1;
 
-  test(node, num_samples, chain_start, chain_end, timeout, urdf_param);
+  test(node, num_samples, chain_start, chain_end, timeout, urdf_xml);
 
   // Useful when you make a script that loops over multiple launch files that test different robot chains
   // std::vector<char *> commandVector;
