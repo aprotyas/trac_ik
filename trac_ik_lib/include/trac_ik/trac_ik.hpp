@@ -55,7 +55,7 @@ public:
   TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime = 0.005, double _eps = 1e-5, SolveType _type = Speed);
 
   TRAC_IK_PUBLIC
-  TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param = "/robot_description", double _maxtime = 0.005, double _eps = 1e-5, SolveType _type = Speed);
+  TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& urdf_xml = "", double _maxtime = 0.005, double _eps = 1e-5, SolveType _type = Speed);
 
   TRAC_IK_PUBLIC
   ~TRAC_IK();
