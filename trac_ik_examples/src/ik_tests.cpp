@@ -39,6 +39,9 @@ double fRand(double min, double max)
   return min + f * (max - min);
 }
 
+#include <kdl/chainiksolverpos_nr_jl.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <trac_ik/trac_ik.hpp>
 
 void test(ros::NodeHandle& nh, double num_samples, std::string chain_start, std::string chain_end, double timeout, std::string urdf_param)
 {
