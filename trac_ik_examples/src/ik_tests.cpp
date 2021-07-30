@@ -97,7 +97,7 @@ void test(
     for (uint j = 0; j < ll.data.size(); j++)
     {
       std::uniform_real_distribution<double> dist(ll(j), ul(j));
-      q(j) = dist(mt);
+      q(j) = dist(gen);
     }
     JointList.push_back(q);
   }
