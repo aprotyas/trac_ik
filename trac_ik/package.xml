@@ -9,6 +9,7 @@
     without increasing solve time.
   </description>
   <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
+  <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
   <author>Patrick Beeson</author>
   <author>Barrett Ames</author>
   <license>BSD</license>
