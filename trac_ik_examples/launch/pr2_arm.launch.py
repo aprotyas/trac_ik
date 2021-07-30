@@ -31,25 +31,43 @@ def generate_launch_description():
     urdf_file = os.path.join(pkg_share, 'launch', 'pr2.urdf')
     with open(urdf_file, 'r') as infp:
         robot_desc = infp.read()
-    ik_test_params = {
-        'robot_description': robot_desc,
-        'num_samples': num_samples,
-        'chain_start': chain_start,
-        'chain_end': chain_end,
-        'timeout': timeout,
-    }
 
     return LaunchDescription(
         [
-            DeclareLaunchArgument('num_samples', default_value=1000),
+            DeclareLaunchArgument('num_samples', default_value='1000'),
             DeclareLaunchArgument('chain_start', default_value='torso_lift_link'),
             DeclareLaunchArgument('chain_end', default_value='r_wrist_roll_link'),
-            DeclareLaunchArgument('timeout', 0.005),
+            DeclareLaunchArgument('timeout', default_value='0.005'),
             Node(
                 package='trac_ik_examples',
                 executable='ik_tests',
                 output='screen',
                 parameters=[
-                    ik_test_params
-                ]),
-        ])
+                    {
+                        'robot_description': robot_desc,
+                        'num_samples': num_samples,
+                        'chain_start': chain_start,
+                        'chain_end': chain_end,
+                        'timeout': timeout,
+                    }
+                ],
+            ),
+        ]
+    )
+
+"""
+Alternative ways to obtain the robot description:
+
+1. Using `xacro` with command substitution:
+xacro_file = os.path.join(urdf_dir, 'test.urdf.xacro')
+robot_desc = launch.substitutions.Command(f'xacro {xacro_file}')
+
+2. Using `xacro` API:
+xacro_file = os.path.join(urdf_dir, 'test.urdf.xacro')
+robot_desc = xacro.process_file(xacro_file).toprettyxml(indent='    ')
+
+3. Using `xacro` with `subprocess` utils:
+xacro_file = os.path.join(urdf_dir, 'test.urdf.xacro')
+p = subprocess.Popen(['xacro', xacro_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+robot_desc, stderr = p.communicate()
+"""
