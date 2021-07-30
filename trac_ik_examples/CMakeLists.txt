@@ -38,15 +38,12 @@ ament_target_dependencies(ik_tests
 )
 
 install(TARGETS ik_tests
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    INCLUDES DESTINATION include
-    RUNTIME DESTINATION BIN
+    DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY
     launch
-    DESTINATION share/${PROJECT_NAME}/
+    DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
