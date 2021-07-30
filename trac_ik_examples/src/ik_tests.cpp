@@ -35,7 +35,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <rclcpp/rclcpp.hpp>
 #include <trac_ik/trac_ik.hpp>
 
-void test(const auto node, double num_samples, std::string chain_start, std::string chain_end, double timeout, std::string urdf_param)
+void test(
+        const rclcpp::Node::SharedPtr node, double num_samples, std::string chain_start,
+        std::string chain_end, double timeout, std::string urdf_param)
 {
   double eps = 1e-5;
 
