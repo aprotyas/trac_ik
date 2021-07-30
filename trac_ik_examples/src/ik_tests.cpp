@@ -185,7 +185,7 @@ int main(int argc, char** argv)
   double timeout;
 
   node->declare_parameter<int>("num_samples", 1000);
-  node->declare_parameters<double>("timeout", 0.005);
+  node->declare_parameter<double>("timeout", 0.005);
   node->declare_parameters<std::string>(
           std::string(), // parameters are not namespaced
           std::map<std::string, std::string>{
