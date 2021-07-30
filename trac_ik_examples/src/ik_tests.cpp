@@ -29,15 +29,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 ********************************************************************************/
 
 #include <chrono>
-#include <trac_ik/trac_ik.hpp>
-#include <ros/ros.h>
-#include <kdl/chainiksolverpos_nr_jl.hpp>
-
-double fRand(double min, double max)
-{
-  double f = (double)rand() / RAND_MAX;
-  return min + f * (max - min);
-}
+#include <random>
 
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -96,11 +88,14 @@ void test(const auto node, double num_samples, std::string chain_start, std::str
   std::vector<KDL::JntArray> JointList;
   KDL::JntArray q(chain.getNrOfJoints());
 
+  std::random_device rd;
+  std::mt19937 gen(rd());
   for (uint i = 0; i < num_samples; i++)
   {
     for (uint j = 0; j < ll.data.size(); j++)
     {
-      q(j) = fRand(ll(j), ul(j));
+      std::uniform_real_distribution<double> dist(ll(j), ul(j));
+      q(j) = dist(mt);
     }
     JointList.push_back(q);
   }
@@ -182,7 +177,6 @@ void test(const auto node, double num_samples, std::string chain_start, std::str
 
 int main(int argc, char** argv)
 {
-  srand(1);
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("ik_tests");
 
