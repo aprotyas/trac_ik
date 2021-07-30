@@ -136,11 +136,11 @@ void test(
       RCLCPP_INFO_STREAM_THROTTLE(node->get_logger(),
               *(node->get_clock()),
               1.0,
-              int((i) / num_samples * 100) << "\% done");
+              int((i) / num_samples * 100) << "% done");
     }
   }
 
-  RCLCPP_INFO_STREAM(node->get_logger(), "KDL found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
+  RCLCPP_INFO_STREAM(node->get_logger(), "KDL found " << success << " solutions (" << 100.0 * success / num_samples << "%) with an average of " << total_time / num_samples << " secs per sample");
 
 
   total_time = 0;
@@ -163,11 +163,11 @@ void test(
       RCLCPP_INFO_STREAM_THROTTLE(node->get_logger(),
               *(node->get_clock()),
               1.0,
-              int((i) / num_samples * 100) << "\% done");
+              int((i) / num_samples * 100) << "% done");
     }
   }
 
-  RCLCPP_INFO_STREAM(node->get_logger(), "TRAC-IK found " << success << " solutions (" << 100.0 * success / num_samples << "\%) with an average of " << total_time / num_samples << " secs per sample");
+  RCLCPP_INFO_STREAM(node->get_logger(), "TRAC-IK found " << success << " solutions (" << 100.0 * success / num_samples << "%) with an average of " << total_time / num_samples << " secs per sample");
 
 
 
