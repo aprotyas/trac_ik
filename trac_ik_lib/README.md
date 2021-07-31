@@ -1,3 +1,20 @@
+# API change (WIP)
+
+Previously, the `TracIK` class could be constructed with a `std::string URDF_param="/robot_description"` argument.
+This `URDF_param` argument contained the name of the parameter which housed the robot description URDF string in the global parameter server.
+Since ROS 2 does not have "global" parameters, I've decided that the onus of obtaining a robot description XML falls on the `TracIK` callee.
+More specifically:
+
+```c++
+
+TRAC_IK::TRAC_IK ik_solver(string base_link, string tip_link, string urdf_param=std::string(), double timeout_in_secs=0.005, double error=1e-5, TRAC_IK::SolveType type=TRAC_IK::Speed);
+
+```
+
+Users can either obtain `urdf_param` by subscribing to the `robot_description` topic if there is a `robot_state_publisher` instance in the ROS graph, or they can progammatically read a URDF XML file, or they can have the XML string saved in a parameter for the callee node through a launch script (and `xacro`, if they want...). The options are limitless!
+
+---
+
 The TRAC-IK kinematics solver is built in trac\_ik\_lib as a .so library (this
 has been tested using ROS Indigo using Catkin).  The headers and shared
 objects in this package can be linked against by user programs.
