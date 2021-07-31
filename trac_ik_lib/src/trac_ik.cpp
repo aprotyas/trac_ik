@@ -228,8 +228,9 @@ bool TRAC_IK::runSolver(T1& solver, T2& other_solver,
   {
     std::chrono::duration<double> timediff(std::chrono::system_clock::now() - start_time);
 
-    if (timediff <= fulltime)
+    if (timediff >= fulltime) {
       break;
+    }
 
     solver.setMaxtime((fulltime - timediff).count());
 
