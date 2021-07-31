@@ -1,3 +1,11 @@
+# trac_ik
+
+ROS 2 port of `trac_ik`, an alternative Inverse Kinematics solver to the popular inverse Jacobian methods in KDL.
+
+Link to the original repository: https://bitbucket.org/traclabs/trac_ik/src/master/
+
+---
+
 The ROS packages in this repository were created to provide an alternative
 Inverse Kinematics solver to the popular inverse Jacobian methods in KDL.
 Specifically, KDL's convergence algorithms are based on Newton's method, which
