@@ -159,7 +159,7 @@ int ChainIkSolverPos_TL::CartToJnt(const KDL::JntArray &q_init, const KDL::Frame
 
     Subtract(q_out, q_curr, q_out);
 
-    if (q_out.data.isZero(std::numeric_limits<double>::epsilon()))
+    if (q_out.data.isZero(std::numeric_limits<float>::epsilon()))
     {
       if (rr)
       {
