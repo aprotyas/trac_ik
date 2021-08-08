@@ -50,6 +50,8 @@ ament_target_dependencies(trac_ik
 
 ament_export_targets(export_trac_ik HAS_LIBRARY_TARGET)
 
+ament_export_libraries(trac_ik)
+ament_export_include_directories(include)
 ament_export_dependencies(
     ament_cmake
     Eigen3

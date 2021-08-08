@@ -4,13 +4,13 @@
 # Convenience code to wrap TRAC IK
 
 from trac_ik_python.trac_ik_wrap import TRAC_IK
-import rospy
+
 
 
 class IK(object):
     def __init__(self, base_link, tip_link,
                  timeout=0.005, epsilon=1e-5, solve_type="Speed",
-                 urdf_string=None):
+                 urdf_string):
         """
         Create a TRAC_IK instance and keep track of it.
 
@@ -20,11 +20,9 @@ class IK(object):
         :param float epsilon: Error epsilon.
         :param solve_type str: Type of solver, can be:
             Speed (default), Distance, Manipulation1, Manipulation2
-        :param urdf_string str: Optional arg, if not given URDF is taken from
-            the param server at /robot_description.
+        :param urdf_string str: robot urdf
         """
-        if urdf_string is None:
-            urdf_string = rospy.get_param('/robot_description')
+
         self._urdf_string = urdf_string
         self._timeout = timeout
         self._epsilon = epsilon

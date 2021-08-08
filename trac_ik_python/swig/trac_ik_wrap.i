@@ -7,10 +7,10 @@
  /* Includes the header in the wrapper code */
  #include <trac_ik/trac_ik.hpp>
  #include <urdf/model.h>
- #include <ros/ros.h>
+ #include <rclcpp/rclcpp.hpp>
  #include <kdl_parser/kdl_parser.hpp>
  #include <limits>
- #include <tf_conversions/tf_kdl.h>
+ #include <tf2_kdl/tf2_kdl.h>
  %}
 
  // We need this or we will get on runtime
@@ -33,7 +33,7 @@ namespace std {
 // Ignore original constructors as they are not useful in Python
 // Note the full namespacing
 %ignore TRAC_IK::TRAC_IK::TRAC_IK(const KDL::Chain& _chain, const KDL::JntArray& _q_min, const KDL::JntArray& _q_max, double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
-%ignore TRAC_IK::TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& URDF_param="/robot_description", double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
+%ignore TRAC_IK::TRAC_IK::TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& urdf_xml="", double _maxtime=0.005, double _eps=1e-5, SolveType _type=Speed);
 
 // Ignore the runKDL and runNLOPT methods as they fail to be wrapped (and are private anyways)
 %ignore TRAC_IK::runKDL(const KDL::JntArray &q_init, const KDL::Frame &p_in);
@@ -51,31 +51,37 @@ namespace std {
 %include <trac_ik/trac_ik.hpp>
 
 // Create a more Python friendly constructor
+
+
 %extend TRAC_IK::TRAC_IK {
     // Based on trac_ik_kinematics_plugin.cpp implementation
     // As we can't access the private variables of the TRAC_IK class from this extension
     // this is the only way I found to make another constructor
     // thanks to: http://stackoverflow.com/questions/33564645/how-to-add-an-alternative-constructor-to-the-target-language-specifically-pytho
-    TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& urdf_string,
+    TRAC_IK(const std::string& base_link, const std::string& tip_link, const std::string& urdf_xml="",
       double timeout, double epsilon, const std::string& solve_type="Speed"){
-
+      static const rclcpp::Logger LOGGER = rclcpp::get_logger("trac_ik.ros.trac_ik_wrap");
       urdf::Model robot_model;
 
-      robot_model.initString(urdf_string);
+      robot_model.initString(urdf_xml);
 
-      ROS_DEBUG_STREAM_NAMED("trac_ik","Reading joints and links from URDF");
 
+      RCLCPP_DEBUG(LOGGER, "Reading joints and links from URDF");
       KDL::Tree tree;
 
       if (!kdl_parser::treeFromUrdfModel(robot_model, tree)) {
-        ROS_FATAL("Failed to extract kdl tree from xml robot description");
+	RCLCPP_FATAL(LOGGER, "Failed to extract kdl tree from xml robot description");
       }
 
 
       KDL::Chain chain;
 
       if(!tree.getChain(base_link, tip_link, chain)) {
-        ROS_FATAL("Couldn't find chain %s to %s",base_link.c_str(),tip_link.c_str());
+
+	RCLCPP_FATAL_STREAM(
+            LOGGER, "Couldn't find chain " << base_link.c_str() << " to " << tip_link.c_str());
+	
+        
       }
 
       uint num_joints_;
@@ -127,7 +133,9 @@ namespace std {
             joint_min(joint_num-1)=std::numeric_limits<float>::lowest();
             joint_max(joint_num-1)=std::numeric_limits<float>::max();
           }
-          ROS_DEBUG_STREAM("IK Using joint "<<chain_segs[i].getName()<<" "<<joint_min(joint_num-1)<<" "<<joint_max(joint_num-1));
+
+	  RCLCPP_DEBUG_STREAM(LOGGER,
+              "IK Using joint " << joint->name << " " << lb(joint_num - 1) << " " << ub(joint_num - 1));
         }
       }
 
@@ -142,7 +150,7 @@ namespace std {
         solvetype = TRAC_IK::Distance;
       else {
           if (solve_type != "Speed") {
-              ROS_WARN_STREAM_NAMED("trac_ik", solve_type << " is not a valid solve_type; setting to default: Speed");
+              RCLCPP_WARN_STREAM(LOGGER, solve_type << " is not a valid solve_type; setting to default: Speed");
           }
           solvetype = TRAC_IK::Speed;
       }
@@ -176,7 +184,7 @@ namespace std {
       pose.orientation.z = rz;
       pose.orientation.w = rw;
 
-      tf::poseMsgToKDL(pose, frame);
+      tf2_kdl::fromMsg(pose,frame);
 
       KDL::JntArray in(q_init.size()), out(q_init.size());
 
