@@ -2,6 +2,10 @@
 
 ROS 2 port of `trac_ik`, an alternative Inverse Kinematics solver to the popular inverse Jacobian methods in KDL.
 
+dependencies:
+- sudo apt install libnlopt-cxx0 libnlopt-cxx-dev
+- sudo apt install swig
+
 Link to the original repository: https://bitbucket.org/traclabs/trac_ik/src/master/
 
 ---
