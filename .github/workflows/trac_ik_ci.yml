@@ -1,0 +1,46 @@
+name: trac_ik CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        linter: [copyright, cppcheck, cpplint, lint_cmake, uncrustify, xmllint]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        ros_distribution: [galactic, rolling]
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: Setup ROS2
+        uses: ros-tooling/setup-ros@v0.2
+        with:
+          use-ros2-testing: true
+          required-ros-distributions: ${{ matrix.ros_distribution }}
+
+      - name: Lint trac_ik
+        uses: ros-tooling/action-ros-lint@master
+        with:
+          package-name: trac_ik
+          linter: ${{ matrix.linter }}
+
+      - name: Build and test trac_ik
+        uses: ros-tooling/action-ros-ci@v0.2
+        id: action_ros_ci
+        with:
+          package-name: trac_ik
+          target-ros2-distro: ${{ matrix.ros_distribution }}
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: colcon_logs
+          path: ${{ steps.action_ros_ci.outputs.ros-workspace-directory-name }}/log
+        if: always()
+
