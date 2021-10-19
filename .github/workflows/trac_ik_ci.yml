@@ -12,7 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        linter: [copyright, cppcheck, cpplint, lint_cmake, uncrustify, xmllint]
         os: [ubuntu-latest, macOS-latest, windows-latest]
         ros_distribution: [galactic, rolling]
     steps:
@@ -23,12 +22,6 @@ jobs:
         with:
           use-ros2-testing: true
           required-ros-distributions: ${{ matrix.ros_distribution }}
-
-      - name: Lint trac_ik
-        uses: ros-tooling/action-ros-lint@master
-        with:
-          package-name: trac_ik
-          linter: ${{ matrix.linter }}
 
       - name: Build and test trac_ik
         uses: ros-tooling/action-ros-ci@v0.2
