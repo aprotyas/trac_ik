@@ -28,7 +28,6 @@ jobs:
       - name: Lint trac_ik
         uses: ros-tooling/action-ros-lint@master
         with:
-          package-name: trac_ik
           package-name: ${{ matrix.package }}
           linter: ${{ matrix.linter }}
 
