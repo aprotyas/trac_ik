@@ -7,13 +7,13 @@ on:
       - master
 
 jobs:
-  build-and-test:
+  trac_ik-CI:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        ros_distribution: [galactic, rolling]
+        os: [ubuntu-latest]
+        ros_distribution: [foxy, galactic, rolling]
     steps:
       - uses: actions/checkout@v2.3.4
 
