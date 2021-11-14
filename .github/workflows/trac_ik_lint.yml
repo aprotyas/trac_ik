@@ -7,25 +7,29 @@ on:
       - master
 
 jobs:
-  build-and-test:
+  trac_ik-lint:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:focal
     strategy:
       fail-fast: false
       matrix:
-        linter: [copyright, cppcheck, cpplint, lint_cmake, uncrustify, xmllint]
+        linter: [copyright, cppcheck, cpplint, flake8,
+          lint_cmake, mypy, pep257, pep8, uncrustify, xmllint]
+        package: [trac_ik_lib, trac_ik_examples]
     steps:
       - uses: actions/checkout@v2.3.4
 
       - name: Setup ROS2
         uses: ros-tooling/setup-ros@v0.2
         with:
-          use-ros2-testing: true
           required-ros-distributions: rolling
 
       - name: Lint trac_ik
         uses: ros-tooling/action-ros-lint@master
         with:
           package-name: trac_ik
+          package-name: ${{ matrix.package }}
           linter: ${{ matrix.linter }}
 
       - name: Upload Logs
