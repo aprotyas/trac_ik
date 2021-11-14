@@ -55,6 +55,7 @@ def generate_launch_description():
         ]
     )
 
+
 """
 Alternative ways to obtain the robot description:
 
