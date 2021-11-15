@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>trac_ik_examples</name>
-  <version>1.6.6</version>
+  <version>0.1.0</version>
   <description> This package contains the source code for testing and comparing trac_ik</description>
-  <author>Patrick Beeson</author>
-  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
+  <author>Patrick Beeson</author>
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

@@ -3,8 +3,8 @@
   <name>trac_ik_kinematics_plugin</name>
   <version>1.6.6</version>
   <description>A MoveIt! Kinematics plugin using TRAC-IK</description>
+  <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
   <author>Patrick Beeson</author>
-  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>

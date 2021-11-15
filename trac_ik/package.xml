@@ -1,21 +1,18 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>trac_ik</name>
-  <version>1.6.6</version>
+  <version>0.1.0</version>
   <description>
-    The ROS packages in this repository were created to provide an improved
-    alternative Inverse Kinematics solver to the popular inverse Jacobian
-    methods in KDL.  TRAC-IK handles joint-limited chains better than KDL
-    without increasing solve time.
+    The ROS packages in this repository have been forked from TRACLABS' source
+    tree, to provide - in ROS 2 - an improved alternative Inverse Kinematics
+    solver to the popular inverse Jacobian methods in KDL
   </description>
-  <maintainer email="robotics@traclabs.com">TRACLabs Robotics</maintainer>
   <maintainer email="aprotyas@u.rochester.edu">Abrar Rahman Protyasha</maintainer>
   <author>Patrick Beeson</author>
   <author>Barrett Ames</author>
   <license>BSD</license>
 
-  <url type="website">http://wiki.ros.org/trac_ik</url>
-  <url type="repository">https://bitbucket.org/traclabs/trac_ik</url>
+  <url type="repository">https://github.com/aprotyas/trac_ik</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
