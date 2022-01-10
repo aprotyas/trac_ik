@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - ros2
+  schedule:
+    # Triggers the workflow at 00:00 UTC every day
+    - cron: '0 0 * * *'
 
 jobs:
   trac_ik-CI:
