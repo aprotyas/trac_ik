@@ -30,11 +30,6 @@
 #ifndef TRAC_IK__TRAC_IK_HPP_
 #define TRAC_IK__TRAC_IK_HPP_
 
-#include <trac_ik/nlopt_ik.hpp>
-#include <trac_ik/visibility_control.hpp>
-
-#include <kdl/chainjnttojacsolver.hpp>
-
 #include <chrono>
 #include <memory>
 #include <mutex>
@@ -42,6 +37,10 @@
 #include <thread>
 #include <vector>
 #include <utility>
+
+#include "kdl/chainjnttojacsolver.hpp"
+#include "trac_ik/nlopt_ik.hpp"
+#include "trac_ik/visibility_control.hpp"
 
 namespace TRAC_IK
 {
