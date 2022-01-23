@@ -42,7 +42,6 @@
 #include "trac_ik/nlopt_ik.hpp"
 #include "trac_ik/visibility_control.hpp"
 
-
 namespace TRAC_IK
 {
 
