@@ -2,9 +2,11 @@ name: trac_ik CI
 
 on:
   pull_request:
+    paths-ignore: ['**.md']
   push:
     branches:
       - ros2
+    paths-ignore: ['**.md']
   schedule:
     # Triggers the workflow at 00:00 UTC every day
     - cron: '0 0 * * *'
