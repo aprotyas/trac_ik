@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04]
-        package: [trac_ik_lib, trac_ik_examples]
         ros_distribution: [foxy, galactic, rolling]
     steps:
       - uses: actions/checkout@v2.3.4
@@ -31,7 +30,10 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.2
         id: action_ros_ci
         with:
-          package-name: ${{ matrix.package }}
+          package-name: |
+            trac_ik
+            trac_ik_examples
+            trac_ik_lib
           target-ros2-distro: ${{ matrix.ros_distribution }}
 
       - name: Upload Logs
