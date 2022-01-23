@@ -127,6 +127,11 @@ public:
     solvetype = _type;
   }
 
+  inline SolveType GetSolveType() const
+  {
+    return solvetype;
+  }
+
 private:
   bool initialized;
   KDL::Chain chain;
