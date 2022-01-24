@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks":
+    [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "r2gc && cd ~/roboct_ws/ && colcon build --packages-select roboct_moveit_commander",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Launch",
+            "type": "shell",
+            "command": "source /opt/ros/foxy/setup.bash && source ~/moveit2_ws/install/local_setup.bash && source ~/ros2_roboct_ws/install/local_setup.bash && ros2 launch roboct_moveit_commander commander.launch.py"
+        }
+    ]
+}
