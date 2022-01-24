@@ -35,6 +35,7 @@ jobs:
           package-name: |
             trac_ik
             trac_ik_examples
+            trac_ik_kinematics
             trac_ik_lib
           target-ros2-distro: ${{ matrix.ros_distribution }}
 
