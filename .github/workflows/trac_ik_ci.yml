@@ -17,9 +17,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, windows-latest]
         ros_distribution: [foxy, galactic, rolling]
     steps:
+      - if: runner.os == 'Windows'
+        uses: actions/cache@v2
+        with:
+          path: ${{env.TEMP}}/chocolatey
+          key: ${{matrix.os}}-chocolatey-${{github.job_id}}
+          restore-keys: ${{matrix.os}}-chocolatey-
+
       - uses: actions/checkout@v2.3.4
 
       - name: Setup ROS2
